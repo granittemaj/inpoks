@@ -1,0 +1,13 @@
+{
+  "name": "inpo-website",
+  "version": "0.2.0",
+  "private": true,
+  "description": "INPO website prototype. Static site, no build step. package.json only exists for local dev tooling.",
+  "scripts": {
+    "serve": "npx --yes serve . -l 8000",
+    "test": "node scripts/smoke-test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  }
+}

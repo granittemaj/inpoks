@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Faqja nuk u gjet · INPO</title>
+<script>
+  /* GitHub Pages serves this for unknown paths. The site uses hash routing,
+     so send the visitor to the app's own 404 view. Works for user sites
+     (user.github.io/) and project sites (user.github.io/repo/). */
+  (function () {
+    var host = location.hostname;
+    var parts = location.pathname.split('/').filter(Boolean);
+    var base = (/\.github\.io$/.test(host) && parts.length) ? '/' + parts[0] + '/' : '/';
+    location.replace(base + '#/404');
+  })();
+</script>
+</head>
+<body><p>Faqja nuk u gjet. <a href="./">Kthehu në kryefaqe</a>.</p></body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>INPO · Iniciativa për Progres</title>
+<meta name="description" content="Iniciativa për Progres (INPO) monitoron prokurimin publik dhe qeverisjen lokale në Kosovë.">
+<!-- Prototype: remove the next line when this becomes the production site -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3D3B8E">
+<meta property="og:title" content="INPO · Iniciativa për Progres">
+<meta property="og:description" content="Llogaridhënie, jo premtime. Monitorim i prokurimit publik dhe i qeverisjes lokale në Kosovë.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<script>
+  /* Runs before paint: enables JS-only styles and applies the saved theme without a flash. */
+  (function () {
+    var d = document.documentElement;
+    d.classList.add('js');
+    try { var t = localStorage.getItem('inpo-theme'); if (t) d.dataset.theme = t; } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip" href="#app">Kalo te përmbajtja</a>
+
+<header class="site-header" id="hdr">
+  <div class="wrap hdr">
+    <a class="logo" href="#/" aria-label="INPO, Iniciativa për Progres, kryefaqja"><b>INPO</b><span>Iniciativa për Progres</span></a>
+    <nav class="nav" aria-label="Kryesore">
+      <a href="#/" data-nav="">Kryefaqja</a>
+      <a href="#/lajme" data-nav="lajme">Lajme</a>
+      <div class="dd" id="dd">
+        <button type="button" aria-expanded="false" aria-controls="dd-menu">Programet <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="dd-menu" id="dd-menu">
+          <a href="#/programet/qeverisje"><b>Qeverisje e mirë</b><small>Transparencë, llogaridhënie, sundim i ligjit</small></a>
+          <a href="#/programet/edukim"><b>Edukim demokratik</b><small>Të rinj aktivë për një shoqëri të hapur</small></a>
+        </div>
+      </div>
+      <a href="#/publikimet" data-nav="publikimet">Publikimet</a>
+      <a href="#/rreth-nesh" data-nav="rreth-nesh">Rreth nesh</a>
+      <a href="#/kontakti" data-nav="kontakti">Kontakti</a>
+    </nav>
+    <div class="actions">
+      <div class="lang" aria-label="Gjuha"><a href="#" aria-current="true" data-noop>SQ</a><a href="#" data-noop data-toast="Versioni në anglisht vjen me migrimin e përmbajtjes.">EN</a></div>
+      <button class="icon-btn" type="button" id="theme" aria-label="Ndrysho temën e ngjyrave"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+      <button class="icon-btn" type="button" id="open-search" aria-label="Kërko në faqe"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="btn btn-ink btn-sm" type="button" data-scroll="newsletter">Abonohu</button>
+      <button class="icon-btn menu-btn" type="button" id="open-menu" aria-label="Hap menunë" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14"/><path d="M5 15h14"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<div class="wrap">
+  <section class="nl grid12" id="newsletter" aria-labelledby="nl-h">
+    <svg class="rings" width="700" height="700" viewBox="0 0 700 700" aria-hidden="true"><circle cx="350" cy="350" r="120"/><circle cx="350" cy="350" r="190"/><circle cx="350" cy="350" r="260"/><circle cx="350" cy="350" r="330"/></svg>
+    <div class="nl-copy">
+      <h2 id="nl-h">Qëndro i informuar.</h2>
+      <p>Analizat, raportet dhe reagimet tona, një herë në muaj, direkt në email.</p>
+    </div>
+    <form class="nl-form" id="nl-form" novalidate>
+      <label for="nl-email">Adresa e email-it</label>
+      <div class="nl-field">
+        <input id="nl-email" type="email" autocomplete="email" placeholder="emri@shembull.com" required>
+        <button type="submit">Abonohu</button>
+      </div>
+      <div class="nl-msg" id="nl-msg" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="grid12 foot-cols">
+      <div class="foot-about">
+        <p>Iniciativa për Progres promovon demokratizimin e qeverisjes lokale përmes aktivizmit qytetar.</p>
+        <div class="socials">
+          <a href="https://www.facebook.com/OrganizataINPO/" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://x.com/organizatainpo" target="_blank" rel="noopener">X</a>
+          <a href="https://www.youtube.com/channel/UC5FqAZlDj2B05tV4HSiLWOg" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+      <div class="foot-c1"><h3>Zyra në Prishtinë</h3>Rr. “Qamil Hoxha”, H32,<br>nr. 09, kati IV<br>10000 Prishtinë</div>
+      <div class="foot-c2"><h3>Zyra në Ferizaj</h3>Rr. “Latif Hasani”, pn<br>70000 Ferizaj</div>
+      <div class="foot-c3"><h3>Kontakt</h3><a href="mailto:info@inpo-ks.org">info@inpo-ks.org</a><a href="tel:+38349354000">+383 (0) 49 354 000</a><a href="#/rreth-nesh">Raportet e auditimit</a></div>
+    </div>
+    <div class="foot-bottom">
+      <span class="wordmark" aria-hidden="true">INPO</span>
+      <small>© <span id="yr">2026</span> Iniciativa për Progres<br>Të gjitha të drejtat e rezervuara</small>
+    </div>
+  </div>
+</footer>
+
+<dialog id="menu" aria-label="Menuja">
+  <div class="menu-panel">
+    <div class="menu-top">
+      <a class="logo" href="#/"><b>INPO</b><span>Iniciativa për Progres</span></a>
+      <button class="icon-btn" type="button" data-close aria-label="Mbyll menunë"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <nav class="menu-links" aria-label="Menuja mobile">
+      <a href="#/">Kryefaqja</a>
+      <a href="#/lajme">Lajme</a>
+      <a href="#/programet/qeverisje">Programet</a>
+      <a class="sub" href="#/programet/qeverisje">Qeverisje e mirë</a>
+      <a class="sub" href="#/programet/edukim">Edukim demokratik</a>
+      <a href="#/publikimet">Publikimet</a>
+      <a href="#/rreth-nesh">Rreth nesh</a>
+      <a href="#/kontakti">Kontakti</a>
+    </nav>
+    <div class="menu-foot">
+      <button class="btn btn-accent" type="button" data-scroll="newsletter">Abonohu</button>
+      <div class="lang"><a href="#" aria-current="true" data-noop>SQ</a><a href="#" data-noop data-toast="Versioni në anglisht vjen me migrimin e përmbajtjes.">EN</a></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="search" aria-label="Kërko">
+  <div class="search-panel">
+    <div class="search-field">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <label for="q-global" class="sr">Kërko lajme dhe publikime</label>
+      <input id="q-global" type="search" placeholder="Kërko lajme dhe publikime" autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="search-res" id="search-res" role="region" aria-live="polite"></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
