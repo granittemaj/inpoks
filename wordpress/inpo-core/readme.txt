@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,11 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.1.0 =
+* Works on the live inpo-ks.org data (publikimet, tipi_i_publikimit), WPML language switch.
+* Two-step launch: Prepare, then automatic go-live on theme activation, with restore.
+* Team and Donors copied from the old site; programme activities; English wp-admin.
 
 = 1.0.0 =
 * First release, ported from the approved prototype.
