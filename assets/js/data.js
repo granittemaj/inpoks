@@ -15,7 +15,7 @@ const NEWS = [
       'OShP ka refuzuar të shqyrtojë ankesën duke u thirrur në mungesë juridiksioni, ndonëse paraprakisht e kishte pranuar atë për shqyrtim. Ky qëndrim krijon pasiguri juridike për operatorët ekonomikë dhe dobëson besimin në mekanizmin e ankesave.',
       'INPO kërkon që vendimi të rishikohet dhe që OShP të sqarojë publikisht bazën ligjore mbi të cilën ka ndryshuar qëndrimin për juridiksionin.'
     ], todo:true },
-  { id:'mkrs-procesverbal', date:'Maj 2025', iso:'2025-05-20', cat:'reagim',
+  { id:'mkrs-procesverbal', date:'21.05.2025', iso:'2025-05-21', cat:'reagim',
     title:'Pas reagimit të INPO-s, MKRS publikon procesverbalin e hapjes së tenderit 56 milionësh, por jo vendimin për fituesin',
     excerpt:'Ministria publikoi procesverbalin e hapjes së tenderit për stadiumet vetëm pas reagimit publik. Vendimi për fituesin e kontratës mungon ende.',
     body:['Pas reagimit publik të INPO-s, Ministria e Kulturës, Rinisë dhe Sportit (MKRS) ka publikuar procesverbalin e hapjes së tenderit 56 milionësh për stadiume. Vendimi për fituesin ose fituesit e kontratës ende nuk është publikuar.'], todo:true },

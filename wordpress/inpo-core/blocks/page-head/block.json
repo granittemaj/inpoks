@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/page-head",
+	"title": "Page head",
+	"category": "inpo",
+	"icon": "heading",
+	"description": "Page title with kicker and intro.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"source": {
+			"type": "string",
+			"default": "custom"
+		},
+		"kicker": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"lead": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"usesContext": [
+		"postId",
+		"postType"
+	]
+}

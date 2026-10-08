@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/hero",
+	"title": "Hero",
+	"category": "inpo",
+	"icon": "megaphone",
+	"description": "Large home page headline with two buttons.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"badge": {
+			"type": "string",
+			"default": "Organizatë joqeveritare në Ferizaj dhe Prishtinë, që nga 2005"
+		},
+		"line1": {
+			"type": "string",
+			"default": "Llogaridhënie,"
+		},
+		"line2": {
+			"type": "string",
+			"default": "jo premtime."
+		},
+		"lead": {
+			"type": "string",
+			"default": "Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj."
+		},
+		"cta1Text": {
+			"type": "string",
+			"default": "Shfleto publikimet"
+		},
+		"cta1Url": {
+			"type": "string",
+			"default": ""
+		},
+		"cta2Text": {
+			"type": "string",
+			"default": "Rreth INPO-s"
+		},
+		"cta2Url": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

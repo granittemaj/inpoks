@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/publication-library",
+	"title": "Publication library",
+	"category": "inpo",
+	"icon": "book",
+	"description": "Search, type and year filters, and the publication grid.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"placeholder": {
+			"type": "string",
+			"default": "Kërko, p.sh. OShP, tenderë, komuna"
+		},
+		"programLabel": {
+			"type": "string",
+			"default": "Programi"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"viewScript": "inpo-core-view"
+}

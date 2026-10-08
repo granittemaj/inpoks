@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/newsletter",
+	"title": "Newsletter",
+	"category": "inpo",
+	"icon": "email",
+	"description": "Newsletter sign-up panel.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Qëndro i informuar."
+		},
+		"text": {
+			"type": "string",
+			"default": "Analizat, raportet dhe reagimet tona, një herë në muaj, direkt në email."
+		},
+		"label": {
+			"type": "string",
+			"default": "Adresa e email-it"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": "emri@shembull.com"
+		},
+		"button": {
+			"type": "string",
+			"default": "Abonohu"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"viewScript": "inpo-core-view"
+}

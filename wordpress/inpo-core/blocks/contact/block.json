@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/contact",
+	"title": "Contact form",
+	"category": "inpo",
+	"icon": "feedback",
+	"description": "Contact form with the two offices.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"submit": {
+			"type": "string",
+			"default": "Dërgo mesazhin"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"viewScript": "inpo-core-view"
+}

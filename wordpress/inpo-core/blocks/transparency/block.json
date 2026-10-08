@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/transparency",
+	"title": "Transparency",
+	"category": "inpo",
+	"icon": "visibility",
+	"description": "Audit reports and job openings.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Transparenca fillon nga ne"
+		},
+		"auditTitle": {
+			"type": "string",
+			"default": "Raportet e auditimit"
+		},
+		"auditText": {
+			"type": "string",
+			"default": "Pasqyrat financiare të audituara, të publikuara çdo vit."
+		},
+		"auditCount": {
+			"type": "number",
+			"default": 1
+		},
+		"allText": {
+			"type": "string",
+			"default": "Të gjitha raportet për INPO"
+		},
+		"jobsTitle": {
+			"type": "string",
+			"default": "Mundësi punësimi"
+		},
+		"jobsText": {
+			"type": "string",
+			"default": "Pozitat dhe thirrjet e hapura publikohen këtu. Abonohuni për të marrë njoftim kur hapet një pozitë e re."
+		},
+		"jobsButton": {
+			"type": "string",
+			"default": "Merr njoftime"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

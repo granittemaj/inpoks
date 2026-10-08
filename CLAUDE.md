@@ -46,6 +46,17 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 3. If it is top-level, add a `data-nav="foo"` link in the header nav in `index.html` and in the mobile menu.
 4. Add the route to `routes` in `scripts/smoke-test.mjs`.
 
+## WordPress port (`wordpress/`)
+
+- `wordpress/inpo/` is a block theme, `wordpress/inpo-core/` its companion plugin. Read `wordpress/README.md` first.
+- Same markup and CSS as the prototype. `inpo/assets/css/inpo.css` = `assets/css/styles.css` verbatim plus a "WordPress integration" section at the end. **Any CSS change in the prototype must be mirrored there** (and vice versa for shared rules).
+- Block renderers in `inpo-core/includes/render.php` mirror the renderers in `app.js` class for class. Header and footer markup lives in `inpo/inc/chrome.php`.
+- Content import: `inpo-core/seed/content.json` is generated from `data.js`. Regenerate it when `data.js` changes.
+- The live inpo-ks.org is WordPress (WPML, Yoast, CPT UI). The plugin reuses its names: post type `publikimet`, taxonomy `tipi_i_publikimit`. Deploy in two steps: activate the plugin first and run INPO > Setup > Prepare (no public change while the old theme is active, `inpo_core_theme_active()` gates public behaviour), then activate the theme: go-live runs automatically, backs up what it changes and is restored if the old theme is reactivated. Permalinks are never changed on the live site.
+- wp-admin strings (plugin and theme) are English and wrapped in `__()`; public site copy stays Albanian.
+- Still no build step: block editor UI is plain JS on `wp.*` globals (`inpo-core/assets/editor.js`).
+- Run `npm run wp` to test in a real WordPress. Check every PHP file with `php -l`.
+
 ## Design system rules (approved direction: "Quiet Indigo")
 
 - **One brand colour:** `--accent` (INPO indigo). Everything else is neutral. No gradients, no extra accent colours.
@@ -82,7 +93,6 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - Full article bodies, publication summaries, years and PDF links.
 - EN translation (the switch is a `data-noop` stub).
 - Form backends (contact and newsletter are client-side only).
-- Exact date of the MKRS protocol news ("Maj 2025").
 - `noindex` meta in `index.html` must be removed for production.
 
 ## Suggested next tasks
@@ -90,4 +100,4 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 1. Replace the text wordmark with the official SVG logo (inline in header and menu). Keep the footer giant wordmark as text.
 2. Add an EN content layer: `data.en.js` plus a `lang` state, with the switch updating `<html lang>` and the hash (`#/en/...`).
 3. Add a "Tender Watch" page (`#/tenderet`) listing monitored cases with status pills, reusing `.stat` and `.row` styles.
-4. Port to a WordPress block theme: map tokens to `theme.json`, renderers to templates and parts, `PUBS` to a `publication` CPT.
+4. WordPress port: done in `wordpress/`. Next there: official SVG logo via Site Logo, Polylang EN content, PDF files on publications.

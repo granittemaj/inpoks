@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/programs",
+	"title": "Programme cards",
+	"category": "inpo",
+	"icon": "networking",
+	"description": "Cards linking to the programme pages.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"kicker": {
+			"type": "string",
+			"default": "Programet"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Dy programe, një qëllim: institucione që u përgjigjen qytetarëve."
+		},
+		"linkLabel": {
+			"type": "string",
+			"default": "Zbulo programin"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

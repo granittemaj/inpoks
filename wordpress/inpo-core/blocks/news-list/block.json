@@ -1,0 +1,62 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/news-list",
+	"title": "News list (rows)",
+	"category": "inpo",
+	"icon": "list-view",
+	"description": "News as rows, with an intro, a heading or on its own.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"layout": {
+			"type": "string",
+			"default": "intro"
+		},
+		"kicker": {
+			"type": "string",
+			"default": "Lajme"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Lajme dhe reagime"
+		},
+		"lead": {
+			"type": "string",
+			"default": "Qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë."
+		},
+		"linkText": {
+			"type": "string",
+			"default": "Të gjitha lajmet"
+		},
+		"count": {
+			"type": "number",
+			"default": 3
+		},
+		"category": {
+			"type": "string",
+			"default": ""
+		},
+		"skipShown": {
+			"type": "boolean",
+			"default": true
+		},
+		"excludeCurrent": {
+			"type": "boolean",
+			"default": false
+		},
+		"inherit": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"usesContext": [
+		"postId",
+		"postType"
+	]
+}

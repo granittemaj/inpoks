@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/news-grid",
+	"title": "News cards",
+	"category": "inpo",
+	"icon": "excerpt-view",
+	"description": "News cards with category filters. Uses the page query.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"allLabel": {
+			"type": "string",
+			"default": "Të gjitha"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

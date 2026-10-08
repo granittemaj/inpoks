@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/team",
+	"title": "Team",
+	"category": "inpo",
+	"icon": "groups",
+	"description": "Staff with photo, role and email (INPO > Team).",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Stafi"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

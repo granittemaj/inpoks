@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/site-footer",
+	"title": "Site footer",
+	"category": "theme",
+	"icon": "table-row-after",
+	"description": "Offices, contact details and social links.",
+	"textdomain": "inpo",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false
+	},
+	"editorScript": "inpo-theme-editor"
+}

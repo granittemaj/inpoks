@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/site-header",
+	"title": "Site header",
+	"category": "theme",
+	"icon": "table-row-before",
+	"description": "Logo, menu, search and colour theme switch.",
+	"textdomain": "inpo",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false
+	},
+	"editorScript": "inpo-theme-editor"
+}

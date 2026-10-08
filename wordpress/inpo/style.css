@@ -1,0 +1,16 @@
+/*
+Theme Name: INPO
+Theme URI: https://inpo-ks.org
+Author: Iniciativa për Progres
+Description: Block theme for Iniciativa për Progres (INPO). "Quiet Indigo" design: one indigo accent, Geist type, concentric rings. Pairs with the INPO Core plugin, which provides the content model, blocks and forms.
+Requires at least: 6.6
+Tested up to: 6.8
+Requires PHP: 7.4
+Version: 1.0.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: inpo
+Tags: block-theme, full-site-editing, one-column, accessibility-ready
+*/
+
+/* All styles live in assets/css/inpo.css (loaded on the site and in the editor). */

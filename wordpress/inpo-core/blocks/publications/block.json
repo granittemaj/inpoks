@@ -1,0 +1,62 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/publications",
+	"title": "Publications grid",
+	"category": "inpo",
+	"icon": "media-document",
+	"description": "Latest, related or programme publications.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"mode": {
+			"type": "string",
+			"default": "latest"
+		},
+		"kicker": {
+			"type": "string",
+			"default": "Publikimet"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Të dhëna, jo opinione."
+		},
+		"count": {
+			"type": "number",
+			"default": 4
+		},
+		"columns": {
+			"type": "number",
+			"default": 4
+		},
+		"type": {
+			"type": "string",
+			"default": ""
+		},
+		"program": {
+			"type": "string",
+			"default": ""
+		},
+		"showChips": {
+			"type": "boolean",
+			"default": true
+		},
+		"linkText": {
+			"type": "string",
+			"default": ""
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"usesContext": [
+		"postId",
+		"postType"
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/program-page",
+	"title": "Programme page",
+	"category": "inpo",
+	"icon": "networking",
+	"description": "Full programme page.",
+	"textdomain": "inpo-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

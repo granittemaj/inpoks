@@ -1,0 +1,98 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/bento",
+	"title": "Cases we follow (bento)",
+	"category": "inpo",
+	"icon": "grid-view",
+	"description": "Featured story and two figures from monitored cases.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Rastet që po ndjekim"
+		},
+		"featuredId": {
+			"type": "number",
+			"default": 0
+		},
+		"featuredSlug": {
+			"type": "string",
+			"default": "ankesa-e-krm-pastrimi-perjashtohet-pas-shqyrtimit-inpo-kerkon-rishikim-te-vendimit-te-pakuptimte-te-oshp-se"
+		},
+		"featuredTitle": {
+			"type": "string",
+			"default": ""
+		},
+		"stat1Id": {
+			"type": "number",
+			"default": 0
+		},
+		"stat1Slug": {
+			"type": "string",
+			"default": "tenderi-56-milionesh-per-stadiume-i-mkrs-se-126-dite-pa-vendim-pa-transparence-pa-pergjegjesi"
+		},
+		"stat1Label": {
+			"type": "string",
+			"default": "Prokurimi i hapur, MKRS"
+		},
+		"stat1Number": {
+			"type": "string",
+			"default": "125"
+		},
+		"stat1Prefix": {
+			"type": "string",
+			"default": ""
+		},
+		"stat1Suffix": {
+			"type": "string",
+			"default": ""
+		},
+		"stat1Decimals": {
+			"type": "number",
+			"default": 0
+		},
+		"stat1Text": {
+			"type": "string",
+			"default": "ditë pa vendim për tenderin 56 milionësh të stadiumeve. Pa transparencë, pa përgjegjësi."
+		},
+		"stat2Id": {
+			"type": "number",
+			"default": 0
+		},
+		"stat2Slug": {
+			"type": "string",
+			"default": "inpo-kerkon-anulimin-dhe-rishikimin-e-tenderit-4-98-milione-e-te-komunes-se-vushtrrise-per-shkak-te-kritereve-diskriminuese"
+		},
+		"stat2Label": {
+			"type": "string",
+			"default": "Reagim publik, Vushtrri"
+		},
+		"stat2Number": {
+			"type": "string",
+			"default": "4.98"
+		},
+		"stat2Prefix": {
+			"type": "string",
+			"default": "€"
+		},
+		"stat2Suffix": {
+			"type": "string",
+			"default": "M"
+		},
+		"stat2Decimals": {
+			"type": "number",
+			"default": 2
+		},
+		"stat2Text": {
+			"type": "string",
+			"default": "Kërkojmë anulimin e tenderit për kritere diskriminuese."
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

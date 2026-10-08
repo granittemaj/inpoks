@@ -95,8 +95,11 @@ inpo-website/
 │   └── js/
 │       ├── data.js       All content: news, publications, programmes, donors
 │       └── app.js        Router, page renderers, search, forms, theme
-├── scripts/smoke-test.mjs
-├── package.json          Dev tooling only (serve, test)
+├── scripts/
+│   ├── smoke-test.mjs
+│   └── wp-zip.mjs        Builds the WordPress zips
+├── wordpress/            WordPress theme (inpo) and plugin (inpo-core)
+├── package.json          Dev tooling only (serve, test, wp)
 ├── CLAUDE.md             Instructions for Claude Code
 └── README.md
 ```
@@ -155,20 +158,24 @@ Typography is **Geist** (Google Fonts), weights 300 to 800.
 - [ ] Article bodies are partial. Import the full texts from inpo-ks.org.
 - [ ] Publication categories, years and summaries are assumptions. Confirm them against the CMS.
 - [ ] PDF downloads, the EN version and form submission are not connected.
-- [ ] The MKRS protocol news date ("Maj 2025") needs the exact date.
 - [ ] Remove `<meta name="robots" content="noindex, nofollow">` for production.
 
 ---
 
-## Roadmap
+## WordPress
 
-This prototype is the visual and UX reference for a WordPress block theme:
+The prototype is ported to a WordPress block theme and plugin in [`wordpress/`](wordpress/README.md). Same markup and CSS, verified element by element against this prototype at 390, 768, 1024, 1200 and 1440px.
+
+```bash
+npm run wp       # local WordPress with content imported, http://127.0.0.1:9500
+npm run wp:zip   # dist/inpo.zip (theme) and dist/inpo-core.zip (plugin)
+```
 
 | Prototype | WordPress |
 |---|---|
-| Tokens in `styles.css` | `theme.json` |
-| News | Posts, categories `reagim-publik` / `prokurimi-i-hapur` |
-| Publications | CPT `publication`, taxonomies `publication_type`, `program` |
-| Library filters | REST API or FacetWP |
-| SQ / EN | Polylang or WPML |
-| Forms | Fluent Forms or Gravity Forms, newsletter via Brevo or Mailchimp |
+| Tokens in `styles.css` | `theme.json` palette + the same tokens in `inpo/assets/css/inpo.css` |
+| News | Posts, categories `reagim-publik` / `prokurimi-i-hapur`, at `/lajme/<slug>/` |
+| Publications | CPT `publikimet` and taxonomy `tipi_i_publikimit` (the live site's own names, `?lloji=`), plus `inpo_program` |
+| Library filters | Archive query, enhanced with fetch (works without JS) |
+| SQ / EN | Polylang supported in the language switch |
+| Forms | Built in (INPO Core): stored, emailed, CSV export, hook for Brevo or Mailchimp |

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "login": true,
+  "steps": [
+    { "step": "activatePlugin", "pluginPath": "inpo-core/inpo-core.php" },
+    { "step": "activateTheme", "themeFolderName": "inpo" },
+    { "step": "runPHP", "code": "<?php require '/wordpress/wp-load.php'; inpo_core_run_setup();" }
+  ]
+}

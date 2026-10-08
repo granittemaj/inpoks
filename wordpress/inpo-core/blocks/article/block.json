@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/article",
+	"title": "Article",
+	"category": "inpo",
+	"icon": "text-page",
+	"description": "Full news article: title, text and sidebar.",
+	"textdomain": "inpo-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"usesContext": [
+		"postId",
+		"postType"
+	]
+}

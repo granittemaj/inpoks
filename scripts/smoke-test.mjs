@@ -1,5 +1,5 @@
 // Smoke test: renders every route in jsdom and checks each page has an h1.
-// Also fails on em dashes in source files (project rule).
+// Also fails on em dashes in source files, including the WordPress theme and plugin (project rule).
 // Run: npm install && npm test
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
@@ -42,11 +42,11 @@ for (const r of routes) {
 // Em dash check across text sources.
 const walk = (dir) => readdirSync(dir).flatMap((f) => {
   const p = join(dir, f);
-  if (f === 'node_modules' || f.startsWith('.git')) return [];
+  if (f === 'node_modules' || f === 'dist' || f.startsWith('.git')) return [];
   return statSync(p).isDirectory() ? walk(p) : [p];
 });
 const EM = String.fromCharCode(0x2014);
-for (const f of walk(root).filter((f) => ['.html', '.css', '.js', '.md', '.mjs'].includes(extname(f)))) {
+for (const f of walk(root).filter((f) => ['.html', '.css', '.js', '.md', '.mjs', '.php', '.json', '.txt'].includes(extname(f)) && !f.includes('/fonts/'))) {
   if (readFileSync(f, 'utf8').includes(EM)) { failed++; console.log('FAIL  em dash found in ' + f.replace(root, '')); }
 }
 

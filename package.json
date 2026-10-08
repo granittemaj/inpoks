@@ -5,7 +5,9 @@
   "description": "INPO website prototype. Static site, no build step. package.json only exists for local dev tooling.",
   "scripts": {
     "serve": "npx --yes serve . -l 8000",
-    "test": "node scripts/smoke-test.mjs"
+    "test": "node scripts/smoke-test.mjs",
+    "wp": "npx --yes @wp-playground/cli@latest server --port=9500 --mount=./wordpress/inpo:/wordpress/wp-content/themes/inpo --mount=./wordpress/inpo-core:/wordpress/wp-content/plugins/inpo-core --blueprint=./wordpress/blueprint.json",
+    "wp:zip": "node scripts/wp-zip.mjs"
   },
   "devDependencies": {
     "jsdom": "^24.1.0"

@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/publication-detail",
+	"title": "Publication details",
+	"category": "inpo",
+	"icon": "media-document",
+	"description": "Cover, facts and PDF download.",
+	"textdomain": "inpo-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"usesContext": [
+		"postId",
+		"postType"
+	]
+}
