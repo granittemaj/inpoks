@@ -46,7 +46,7 @@ const walk = (dir) => readdirSync(dir).flatMap((f) => {
   return statSync(p).isDirectory() ? walk(p) : [p];
 });
 const EM = String.fromCharCode(0x2014);
-for (const f of walk(root).filter((f) => ['.html', '.css', '.js', '.md', '.mjs', '.php', '.json', '.txt'].includes(extname(f)) && !f.includes('/fonts/'))) {
+for (const f of walk(root).filter((f) => ['.html', '.css', '.js', '.md', '.mjs', '.php', '.json', '.txt'].includes(extname(f)) && !f.includes('/fonts/') && !f.includes('/vendor/') && !f.includes('/.audit'))) {
   if (readFileSync(f, 'utf8').includes(EM)) { failed++; console.log('FAIL  em dash found in ' + f.replace(root, '')); }
 }
 

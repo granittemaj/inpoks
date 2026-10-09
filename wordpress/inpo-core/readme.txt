@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,12 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.2.0 =
+* Document-style publication covers, real first-page covers (featured image, WordPress PDF preview, or drawn in the browser).
+* Full-screen PDF reader with thumbnails, zoom, keyboard and Back-button support; pdf.js bundled and lazy-loaded.
+* PDF covers tool (INPO > Setup, wp inpo covers).
+* Accessibility: 44px targets, mobile language switch, heading order, form states.
 
 = 1.1.0 =
 * Works on the live inpo-ks.org data (publikimet, tipi_i_publikimit), WPML language switch.

@@ -112,6 +112,13 @@ All in the "INPO" inserter category. Each is server-rendered with the prototype 
 
 Mission, vision and history on the About page are plain core blocks with theme classes, so they are edited by typing directly on the page.
 
+## Publications: covers and the PDF reader
+
+- **Covers** are designed documents (folded corner, typeset title, type and year, INPO mark) that rotate through four styles. When a publication has a featured image, or WordPress has a preview image of its PDF, the card shows the **real first page** instead.
+- **INPO > Setup > PDF covers** creates those previews for publication PDFs, 10 per click (or `wp inpo covers`). It needs Imagick with Ghostscript on the server; without it the designed covers stay, and the publication page still draws the first page in the browser.
+- **Reader:** "Lexo" on a card, "Lexo online" or the cover on a publication page opens the PDF in a full-screen reader: page thumbnails (wide screens), page n/N with previous/next, zoom, download. Pages render as they scroll into view. Keyboard: arrows or Page Up/Down, + and −, Home/End, Esc. The browser's Back button closes it, and `…/publikimet/<slug>/#lexo` opens it directly (shareable). If a PDF cannot be opened in the browser, it offers download and "open in a new tab".
+- pdf.js 3.11 (Mozilla, Apache-2.0) is bundled in `inpo-core/assets/vendor/pdfjs/` and only downloaded when the reader or a first-page cover is needed. No CDN.
+
 ## Forms
 
 - Contact and newsletter post to `/wp-json/inpo/v1/contact` and `/subscribe` with JS, and fall back to a normal form post without JS. Same validation messages on both sides.

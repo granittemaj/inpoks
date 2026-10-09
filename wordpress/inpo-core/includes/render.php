@@ -267,9 +267,17 @@ function inpo_core_render_publication_detail( $a, $block ) {
 		? '<p class="todo" style="margin:0">' . esc_html__( 'Editors only: add a summary in the Excerpt field and visitors will see it here.', 'inpo-core' ) . '</p>'
 		: '';
 	$size     = $pdf ? inpo_core_file_size( $pdf['size'] ) : '';
+	$reader   = $pdf ? inpo_core_reader_attrs( $post, $pdf ) : '';
 	$download = $pdf
-		? '<a class="btn btn-accent" href="' . esc_url( $pdf['url'] ) . '" download>' . inpo_core_icon( 'download' ) . ' Shkarko PDF' . ( $size ? ' <span style="font-weight:500;opacity:.8">· ' . esc_html( $size ) . '</span>' : '' ) . '</a>'
+		? '<button class="btn btn-accent" type="button"' . $reader . ' data-pdf-hash>' . inpo_core_icon( 'book' ) . ' Lexo online</button>'
+			. '<a class="btn btn-line" href="' . esc_url( $pdf['url'] ) . '" download>' . inpo_core_icon( 'download' ) . ' Shkarko PDF' . ( $size ? ' <span class="btn-meta">' . esc_html( $size ) . '</span>' : '' ) . '</a>'
 		: '<a class="btn btn-accent" href="#" data-noop data-toast="Skedari PDF do të shtohet së shpejti.">' . inpo_core_icon( 'download' ) . ' Shkarko PDF</a>';
+	// The cover opens the reader too; without a server preview, the browser draws the real first page into it.
+	$cover = inpo_core_cover( $post, 0 );
+	if ( $pdf ) {
+		$first = false === strpos( $cover, 'cv-page' ) ? ' data-first-page' : '';
+		$cover = '<div class="pd-cover"' . $first . '>' . $cover . '<button class="pd-read" type="button"' . $reader . ' data-pdf-hash aria-label="' . esc_attr__( 'Lexo publikimin', 'inpo-core' ) . '"><span>' . inpo_core_icon( 'book' ) . ' Lexo online</span></button></div>';
+	}
 
 	$crumbs = '<nav class="crumbs" aria-label="Gjurma"><a href="' . esc_url( $archive ) . '">Publikimet</a>'
 		. ( $type ? '<span aria-hidden="true">/</span><a href="' . esc_url( inpo_core_pubs_url( array( 'lloji' => $type->slug ) ) ) . '">' . esc_html( inpo_core_type_plural( $type ) ) . '</a>' : '' ) . '</nav>';
@@ -278,7 +286,7 @@ function inpo_core_render_publication_detail( $a, $block ) {
 		. '<div><dt>Programi</dt><dd>' . esc_html( $program ? $program->name : 'INPO' ) . '</dd></div>'
 		. '<div><dt>' . ( $partners ? 'Partnerë' : 'Viti' ) . '</dt><dd>' . esc_html( $partners ? $partners : ( $year ? $year : '[Viti]' ) ) . '</dd></div></dl>';
 
-	$html = '<section class="wrap grid12 pd">' . inpo_core_cover( $post, 0 )
+	$html = '<section class="wrap grid12 pd">' . $cover
 		. '<div class="pd-info">' . $crumbs . '<h1 data-focus>' . inpo_core_title( $post ) . '</h1>' . $facts
 		. ( $lead ? '<p class="lead">' . esc_html( $lead ) . '</p>' : $hint )
 		. '<div class="hero-ctas">' . $download . '<button class="btn btn-line" type="button" data-copy>Kopjo linkun</button></div>'
@@ -373,7 +381,7 @@ function inpo_core_render_news_grid( $a ) {
 		$big    = $first && 0 === $i;
 		$cards .= '<a class="ncard' . ( $big ? ' big' : '' ) . '" href="' . esc_url( get_permalink( $post ) ) . '">' . ( $big ? inpo_core_rings( 560, 4 ) : '' )
 			. '<div class="ncard-meta"><span class="pill">' . esc_html( inpo_core_post_category_name( $post ) ) . '</span>' . inpo_core_time( $post ) . '</div>'
-			. '<div><h3>' . inpo_core_title( $post ) . '</h3><p>' . esc_html( inpo_core_excerpt( $post ) ) . '</p></div></a>';
+			. '<div><h2>' . inpo_core_title( $post ) . '</h2><p>' . esc_html( inpo_core_excerpt( $post ) ) . '</p></div></a>';
 	}
 	if ( ! $cards ) {
 		$cards = '<div class="empty"><b>Ende pa lajme.</b><span class="muted">Lajmet dhe reagimet publikohen këtu.</span></div>';
@@ -699,7 +707,7 @@ function inpo_core_render_contact( $a ) {
 			. ( $err( 'form' ) ? '<p class="form-err" role="alert">' . esc_html( $err( 'form' ) ) . '</p>' : '<p class="form-err" role="alert" hidden></p>' )
 			. '<div class="two">'
 			. '<div class="' . $cls( 'emri' ) . '"><label for="c-emri">Emri</label><input id="c-emri" name="emri" autocomplete="given-name" required value="' . esc_attr( $val( 'emri' ) ) . '"' . $inv( 'emri' ) . ' aria-describedby="e-emri"><span class="err" id="e-emri">' . esc_html( $err( 'emri' ) ) . '</span></div>'
-			. '<div class="field"><label for="c-mbiemri">Mbiemri</label><input id="c-mbiemri" name="mbiemri" autocomplete="family-name" value="' . esc_attr( $val( 'mbiemri' ) ) . '"><span class="err"></span></div>'
+			. '<div class="field"><label for="c-mbiemri">Mbiemri <span class="opt">(opsionale)</span></label><input id="c-mbiemri" name="mbiemri" autocomplete="family-name" value="' . esc_attr( $val( 'mbiemri' ) ) . '"><span class="err"></span></div>'
 			. '</div>'
 			. '<div class="' . $cls( 'email' ) . '"><label for="c-email">Adresa e email-it</label><input id="c-email" name="email" type="email" autocomplete="email" placeholder="emri@shembull.com" required value="' . esc_attr( $val( 'email' ) ) . '"' . $inv( 'email' ) . ' aria-describedby="e-email"><span class="err" id="e-email">' . esc_html( $err( 'email' ) ) . '</span></div>'
 			. '<fieldset class="field"><legend>Tema</legend><div class="topics">' . $radios . '</div></fieldset>'

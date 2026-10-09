@@ -131,6 +131,11 @@
         .catch(function () { toast('Kopjimi nuk u lejua. Kopjoni linkun nga shiriti i adresës.'); });
     }
     if (e.target.closest('[data-open-search]')) openSearch();
+    if (e.target.closest('[data-top]')) {
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      var logo = $('.site-header .logo');
+      if (logo) logo.focus({ preventScroll: true });
+    }
   });
 
   /* Header border on scroll */

@@ -36,6 +36,7 @@ function inpo_core_icon( $name ) {
 		'check'     => '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
 		'qeverisje' => '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v8"/><path d="M12 11c-4 0-7 1.5-7 4.5"/><path d="M12 11c4 0 7 1.5 7 4.5"/></svg>',
 		'edukim'    => '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>',
+		'book'      => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5C4.5 4 8 4 12 6c4-2 7.5-2 10-.5V19c-2.5-1.5-6-1.5-10 .5-4-2-7.5-2-10-.5Z"/><path d="M12 6v13.5"/></svg>',
 		'dokument'  => '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></svg>',
 	);
 	return isset( $icons[ $name ] ) ? $icons[ $name ] : $icons['dokument'];
@@ -285,6 +286,7 @@ function inpo_core_pub_year( $post ) {
 function inpo_core_pub_pdf( $post ) {
 	$url  = get_post_meta( $post->ID, 'inpo_pdf', true );
 	$file = '';
+	$id   = 0;
 	if ( $url ) {
 		$id   = attachment_url_to_postid( $url );
 		$file = $id ? get_attached_file( $id ) : '';
@@ -301,6 +303,7 @@ function inpo_core_pub_pdf( $post ) {
 		);
 		if ( $pdfs ) {
 			$pdf  = reset( $pdfs );
+			$id   = $pdf->ID;
 			$url  = wp_get_attachment_url( $pdf->ID );
 			$file = get_attached_file( $pdf->ID );
 		}
@@ -308,7 +311,7 @@ function inpo_core_pub_pdf( $post ) {
 	if ( ! $url ) {
 		return null;
 	}
-	return array( 'url' => $url, 'size' => ( $file && file_exists( $file ) ) ? (int) filesize( $file ) : null );
+	return array( 'url' => $url, 'id' => (int) $id, 'size' => ( $file && file_exists( $file ) ) ? (int) filesize( $file ) : null );
 }
 
 /**
@@ -355,10 +358,33 @@ function inpo_core_audit_type_slug() {
 }
 
 /**
- * Publication cover. Variant is the "cover" meta, or rotates by position like the prototype.
+ * A picture of the publication for its cover: the featured image, else the first-page preview
+ * WordPress creates for an uploaded PDF (when the server can render PDFs).
+ *
+ * @return array|null { url, width, height }
+ */
+function inpo_core_pub_preview( $post ) {
+	$id = (int) get_post_thumbnail_id( $post );
+	if ( ! $id ) {
+		$pdf = inpo_core_pub_pdf( $post );
+		$id  = $pdf && $pdf['id'] ? $pdf['id'] : 0;
+	}
+	if ( ! $id ) {
+		return null;
+	}
+	$src = wp_get_attachment_image_src( $id, 'medium_large' );
+	if ( ! $src || empty( $src[0] ) || preg_match( '#/wp-includes/images/media/#', $src[0] ) ) {
+		return null;
+	}
+	return array( 'url' => $src[0], 'width' => (int) $src[1], 'height' => (int) $src[2] );
+}
+
+/**
+ * Publication cover: a document with a folded corner and its title typeset like a report.
+ * Shows the real first page when a preview exists. Decorative: the title is also in the card or the h1.
  *
  * @param WP_Post $post  Publication.
- * @param int     $index Position in the list.
+ * @param int     $index Position in the list (rotates the style when none is set).
  * @return string
  */
 function inpo_core_cover( $post, $index = 0 ) {
@@ -367,17 +393,18 @@ function inpo_core_cover( $post, $index = 0 ) {
 	if ( ! in_array( $variant, $variants, true ) ) {
 		$variant = $variants[ absint( $index ) % 4 ];
 	}
-	$type  = inpo_core_pub_type( $post );
-	$label = '<span class="pill">' . esc_html( inpo_core_type_label( $type ) ) . '</span>';
-	$dl    = '<span class="dl">PDF ' . inpo_core_icon( 'download' ) . '</span>';
-	$art   = '';
-	if ( 'rings' === $variant ) {
+	$preview = inpo_core_pub_preview( $post );
+	$art     = '';
+	if ( $preview ) {
+		$variant = 'page';
+		$art     = '<img class="cover-img" src="' . esc_url( $preview['url'] ) . '" alt="" loading="lazy" decoding="async"' . ( $preview['width'] ? ' width="' . $preview['width'] . '" height="' . $preview['height'] . '"' : '' ) . '>';
+	} elseif ( 'rings' === $variant ) {
 		$art = inpo_core_rings( 260, 3 );
 	} elseif ( 'bars' === $variant ) {
-		$art = '<div class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
+		$art = '<div class="bars"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
 	} elseif ( 'dots' === $variant ) {
 		$on  = array( 2, 7, 10, 15 );
-		$art = '<div class="dots" aria-hidden="true">';
+		$art = '<div class="dots">';
 		for ( $k = 0; $k < 18; $k++ ) {
 			$art .= in_array( $k, $on, true ) ? '<i class="on"></i>' : '<i></i>';
 		}
@@ -389,16 +416,37 @@ function inpo_core_cover( $post, $index = 0 ) {
 				return mb_substr( $w, 0, 1 );
 			}, array_slice( preg_split( '/\s+/', wp_strip_all_tags( get_the_title( $post ) ) ), 0, 3 ) ) ) );
 		}
-		$art = '<span class="word" aria-hidden="true">' . esc_html( $word ) . '</span>';
+		$art = '<span class="word">' . esc_html( $word ) . '</span>';
 	}
-	return '<div class="cover cv-' . $variant . '">' . $art . $label . $dl . '</div>';
+	$type = inpo_core_pub_type( $post );
+	return '<div class="cover cv-' . $variant . '" aria-hidden="true">' . $art
+		. '<div class="cover-top"><span class="pill">' . esc_html( inpo_core_type_label( $type ) ) . '</span><span class="cover-year">' . esc_html( inpo_core_pub_year( $post ) ) . '</span></div>'
+		. '<span class="cover-title">' . inpo_core_title( $post ) . '</span>'
+		. '<div class="cover-foot"><span class="cover-mark">' . esc_html( inpo_core_settings( 'short_name' ) ) . '</span></div></div>';
 }
 
 /**
- * Publication card (cover + title).
+ * Data attributes that open a PDF in the reader (assets/reader.js).
+ */
+function inpo_core_reader_attrs( $post, $pdf ) {
+	wp_enqueue_script( 'inpo-core-reader' );
+	$type = inpo_core_pub_type( $post );
+	return ' data-pdf="' . esc_url( $pdf['url'] ) . '" data-pdf-title="' . esc_attr( wp_strip_all_tags( get_the_title( $post ) ) ) . '"'
+		. ' data-pdf-meta="' . esc_attr( inpo_core_type_label( $type ) . ' · ' . inpo_core_pub_year( $post ) ) . '"'
+		. ' data-pdf-link="' . esc_url( get_permalink( $post ) ) . '"';
+}
+
+/**
+ * Publication card: cover, title and, when there is a PDF, a "Lexo" button that opens the reader.
  */
 function inpo_core_pub_card( $post, $index = 0 ) {
-	return '<a class="pub" href="' . esc_url( get_permalink( $post ) ) . '">' . inpo_core_cover( $post, $index ) . '<span class="pub-title">' . inpo_core_title( $post ) . '</span></a>';
+	$url   = get_permalink( $post );
+	$pdf   = inpo_core_pub_pdf( $post );
+	$read  = $pdf
+		? '<button type="button" class="pub-read"' . inpo_core_reader_attrs( $post, $pdf ) . ' aria-label="' . esc_attr( 'Lexo: ' . wp_strip_all_tags( get_the_title( $post ) ) ) . '">' . inpo_core_icon( 'book' ) . ' Lexo</button>'
+		: '';
+	return '<div class="pub"><a class="pub-cover" href="' . esc_url( $url ) . '" tabindex="-1" aria-hidden="true">' . inpo_core_cover( $post, $index ) . '</a>'
+		. '<a class="pub-title" href="' . esc_url( $url ) . '">' . inpo_core_title( $post ) . '</a>' . $read . '</div>';
 }
 
 /**

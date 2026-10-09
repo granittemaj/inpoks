@@ -20,16 +20,17 @@ const DOTS_ON = [2,7,10,15];
 
 function cover(p, i){
   const v = ['rings','bars','dots','word'][i % 4];
-  const label = `<span class="pill">${PTYPES[p.type]}</span>`;
-  const dl = `<span class="dl">PDF ${DL}</span>`;
+  const top = `<div class="cover-top"><span class="pill">${PTYPES[p.type]}</span>${p.year ? `<span class="cover-year">${p.year}</span>` : ''}</div>`;
+  const foot = `<div class="cover-foot"><span class="cover-mark">INPO</span><span class="dl">PDF ${DL}</span></div>`;
   let art = '';
   if (v==='rings') art = rings(260,3);
   if (v==='bars') art = '<div class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
   if (v==='dots') art = '<div class="dots" aria-hidden="true">' + Array.from({length:18},(_,k)=>`<i${DOTS_ON.includes(k)?' class="on"':''}></i>`).join('') + '</div>';
   if (v==='word') art = `<span class="word" aria-hidden="true">${p.short}</span>`;
-  return `<div class="cover cv-${v}">${art}${label}${dl}</div>`;
+  // A document cover: decorative, so hidden from screen readers (the title is in the card or the h1).
+  return `<div class="cover cv-${v}" aria-hidden="true">${art}${top}<span class="cover-title">${p.title}</span>${foot}</div>`;
 }
-const pubCard = (p,i) => `<a class="pub" href="#/publikimet/${p.id}">${cover(p,i)}<span class="pub-title">${p.title}</span></a>`;
+const pubCard = (p,i) => `<div class="pub"><a class="pub-cover" href="#/publikimet/${p.id}" tabindex="-1" aria-hidden="true">${cover(p,i)}</a><a class="pub-title" href="#/publikimet/${p.id}">${p.title}</a></div>`;
 const newsRow = n => `<a class="row" href="#/lajme/${n.id}"><div class="row-meta"><time datetime="${n.iso}">${n.date}</time><span>${CATS[n.cat]}</span></div><span class="row-title">${n.title}</span><span class="arrow-circle">${ARROW}</span></a>`;
 const donorsHTML = () => `<div class="donors">${DONORS.map(d=>`<div class="donor">${d}</div>`).join('')}</div><p class="fineprint">Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).</p>`;
 const pageHead = (kicker, title, lead, crumbs) => `<section class="wrap grid12 page-head"><div class="ph-l">${crumbs||`<span class="kicker">${kicker}</span>`}<h1 class="h-page" data-focus>${title}</h1></div><div class="ph-r">${lead?`<p class="lead">${lead}</p>`:''}</div></section>`;
@@ -105,7 +106,7 @@ function newsPage(q){
       <a class="ncard${i===0?' big':''}" href="#/lajme/${n.id}">
         ${i===0?rings(560,4):''}
         <div class="ncard-meta"><span class="pill">${CATS[n.cat]}</span><time datetime="${n.iso}">${n.date}</time></div>
-        <div><h3>${n.title}</h3><p>${n.excerpt}</p></div>
+        <div><h2>${n.title}</h2><p>${n.excerpt}</p></div>
       </a>`).join('')}
     </div>
   </section>`;
@@ -265,7 +266,7 @@ function contactPage(q){
     <form class="form-card" id="c-form" novalidate>
       <div class="two">
         <div class="field"><label for="c-emri">Emri</label><input id="c-emri" name="emri" autocomplete="given-name" required><span class="err" id="e-emri"></span></div>
-        <div class="field"><label for="c-mbiemri">Mbiemri</label><input id="c-mbiemri" name="mbiemri" autocomplete="family-name"><span class="err"></span></div>
+        <div class="field"><label for="c-mbiemri">Mbiemri <span class="opt">(opsionale)</span></label><input id="c-mbiemri" name="mbiemri" autocomplete="family-name"><span class="err"></span></div>
       </div>
       <div class="field"><label for="c-email">Adresa e email-it</label><input id="c-email" name="email" type="email" autocomplete="email" placeholder="emri@shembull.com" required><span class="err" id="e-email"></span></div>
       <fieldset class="field"><legend>Tema</legend><div class="topics">${topics.map(([k,l])=>`<label><input type="radio" name="tema" value="${k}" ${k===t?'checked':''}>${l}</label>`).join('')}</div></fieldset>
@@ -284,7 +285,13 @@ function contactPage(q){
 function bindContact(){
   const f = $('#c-form');
   const set = (id, el, msg) => { $('#'+id).textContent = msg; el.closest('.field').classList.toggle('invalid', !!msg); if(msg) el.setAttribute('aria-invalid','true'); else el.removeAttribute('aria-invalid'); };
+  // After the first attempt, re-check a field as soon as the visitor leaves it.
+  const rules = { 'c-emri': v => v ? '' : 'Shkruani emrin.', 'c-email': v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : 'Shkruani një adresë email të vlefshme, p.sh. emri@shembull.com.', 'c-msg': v => v.length >= 10 ? '' : 'Shkruani mesazhin, të paktën 10 shkronja.' };
+  const errId = { 'c-emri': 'e-emri', 'c-email': 'e-email', 'c-msg': 'e-msg' };
+  let tried = false;
+  Object.keys(rules).forEach(id => $('#'+id).addEventListener('blur', e => { if (tried || e.target.value.trim()) set(errId[id], e.target, rules[id](e.target.value.trim())); }));
   f.addEventListener('submit', e => {
+    tried = true;
     e.preventDefault();
     const emri=$('#c-emri'), email=$('#c-email'), msg=$('#c-msg'), ok=$('#c-ok');
     set('e-emri', emri, emri.value.trim() ? '' : 'Shkruani emrin.');
@@ -406,6 +413,7 @@ document.addEventListener('click', e => {
   const sc = e.target.closest('[data-scroll]'); if (sc) { if (menu.open) menu.close(); const el=$('#'+sc.dataset.scroll); el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'center'}); setTimeout(()=>$('#nl-email').focus({preventScroll:true}), reduce?0:600); }
   const cp = e.target.closest('[data-copy]'); if (cp) { const url=location.href; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(()=>toast('Linku u kopjua.')).catch(()=>toast('Kopjimi nuk u lejua. Kopjoni linkun nga shiriti i adresës.')); }
   if (e.target.closest('[data-open-search]')) openSearch();
+  if (e.target.closest('[data-top]')) { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); $('.logo').focus({ preventScroll: true }); }
 });
 
 /* Newsletter */

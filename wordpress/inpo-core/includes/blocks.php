@@ -17,6 +17,19 @@ function inpo_core_register_blocks() {
 		true
 	);
 	wp_register_script( 'inpo-core-view', INPO_CORE_URL . 'assets/view.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	// PDF reader. pdf.js (Mozilla, Apache-2.0) is bundled and only downloaded when a reader opens.
+	wp_register_script( 'inpo-core-reader', INPO_CORE_URL . 'assets/reader.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_add_inline_script(
+		'inpo-core-reader',
+		'window.inpoReader=' . wp_json_encode(
+			array(
+				'lib'    => INPO_CORE_URL . 'assets/vendor/pdfjs/pdf.min.js?ver=3.11.174',
+				'worker' => INPO_CORE_URL . 'assets/vendor/pdfjs/pdf.worker.min.js?ver=3.11.174',
+			)
+		) . ';',
+		'before'
+	);
+
 	// Public endpoints, so no nonce: keeps full-page caching safe.
 	wp_add_inline_script(
 		'inpo-core-view',

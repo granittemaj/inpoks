@@ -9,6 +9,14 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var CHECK = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 
+  // Loading state for a submit button: disabled, "Duke dërguar…", announced via aria-busy.
+  function busy(btn, on) {
+    if (on) { btn.dataset.label = btn.textContent; btn.textContent = 'Duke dërguar…'; }
+    else if (btn.dataset.label) { btn.textContent = btn.dataset.label; }
+    btn.disabled = on;
+    btn.setAttribute('aria-busy', on ? 'true' : 'false');
+  }
+
   function post(path, data) {
     return fetch(REST + path, {
       method: 'POST',
@@ -30,14 +38,14 @@
       }
       input.removeAttribute('aria-invalid');
       var btn = $('button[type=submit]', form);
-      btn.disabled = true;
+      busy(btn, true);
       post('subscribe', { email: v, inpo_hp: (form.elements.inpo_hp || {}).value || '' })
         .then(function (res) {
           if (!res.ok) throw res;
           form.innerHTML = '<div class="nl-done" role="status">' + CHECK + '<span>U abonuat me <b>' + esc(v) + '</b>. Buletini i parë vjen në fillim të muajit.</span></div>';
         })
         .catch(function (err) {
-          btn.disabled = false;
+          busy(btn, false);
           // REST blocked or not JSON (firewall, plugin): fall back to the normal form post.
           if (!err || typeof err.error !== 'string') { form.submit(); return; }
           msg.textContent = err.error || 'Abonimi nuk u krye. Provoni përsëri.';
@@ -66,8 +74,22 @@
       var first = $('[aria-invalid="true"]', form);
       if (first) first.focus(); else if (errors.form && formErr) formErr.focus();
     }
+    // After the first attempt, re-check a field as soon as the visitor leaves it.
+    var tried = false;
+    function check(k) {
+      var v = fields[k][0].value.trim();
+      if (k === 'emri') return v ? '' : 'Shkruani emrin.';
+      if (k === 'email') return EMAIL.test(v) ? '' : 'Shkruani një adresë email të vlefshme, p.sh. emri@shembull.com.';
+      if (k === 'mesazhi') return v.length >= 10 ? '' : 'Shkruani mesazhin, të paktën 10 shkronja.';
+      return fields.pelqim[0].checked ? '' : 'Pranoni kushtin për të dërguar mesazhin.';
+    }
+    ['emri', 'email', 'mesazhi'].forEach(function (k) {
+      fields[k][0].addEventListener('blur', function () { if (tried || fields[k][0].value.trim()) set(k, check(k)); });
+    });
+    fields.pelqim[0].addEventListener('change', function () { if (tried) set('pelqim', check('pelqim')); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      tried = true;
       var errors = {};
       if (!fields.emri[0].value.trim()) errors.emri = 'Shkruani emrin.';
       if (!EMAIL.test(fields.email[0].value.trim())) errors.email = 'Shkruani një adresë email të vlefshme, p.sh. emri@shembull.com.';
@@ -78,7 +100,7 @@
       var data = {};
       new FormData(form).forEach(function (v, k) { data[k] = v; });
       var btn = $('button[type=submit]', form);
-      btn.disabled = true;
+      busy(btn, true);
       post('contact', data)
         .then(function (res) {
           if (!res.ok) throw res;
@@ -91,7 +113,7 @@
           $('button', wrap).addEventListener('click', function () { location.reload(); });
         })
         .catch(function (err) {
-          btn.disabled = false;
+          busy(btn, false);
           if (!err || !err.errors) { form.submit(); return; }
           showErrors(err.errors);
         });

@@ -55,6 +55,7 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - The live inpo-ks.org is WordPress (WPML, Yoast, CPT UI). The plugin reuses its names: post type `publikimet`, taxonomy `tipi_i_publikimit`. Deploy in two steps: activate the plugin first and run INPO > Setup > Prepare (no public change while the old theme is active, `inpo_core_theme_active()` gates public behaviour), then activate the theme: go-live runs automatically, backs up what it changes and is restored if the old theme is reactivated. Permalinks are never changed on the live site.
 - wp-admin strings (plugin and theme) are English and wrapped in `__()`; public site copy stays Albanian.
 - Still no build step: block editor UI is plain JS on `wp.*` globals (`inpo-core/assets/editor.js`).
+- Publication covers: markup in `cover()` (app.js) and `inpo_core_cover()` (helpers.php) must stay in step. The PDF reader (`inpo-core/assets/reader.js`, pdf.js vendored, lazy-loaded) is WordPress-only; the prototype keeps its placeholder toast.
 - Run `npm run wp` to test in a real WordPress. Check every PHP file with `php -l`.
 
 ## Design system rules (approved direction: "Quiet Indigo")

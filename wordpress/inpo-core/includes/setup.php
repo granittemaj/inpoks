@@ -31,6 +31,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		'prepare' => 'inpo_core_prepare_site',
 		'golive'  => 'inpo_core_go_live',
 		'restore' => 'inpo_core_restore',
+		'covers'  => 'inpo_core_make_previews_all',
 		'setup'   => 'inpo_core_run_setup',
 	) as $command => $callback ) {
 		WP_CLI::add_command(
@@ -109,6 +110,8 @@ function inpo_core_setup_page() {
 			$log = inpo_core_go_live();
 		} elseif ( 'restore' === $action ) {
 			$log = inpo_core_restore();
+		} elseif ( 'covers' === $action ) {
+			$log = inpo_core_make_previews( 10 );
 		} elseif ( 'demo' === $action && ! inpo_core_site_has_content() ) {
 			$log = inpo_core_run_setup();
 		}
@@ -165,7 +168,84 @@ function inpo_core_setup_page() {
 		$button( 'demo', __( 'Import demo content', 'inpo-core' ), true );
 		echo '</div>';
 	}
+	// PDF covers.
+	$missing = inpo_core_pdfs_without_preview();
+	echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'PDF covers', 'inpo-core' ) . '</h2>';
+	echo '<p>' . esc_html__( 'Publication cards show the real first page when WordPress has a preview image of the PDF. Without one they use the designed INPO cover, and a publication page still draws the first page in the browser.', 'inpo-core' ) . '</p>';
+	if ( ! wp_image_editor_supports( array( 'mime_type' => 'application/pdf' ) ) ) {
+		echo '<p><em>' . esc_html__( 'This server cannot render PDFs (it needs Imagick with Ghostscript), so previews cannot be made here. Ask the host to enable it, or keep the designed covers.', 'inpo-core' ) . '</em></p>';
+	} elseif ( $missing ) {
+		/* translators: %d: number of PDFs */
+		echo '<p>' . esc_html( sprintf( __( '%d publication PDFs have no preview yet. Each click processes 10.', 'inpo-core' ), count( $missing ) ) ) . '</p>';
+		$button( 'covers', __( 'Make PDF covers', 'inpo-core' ), true );
+	} else {
+		echo '<p><strong>' . esc_html__( 'Every publication PDF has a preview.', 'inpo-core' ) . '</strong></p>';
+	}
+	echo '</div>';
 	echo '</form></div>';
+}
+
+/**
+ * IDs of PDFs attached to publications that have no preview image yet.
+ *
+ * @return int[]
+ */
+function inpo_core_pdfs_without_preview() {
+	$ids = get_posts(
+		array(
+			'post_type'       => 'attachment',
+			'post_mime_type'  => 'application/pdf',
+			'post_status'     => 'inherit',
+			'posts_per_page'  => -1,
+			'fields'          => 'ids',
+			'post_parent__in' => get_posts( array( 'post_type' => INPO_CORE_PUB, 'posts_per_page' => -1, 'fields' => 'ids', 'post_status' => 'any' ) ) ?: array( 0 ),
+		)
+	);
+	return array_values(
+		array_filter(
+			$ids,
+			function ( $id ) {
+				$meta = wp_get_attachment_metadata( $id );
+				return empty( $meta['sizes'] );
+			}
+		)
+	);
+}
+
+/**
+ * Creates first-page previews for up to $limit publication PDFs (WordPress's own PDF thumbnails).
+ *
+ * @return string[] Log lines.
+ */
+function inpo_core_make_previews( $limit = 10 ) {
+	if ( ! wp_image_editor_supports( array( 'mime_type' => 'application/pdf' ) ) ) {
+		return array( __( 'This server cannot render PDFs.', 'inpo-core' ) );
+	}
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$done = 0;
+	$fail = 0;
+	foreach ( array_slice( inpo_core_pdfs_without_preview(), 0, $limit ) as $id ) {
+		$file = get_attached_file( $id );
+		$meta = $file && file_exists( $file ) ? wp_generate_attachment_metadata( $id, $file ) : array();
+		if ( ! empty( $meta['sizes'] ) ) {
+			wp_update_attachment_metadata( $id, $meta );
+			$done++;
+		} else {
+			$fail++;
+		}
+	}
+	/* translators: 1: made, 2: failed, 3: left */
+	return array( sprintf( __( 'PDF covers made: %1$d, failed: %2$d, still to do: %3$d', 'inpo-core' ), $done, $fail, count( inpo_core_pdfs_without_preview() ) ) );
+}
+
+function inpo_core_make_previews_all() {
+	$log = array();
+	do {
+		$before = count( inpo_core_pdfs_without_preview() );
+		$log    = inpo_core_make_previews( 10 );
+		$after  = count( inpo_core_pdfs_without_preview() );
+	} while ( $after && $after < $before );
+	return $log;
 }
 
 /* ---------- Shared data (facts from inpo-ks.org) ---------- */

@@ -265,6 +265,6 @@ function inpo_theme_render_footer() {
 		. $office( $o['office1'], $o['address1'], 'foot-c1' )
 		. $office( $o['office2'], $o['address2'], 'foot-c2' )
 		. '<div class="foot-c3"><h3>Kontakt</h3><a href="mailto:' . esc_attr( $o['email'] ) . '">' . esc_html( $o['email'] ) . '</a><a href="' . esc_attr( $tel ) . '">' . esc_html( $o['phone'] ) . '</a><a href="' . esc_url( $o['audit_url'] ) . '">Raportet e auditimit</a></div>'
-		. '</div><div class="foot-bottom"><span class="wordmark" aria-hidden="true">' . esc_html( ! empty( $o['short_name'] ) ? $o['short_name'] : get_bloginfo( 'name' ) ) . '</span>'
-		. '<small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '<br>Të gjitha të drejtat e rezervuara</small></div></div></footer>';
+		. '</div><div class="foot-bottom"><small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '. Të gjitha të drejtat e rezervuara.</small>'
+		. '<button class="foot-top" type="button" data-top>Kthehu lart <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button></div></div></footer>';
 }
