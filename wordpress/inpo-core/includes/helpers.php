@@ -407,7 +407,12 @@ function inpo_core_cover( $post, $index = 0 ) {
 	$preview = inpo_core_pub_preview( $post );
 	$art     = '';
 	$data    = inpo_core_cover_table( $post );
-	if ( $data ) {
+	$slides  = inpo_core_slide_ids( $post );
+	if ( $slides ) {
+		// An infographic as images: its first image is the cover.
+		$variant = 'page';
+		$art     = wp_get_attachment_image( $slides[0], 'medium_large', false, array( 'class' => 'cover-img', 'alt' => '', 'loading' => 'lazy', 'decoding' => 'async' ) );
+	} elseif ( $data ) {
 		// An infographic with data: its chart with the most bars, drawn small on the cover.
 		$variant = 'bars';
 		$vals    = array();
@@ -758,3 +763,14 @@ function inpo_core_grid_cols( $n ) {
 	}
 	return $n < 3 ? max( 1, $n ) : $best;
 }
+
+/**
+ * An infographic's images (attachment IDs, in order) that still exist.
+ *
+ * @return int[]
+ */
+function inpo_core_slide_ids( $post ) {
+	$ids = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $post->ID, 'inpo_slides', true ) ) ) );
+	return array_values( array_filter( $ids, 'wp_attachment_is_image' ) );
+}
+

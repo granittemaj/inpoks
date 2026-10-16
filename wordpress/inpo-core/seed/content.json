@@ -95,6 +95,42 @@
  },
  "PUBS": [
   {
+   "id": "temf-2025",
+   "type": "infografika",
+   "prog": "qeverisje",
+   "theme": "prokurimi",
+   "inst": null,
+   "short": "TEMF",
+   "year": "2025",
+   "title": "Kontratat publike me kriterin TEMF, 2025",
+   "slides": [
+    [
+     "temf-2025-01.jpg",
+     "Kontratat publike me kriterin TEMF, 2025: 244 kontrata të nënshkruara, sipas vitit të inicimit"
+    ],
+    [
+     "temf-2025-02.jpg",
+     "Struktura e kontratave: 116 konsulencë individuale dhe 128 kontrata të tjera"
+    ],
+    [
+     "temf-2025-03.jpg",
+     "128 kontrata sipas llojit të kontratës"
+    ],
+    [
+     "temf-2025-04.jpg",
+     "128 kontrata sipas procedurës së prokurimit"
+    ],
+    [
+     "temf-2025-05.jpg",
+     "128 kontrata sipas vlerës së kontratave"
+    ],
+    [
+     "temf-2025-06.jpg",
+     "Autoritetet kontraktuese me vlerën më të madhe të kontratave"
+    ]
+   ]
+  },
+  {
    "id": "gjednj",
    "type": "ligjore",
    "prog": "qeverisje",

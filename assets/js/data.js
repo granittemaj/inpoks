@@ -43,6 +43,9 @@ const CAT1 = { aktivitete:'Aktivitet', komunikata:'Komunikatë për media', reag
 // Publications (Hulumtime dhe publikime). Titles and dates from inpo-ks.org.
 // theme = fusha tematike, inst = institucioni (named in the title). Unknown authors stay empty.
 const PUBS = [
+  // An infographic as images (slides), as INPO publishes them: added from Media in WordPress.
+  { id:'temf-2025', type:'infografika', prog:'qeverisje', theme:'prokurimi', inst:null, short:'TEMF', year:'2025', title:'Kontratat publike me kriterin TEMF, 2025',
+    slides:[['temf-2025-01.jpg','Kontratat publike me kriterin TEMF, 2025: 244 kontrata të nënshkruara, sipas vitit të inicimit'],['temf-2025-02.jpg','Struktura e kontratave: 116 konsulencë individuale dhe 128 kontrata të tjera'],['temf-2025-03.jpg','128 kontrata sipas llojit të kontratës'],['temf-2025-04.jpg','128 kontrata sipas procedurës së prokurimit'],['temf-2025-05.jpg','128 kontrata sipas vlerës së kontratave'],['temf-2025-06.jpg','Autoritetet kontraktuese me vlerën më të madhe të kontratave']] },
   { id:'gjednj', type:'ligjore', prog:'qeverisje', theme:'ligji', inst:null, short:'GJEDNJ', date:'28.05.2025', title:'Aplikimi i jurisprudencës së GJEDNJ-së në Kosovë' },
   { id:'tm4', type:'infografika', prog:'qeverisje', theme:'prokurimi', inst:null, short:'TM4', date:'24.02.2025', title:'Kontratat e negociuara pa publikim të njoftimit për kontratë në nivel vendi, tetor-dhjetor 2024',
     data:{ figures:[['2.838','kontrata të lidhura në nivel vendi, tetor-dhjetor 2024'],['192','me procedurë të negociuar pa publikim të njoftimit'],['6,7%','e kontratave sipas numrit'],['4,4%','e vlerës së kontratave']],

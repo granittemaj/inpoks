@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.8.0 =
+* Infographics as images: in the Publication box, "Choose images from Media" (in order). The page shows them as a row to swipe with arrows, a counter (01 / 06) and a full-screen view; the first image becomes the cover.
 
 = 1.7.0 =
 * Everything editable from wp-admin: the lists (publications, projects, data, news) take their heading, intro and the sections under them from a Page (private pages made by the plugin, marked "… list"; news uses the Posts page). INPO > Help: where to edit what. Editors can change INPO > Settings. "Choose from Media" for the hero photo and the "Kush jemi" photos.

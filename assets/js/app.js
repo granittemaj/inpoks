@@ -39,6 +39,8 @@ function cover(p, i){
   let art = '';
   if (v==='rings') art = rings(260,3);
   if (v==='bars') art = '<div class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
+  // An infographic as images: its first image is the cover.
+  if (p.slides) return `<div class="cover cv-page" aria-hidden="true"><img class="cover-img" src="assets/img/infografika/${p.slides[0][0]}" alt="" loading="lazy" decoding="async">${top}<span class="cover-title">${p.title}</span>${foot}</div>`;
   // An infographic with data: its chart with the most bars, drawn small on the cover.
   if (p.data) art = coverBars(p.data.charts.filter(c=>c.chart!=='table').sort((x,y)=>y.rows.length-x.rows.length)[0] || p.data.charts[0]);
   if (v==='dots') art = '<div class="dots" aria-hidden="true">' + Array.from({length:18},(_,k)=>`<i${DOTS_ON.includes(k)?' class="on"':''}></i>`).join('') + '</div>';
@@ -337,6 +339,15 @@ function pubsPage(q){
   <section class="wrap">${filtersHTML('publikimet', filterState('publikimet', q))}</section>`;
 }
 
+// An infographic's images: a row to swipe, arrows, a counter and a full-screen view (slides.js).
+const SLIDE_ARROW = d => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+function slidesHTML(p){
+  const n = p.slides.length, pad = x => String(x).padStart(2,'0');
+  return `<section class="wrap sec slides-sec" aria-labelledby="h-slides" data-slides>
+    <div class="pub-head"><h2 class="h2" id="h-slides">Infografika</h2><div class="slides-nav"><span class="slides-count" aria-hidden="true">01 / ${pad(n)}</span><button class="icon-btn" type="button" data-slides-go="-1" aria-label="Pamja e mëparshme">${SLIDE_ARROW('m15 18-6-6 6-6')}</button><button class="icon-btn" type="button" data-slides-go="1" aria-label="Pamja tjetër">${SLIDE_ARROW('m9 18 6-6-6-6')}</button></div></div>
+    <div class="slides" role="list">${p.slides.map(([f,alt],i)=>`<figure class="slide" role="listitem"><a href="assets/img/infografika/${f}" aria-label="Hap në ekran të plotë: pamja ${i+1} nga ${n}"><img src="assets/img/infografika/${f}" alt="${alt}" width="1400" height="1400" loading="${i<2?'eager':'lazy'}" decoding="async"></a></figure>`).join('')}</div>
+  </section>`;
+}
 // An infographic's numbers on the page: key figures, then each chart (interactive, with a table and CSV).
 function pubData(p){
   const d = p.data;
@@ -371,6 +382,7 @@ function pubDetail(id){
       ${p.donor?`<p class="muted" style="margin:0;font-size:14px">Me mbështetjen e ${p.donor}.</p>`:''}
     </div>
   </section>
+  ${p.slides ? slidesHTML(p) : ''}
   ${p.data ? pubData(p) : ''}
   <section class="wrap sec">
     <div class="pub-head"><h2 class="h2">Publikime të ngjashme</h2><a class="btn btn-line btn-sm" href="#/publikimet">Të gjitha publikimet</a></div>
@@ -624,7 +636,7 @@ function render(){
   else if (a==='lajme' && !b) { html = newsPage(q); title='Lajme dhe qëndrime · INPO'; after=()=>bindFilters('lajme', q); }
   else if (a==='lajme') { html = articlePage(b); const n=NEWS.find(x=>x.id===b); title=(n?n.title.slice(0,60)+'… ':'')+'· INPO'; }
   else if (a==='publikimet' && !b) { html = pubsPage(q); title='Hulumtime dhe publikime · INPO'; after=()=>bindFilters('publikimet', q); }
-  else if (a==='publikimet') { html = pubDetail(b); title='Publikim · INPO'; after=()=>$$('[data-dataset]').forEach(el=>window.inpoCharts && window.inpoCharts.mount(el)); }
+  else if (a==='publikimet') { html = pubDetail(b); title='Publikim · INPO'; after=()=>{ $$('[data-dataset]').forEach(el=>window.inpoCharts && window.inpoCharts.mount(el)); $$('[data-slides]').forEach(el=>window.inpoSlides && window.inpoSlides.mount(el)); }; }
   else if (a==='te-dhenat') { html = b ? datasetPage(b) : dataPage(); title='Të dhëna dhe statistika · INPO'; section='publikimet'; after=()=>$$('[data-dataset]').forEach(el=>window.inpoCharts && window.inpoCharts.mount(el)); }
   else if (a==='programet') { html = progPage(b); title=(PROGS[b]?PROGS[b].full:'Programet')+' · INPO'; }
   else if (a==='projektet') { html = b ? projectPage(b) : projectsPage(q); title='Projektet dhe ndikimi · INPO'; }

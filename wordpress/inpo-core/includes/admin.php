@@ -225,6 +225,7 @@ function inpo_core_pub_box( $post ) {
 			'word'  => __( 'Word', 'inpo-core' ),
 		)
 	);
+	inpo_core_slides_field( $post );
 	echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Data (infographics)', 'inpo-core' ) . '</h4>';
 	echo '<p class="description">' . esc_html__( 'Optional. The numbers of an infographic, shown on the page as key figures and interactive charts (with a table and CSV download), and as small bars on the cover.', 'inpo-core' ) . '</p>';
 	inpo_core_field( $post, 'inpo_figures', __( 'Key figures', 'inpo-core' ), 'textarea', __( 'One per line: number | label. E.g. 192 | kontrata me procedurë të negociuar.', 'inpo-core' ), array( 'rows' => 4 ) );
@@ -286,6 +287,56 @@ function inpo_core_dataset_box( $post ) {
 }
 
 /**
+ * Infographic images: chosen from Media in the order they are shown; stored as attachment IDs.
+ */
+function inpo_core_slides_field( $post ) {
+	$ids    = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $post->ID, 'inpo_slides', true ) ) ) );
+	$thumbs = '';
+	foreach ( $ids as $id ) {
+		$thumbs .= wp_get_attachment_image( $id, 'thumbnail', false, array( 'style' => 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #dcdcde' ) );
+	}
+	echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Infographic images', 'inpo-core' ) . '</h4>';
+	echo '<p class="description">' . esc_html__( 'For an infographic made of images (01/06, 02/06...): choose them in order. The page shows them as a row to swipe with a full-screen view; the first image is the cover.', 'inpo-core' ) . '</p>';
+	echo '<input type="hidden" name="inpo_slides" id="inpo-slides" value="' . esc_attr( implode( ',', $ids ) ) . '">';
+	echo '<div id="inpo-slides-preview" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">' . $thumbs . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	echo '<p><button type="button" class="button" id="inpo-slides-pick">' . esc_html__( 'Choose images from Media', 'inpo-core' ) . '</button> ';
+	echo '<button type="button" class="button-link button-link-delete" id="inpo-slides-clear"' . ( $ids ? '' : ' hidden' ) . '>' . esc_html__( 'Remove all', 'inpo-core' ) . '</button></p>';
+	?>
+	<script>
+	(function () {
+		var pick = document.getElementById('inpo-slides-pick'), clear = document.getElementById('inpo-slides-clear');
+		var field = document.getElementById('inpo-slides'), preview = document.getElementById('inpo-slides-preview');
+		if (!pick) return;
+		// wp.media loads after the meta boxes in the block editor: check on click, not on load.
+		pick.addEventListener('click', function () {
+			if (!window.wp || !wp.media) return;
+			var frame = wp.media({ title: <?php echo wp_json_encode( __( 'Infographic images, in order', 'inpo-core' ) ); ?>, library: { type: 'image' }, multiple: 'add', button: { text: <?php echo wp_json_encode( __( 'Use these images', 'inpo-core' ) ); ?> } });
+			frame.on('open', function () {
+				frame.content.mode('browse');
+				var sel = frame.state().get('selection');
+				field.value.split(',').filter(Boolean).forEach(function (id) { var a = wp.media.attachment(id); a.fetch(); sel.add(a); });
+			});
+			frame.on('select', function () {
+				var list = frame.state().get('selection').toJSON();
+				field.value = list.map(function (m) { return m.id; }).join(',');
+				preview.innerHTML = '';
+				list.forEach(function (m) {
+					var img = document.createElement('img');
+					img.src = (m.sizes && m.sizes.thumbnail ? m.sizes.thumbnail.url : m.url);
+					img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #dcdcde';
+					preview.appendChild(img);
+				});
+				clear.hidden = !list.length;
+			});
+			frame.open();
+		});
+		clear.addEventListener('click', function () { field.value = ''; preview.innerHTML = ''; clear.hidden = true; });
+	})();
+	</script>
+	<?php
+}
+
+/**
  * "Choose from Media" for a PDF field (publications and documents).
  */
 function inpo_core_pdf_picker() {
@@ -293,8 +344,9 @@ function inpo_core_pdf_picker() {
 	<script>
 	(function () {
 		var b = document.getElementById('inpo-pick-pdf');
-		if (!b || !window.wp || !wp.media) return;
+		if (!b) return;
 		b.addEventListener('click', function () {
+			if (!window.wp || !wp.media) return;
 			var f = wp.media({ title: 'Choose PDF', library: { type: 'application/pdf' }, multiple: false });
 			f.on('select', function () { document.getElementById('inpo-inpo_pdf').value = f.state().get('selection').first().get('url'); });
 			f.open();
@@ -327,7 +379,7 @@ function inpo_core_save_meta( $post_id, $post ) {
 	}
 	$keys = array(
 		'post'          => array( 'inpo_short_title' => 'text', 'inpo_date_label' => 'text', 'inpo_publication' => 'int', 'inpo_todo' => 'bool', 'inpo_impact' => 'bool' ),
-		INPO_CORE_PUB   => array( 'inpo_pdf' => 'url', 'inpo_year' => 'text', 'inpo_partners' => 'text', 'inpo_donor' => 'text', 'inpo_short' => 'text', 'inpo_cover' => 'text', 'inpo_authors' => 'text', 'inpo_figures' => 'textarea', 'inpo_csv' => 'textarea', 'inpo_source' => 'text' ),
+		INPO_CORE_PUB   => array( 'inpo_pdf' => 'url', 'inpo_year' => 'text', 'inpo_partners' => 'text', 'inpo_donor' => 'text', 'inpo_short' => 'text', 'inpo_cover' => 'text', 'inpo_authors' => 'text', 'inpo_figures' => 'textarea', 'inpo_csv' => 'textarea', 'inpo_source' => 'text', 'inpo_slides' => 'ids' ),
 		INPO_CORE_PROJECT => array( 'inpo_status' => 'text', 'inpo_period' => 'text', 'inpo_donor_text' => 'text', 'inpo_partners' => 'text', 'inpo_goals' => 'textarea', 'inpo_results' => 'textarea', 'inpo_publication' => 'int' ),
 		INPO_CORE_DOC     => array( 'inpo_year' => 'text', 'inpo_pdf' => 'url' ),
 		INPO_CORE_DATASET => array( 'inpo_csv' => 'textarea', 'inpo_chart' => 'text', 'inpo_unit' => 'text', 'inpo_source' => 'text' ),
@@ -348,6 +400,8 @@ function inpo_core_save_meta( $post_id, $post ) {
 			$value = esc_url_raw( $raw );
 		} elseif ( 'email' === $type ) {
 			$value = sanitize_email( $raw );
+		} elseif ( 'ids' === $type ) {
+			$value = implode( ',', array_filter( array_map( 'absint', explode( ',', (string) $raw ) ) ) );
 		} elseif ( 'textarea' === $type ) {
 			$value = trim( sanitize_textarea_field( $raw ) );
 		} else {
@@ -565,7 +619,7 @@ function inpo_core_help_page() {
 		),
 		__( 'Content', 'inpo-core' )              => array(
 			array( __( 'News, reactions, press releases', 'inpo-core' ), $link( admin_url( 'edit.php' ), __( 'Posts', 'inpo-core' ) ), __( 'Pick the section in Categories. "Impact example" in the INPO box shows the story under results.', 'inpo-core' ) ),
-			array( __( 'Publications, infographics and their charts', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_PUB ), __( 'Publications', 'inpo-core' ) ), __( 'PDF, authors, year in the Publication box; type, programme, thematic field and institution in the sidebar; an infographic\'s figures and charts under "Data".', 'inpo-core' ) ),
+			array( __( 'Publications, infographics and their charts', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_PUB ), __( 'Publications', 'inpo-core' ) ), __( 'PDF, authors, year in the Publication box; type, programme, thematic field and institution in the sidebar. An infographic: "Choose images from Media" under Infographic images (in order); optional figures and charts under "Data".', 'inpo-core' ) ),
 			array( __( 'Projects', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_PROJECT ), __( 'Projects', 'inpo-core' ) ), __( 'Status, period, donor, partners, objectives and results in the Project box.', 'inpo-core' ) ),
 			array( __( 'Transparency documents (reports, audits, policies)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_DOC ), __( 'Documents', 'inpo-core' ) ), __( 'Category in the sidebar, year and PDF in the Document box.', 'inpo-core' ) ),
 			array( __( 'Data and statistics (charts)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_DATASET ), __( 'Data', 'inpo-core' ) ), __( 'Paste the table from a spreadsheet into "Data (CSV)".', 'inpo-core' ) ),

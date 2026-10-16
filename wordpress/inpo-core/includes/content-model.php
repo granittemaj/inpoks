@@ -288,7 +288,8 @@ function inpo_core_register_content_model() {
 			'inpo_donor'    => 'string',
 			'inpo_pdf'      => 'string',
 			'inpo_authors'  => 'string',
-			// Infographics: their numbers, drawn as charts on the page.
+			// Infographics: their images (attachment IDs, in order), and their numbers drawn as charts.
+			'inpo_slides'   => 'string',
 			'inpo_csv'      => 'string',
 			'inpo_figures'  => 'string',
 			'inpo_source'   => 'string',

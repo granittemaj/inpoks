@@ -2,7 +2,7 @@
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Version: 1.7.0
+Version: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,9 @@ INPO theme, (C) Iniciativa për Progres. GPLv2 or later.
 Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
+
+= 1.8.0 =
+* Styles for infographic images (row to swipe, full-screen view).
 
 = 1.7.0 =
 * List templates (publications, projects, data, news) read their heading, intro and extra sections from the list's Page (block inpo/listing).

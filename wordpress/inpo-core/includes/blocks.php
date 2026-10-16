@@ -18,6 +18,8 @@ function inpo_core_register_blocks() {
 	);
 	wp_register_script( 'inpo-core-view', INPO_CORE_URL . 'assets/view.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	// Data: interactive chart and sortable table (same file as the prototype's assets/js/charts.js).
+	// Infographic images: a row to swipe and a full-screen view (same file as the prototype's assets/js/slides.js).
+	wp_register_script( 'inpo-core-slides', INPO_CORE_URL . 'assets/slides.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'inpo-core-charts', INPO_CORE_URL . 'assets/charts.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	// PDF reader. pdf.js (Mozilla, Apache-2.0) is bundled and only downloaded when a reader opens.
 	wp_register_script( 'inpo-core-reader', INPO_CORE_URL . 'assets/reader.js', array(), INPO_CORE_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );

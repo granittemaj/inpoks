@@ -566,6 +566,31 @@ fieldset.field{border:0;margin:0;padding:0}
 /* ---------- Structure from INPO's brief: sections, figures, projects, documents, data ---------- */
 h2.kicker,h3.kicker{margin:0}
 .h-headline{margin:0;font-size:var(--fs-headline);line-height:1.08;font-weight:600;letter-spacing:-.045em}
+/* Infographic images: a row to swipe, arrows and a counter, and a full-screen view (slides.js) */
+.slides-sec .pub-head{align-items:center}
+.slides-nav{display:flex;align-items:center;gap:8px}
+.slides-count{min-width:76px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.slides-nav .icon-btn:disabled{opacity:.35;cursor:default}
+.slides{display:grid;grid-auto-flow:column;grid-auto-columns:min(620px,80%);gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding-block:4px}
+.slides::-webkit-scrollbar{display:none}
+.slide{margin:0;scroll-snap-align:start;min-width:0}
+.slide a{display:block;overflow:hidden;border-radius:var(--r-md);border:1px solid var(--line);background:var(--bg-soft);cursor:zoom-in}
+.slide img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.slide a:hover img{transform:scale(1.015)}
+.slide a:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}
+@media (max-width:640px){.slides{grid-auto-columns:88%;gap:12px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:clamp(20px,5.5vw,80px);scroll-padding-inline:clamp(20px,5.5vw,80px)}.slides-count{min-width:0}}
+.slides-view{width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent}
+.slides-view[open]{display:flex;align-items:center;justify-content:center}
+.slides-view::backdrop{background:rgba(14,14,26,.92)}
+.slides-view figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px}
+.slides-view img{display:block;max-width:min(92vw,1000px);max-height:82vh;width:auto;height:auto;border-radius:var(--r-sm);background:#FFFFFF}
+.slides-view figcaption{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:#FFFFFF}
+.slides-view .icon-btn{position:fixed;border:0;background:#FFFFFF;color:#0E0E1A}
+.slides-view .sv-close{top:20px;right:20px}
+.slides-view .sv-prev,.slides-view .sv-next{top:50%;transform:translateY(-50%)}
+.slides-view .sv-prev{left:20px}
+.slides-view .sv-next{right:20px}
+@media (max-width:640px){.slides-view .sv-prev,.slides-view .sv-next{top:auto;bottom:24px;transform:none}}
 /* Infographic data on a publication page: key figures, then the charts */
 .pub-figures{margin-top:48px}
 .pub-chart{margin-top:64px}

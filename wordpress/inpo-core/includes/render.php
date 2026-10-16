@@ -354,8 +354,42 @@ function inpo_core_render_publication_detail( $a, $block ) {
 	if ( trim( $post->post_content ) ) {
 		$html .= '<section class="wrap sec grid12"><div class="prose">' . inpo_core_the_content( $post ) . '</div></section>';
 	}
+	$html .= inpo_core_pub_slides( $post );
 	$html .= inpo_core_pub_data( $post );
 	return '<div ' . inpo_core_wrapper( '' ) . '>' . $html . '</div>';
+}
+
+/**
+ * An infographic's images: a row to swipe, arrows, a counter and a full-screen view (assets/slides.js).
+ * Mirrors slidesHTML() in the prototype's app.js.
+ */
+function inpo_core_pub_slides( $post ) {
+	$ids = inpo_core_slide_ids( $post );
+	if ( ! $ids ) {
+		return '';
+	}
+	wp_enqueue_script( 'inpo-core-slides' );
+	$n     = count( $ids );
+	$pad   = function ( $x ) {
+		return str_pad( (string) $x, 2, '0', STR_PAD_LEFT );
+	};
+	$arrow = function ( $d ) {
+		return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' . $d . '"/></svg>';
+	};
+	$title = wp_strip_all_tags( get_the_title( $post ) );
+	$items = '';
+	foreach ( $ids as $i => $id ) {
+		$full = wp_get_attachment_image_url( $id, 'full' );
+		$alt  = trim( (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
+		$alt  = $alt ? $alt : $title . ': pamja ' . ( $i + 1 ) . ' nga ' . $n;
+		$img  = wp_get_attachment_image( $id, 'large', false, array( 'alt' => $alt, 'loading' => $i < 2 ? 'eager' : 'lazy', 'decoding' => 'async', 'sizes' => '(max-width: 640px) 88vw, 620px' ) );
+		$items .= '<figure class="slide" role="listitem"><a href="' . esc_url( $full ) . '" aria-label="' . esc_attr( 'Hap në ekran të plotë: pamja ' . ( $i + 1 ) . ' nga ' . $n ) . '">' . $img . '</a></figure>';
+	}
+	return '<section class="wrap sec slides-sec" aria-labelledby="h-slides" data-slides><div class="pub-head"><h2 class="h2" id="h-slides">Infografika</h2>'
+		. '<div class="slides-nav"><span class="slides-count" aria-hidden="true">01 / ' . $pad( $n ) . '</span>'
+		. '<button class="icon-btn" type="button" data-slides-go="-1" aria-label="Pamja e mëparshme">' . $arrow( 'm15 18-6-6 6-6' ) . '</button>'
+		. '<button class="icon-btn" type="button" data-slides-go="1" aria-label="Pamja tjetër">' . $arrow( 'm9 18 6-6-6-6' ) . '</button></div></div>'
+		. '<div class="slides" role="list">' . $items . '</div></section>';
 }
 
 /**

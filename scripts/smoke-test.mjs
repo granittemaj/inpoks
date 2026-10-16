@@ -13,18 +13,19 @@ const html = read('index.html')
   // Function replacers, so "$" sequences in the code are not treated as patterns.
   .replace('<script src="assets/js/data.js"></script>', () => `<script>${read('assets/js/data.js')}</script>`)
   .replace('<script src="assets/js/charts.js"></script>', () => `<script>${read('assets/js/charts.js')}</script>`)
+  .replace('<script src="assets/js/slides.js"></script>', () => `<script>${read('assets/js/slides.js')}</script>`)
   .replace('<script src="assets/js/app.js"></script>', () => `<script>${read('assets/js/app.js')}</script>`);
 
 const routes = [
   '', 'projektet', 'projektet?statusi=aktive', 'projektet/anulimet', 'transparenca', 'te-dhenat', 'te-dhenat/tenderet-e-anuluar', 'rreth-nesh?seksioni=ekipi', 'lajme', 'lajme?kategoria=reagime', 'lajme?q=stadiume&rendit=te-vjetrat', 'lajme/pastrimi',
-  'publikimet', 'publikimet?lloji=infografika', 'publikimet?lloji=politika&institucioni=oshp', 'publikimet?fusha=prokurimi', 'publikimet?q=zzz', 'publikimet/integriteti',
+  'publikimet', 'publikimet?lloji=infografika', 'publikimet?lloji=politika&institucioni=oshp', 'publikimet?fusha=prokurimi', 'publikimet?q=zzz', 'publikimet/integriteti', 'publikimet/temf-2025',
   'programet/qeverisje', 'programet/edukim', 'rreth-nesh', 'kontakti', 'faqe-qe-nuk-ekziston'
 ];
 // Filtered lists: the live count must match the data.
 const counts = {
   'lajme': '6 artikuj', 'lajme?kategoria=reagime': '5 artikuj', 'lajme?q=stadiume&rendit=te-vjetrat': '2 artikuj',
-  'publikimet': '13 publikime', 'publikimet?lloji=infografika': '4 publikime', 'publikimet?lloji=politika&institucioni=oshp': '1 publikim', 'publikimet?q=zzz': '0 publikime',
-  'publikimet?fusha=prokurimi': '8 publikime'
+  'publikimet': '14 publikime', 'publikimet?lloji=infografika': '5 publikime', 'publikimet?lloji=politika&institucioni=oshp': '1 publikim', 'publikimet?q=zzz': '0 publikime',
+  'publikimet?fusha=prokurimi': '9 publikime'
 };
 
 let failed = 0;
