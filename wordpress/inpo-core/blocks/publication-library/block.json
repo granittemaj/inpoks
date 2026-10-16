@@ -5,7 +5,7 @@
 	"title": "Publication library",
 	"category": "inpo",
 	"icon": "book",
-	"description": "Search, type and year filters, and the publication grid.",
+	"description": "Search, type, programme, year and order filters, and the publication grid.",
 	"textdomain": "inpo-core",
 	"attributes": {
 		"placeholder": {
@@ -15,6 +15,10 @@
 		"programLabel": {
 			"type": "string",
 			"default": "Programi"
+		},
+		"allLabel": {
+			"type": "string",
+			"default": "Të gjitha"
 		}
 	},
 	"supports": {

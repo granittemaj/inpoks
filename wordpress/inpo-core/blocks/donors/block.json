@@ -15,6 +15,14 @@
 		"showFineprint": {
 			"type": "boolean",
 			"default": true
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		},
+		"heading": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"supports": {

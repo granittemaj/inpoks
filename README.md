@@ -14,13 +14,16 @@ Design direction: **Quiet Indigo**. It uses INPO's own indigo, lots of white spa
 
 | Route | Page |
 |---|---|
-| `#/` | Kryefaqja: hero, data bento, programmes, publications, news, donors |
-| `#/lajme` | News list with category filter |
+| `#/` | Kryefaqja: mission and fields of action, key findings, latest research, results and impact, programmes, latest news, projects and partners |
+| `#/rreth-nesh` | History, mission, vision and values, team and board, strategies and documents (`?seksioni=historia` etc. jumps to a section) |
+| `#/programet/qeverisje`, `#/programet/edukim` | Programme pages: objectives, areas of intervention, activities, research, results |
+| `#/publikimet` | Research and publications: search, category chips with counts, programme, thematic field, institution, year, order |
+| `#/publikimet/<id>` | Publication detail: category, date, author or team, programme, thematic field, institution |
+| `#/te-dhenat`, `#/te-dhenat/<id>` | Data: interactive chart, sortable table, CSV download (illustrative values) |
+| `#/lajme` | News and positions: five sections, search, order |
 | `#/lajme/<id>` | Article with share, related news and a contact CTA |
-| `#/publikimet` | Publication library with live search, type and programme filters |
-| `#/publikimet/<id>` | Publication detail |
-| `#/programet/qeverisje`, `#/programet/edukim` | Programme pages |
-| `#/rreth-nesh` | Mission, vision, timeline, audits, jobs, donors |
+| `#/projektet`, `#/projektet/<id>` | Projects (active, completed), results and impact, partners and donors |
+| `#/transparenca` | Annual, financial and audit reports, governance documents, internal policies, by category and year |
 | `#/kontakti` | Contact form with validation and success state |
 | anything else | 404 view |
 
@@ -87,10 +90,10 @@ npm test
 
 ```
 inpo-website/
-├── index.html            App shell: header, newsletter, footer, dialogs
+├── index.html            App shell: header, footer, dialogs
 ├── 404.html              GitHub Pages fallback, redirects to #/404
-├── favicon.svg
 ├── assets/
+│   ├── img/              Logo, favicons, donor logos, team photos
 │   ├── css/styles.css    Design tokens (light and dark) and all components
 │   └── js/
 │       ├── data.js       All content: news, publications, programmes, donors

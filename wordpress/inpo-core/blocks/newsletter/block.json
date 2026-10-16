@@ -32,7 +32,8 @@
 	"supports": {
 		"html": false,
 		"className": true,
-		"customClassName": true
+		"customClassName": true,
+		"inserter": false
 	},
 	"editorScript": "inpo-core-editor",
 	"viewScript": "inpo-core-view"

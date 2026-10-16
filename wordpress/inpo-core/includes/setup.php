@@ -32,6 +32,8 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		'golive'  => 'inpo_core_go_live',
 		'restore' => 'inpo_core_restore',
 		'covers'  => 'inpo_core_make_previews_all',
+		'samples' => 'inpo_core_add_sample_data',
+		'upgrade' => 'inpo_core_upgrade_structure',
 		'setup'   => 'inpo_core_run_setup',
 	) as $command => $callback ) {
 		WP_CLI::add_command(
@@ -91,9 +93,12 @@ add_action(
 			return;
 		}
 		delete_transient( 'inpo_core_notice' );
-		$title = 'live' === $notice[0]
-			? __( 'INPO is live. The new theme now shows your content:', 'inpo-core' )
-			: __( 'INPO theme deactivated. The previous page content and settings were restored:', 'inpo-core' );
+		$titles = array(
+			'live'    => __( 'INPO is live. The new theme now shows your content:', 'inpo-core' ),
+			'upgrade' => __( 'INPO updated: the site now has the structure from INPO\'s brief.', 'inpo-core' ),
+			'restore' => __( 'INPO theme deactivated. The previous page content and settings were restored:', 'inpo-core' ),
+		);
+		$title  = isset( $titles[ $notice[0] ] ) ? $titles[ $notice[0] ] : $titles['restore'];
 		echo '<div class="notice notice-success is-dismissible"><p><strong>' . esc_html( $title ) . '</strong><br>' . implode( '<br>', array_map( 'esc_html', (array) $notice[1] ) ) . '</p></div>';
 	}
 );
@@ -112,6 +117,14 @@ function inpo_core_setup_page() {
 			$log = inpo_core_restore();
 		} elseif ( 'covers' === $action ) {
 			$log = inpo_core_make_previews( 10 );
+		} elseif ( 'upgrade' === $action ) {
+			$log = inpo_core_upgrade_structure();
+		} elseif ( 'menu' === $action ) {
+			$log = array( inpo_core_setup_menu( inpo_core_menu_pages(), true ) );
+		} elseif ( 'samples' === $action ) {
+			$log = inpo_core_add_sample_data();
+		} elseif ( 'samples-off' === $action ) {
+			$log = inpo_core_remove_sample_data();
 		} elseif ( 'demo' === $action && ! inpo_core_site_has_content() ) {
 			$log = inpo_core_run_setup();
 		}
@@ -137,11 +150,13 @@ function inpo_core_setup_page() {
 	if ( $existing ) {
 		echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'Step 1. Prepare the data (now, with the current theme)', 'inpo-core' ) . '</h2>';
 		echo '<p>' . esc_html__( 'Safe on the live site: visitors see no change until the INPO theme is activated. News, publications, PDFs and media stay exactly as they are. This adds:', 'inpo-core' ) . '</p><ul style="list-style:disc;padding-left:20px">'
-			. '<li>' . esc_html__( 'singular labels and order for the publication types (Analizë, Hulumtim, Infografikë…);', 'inpo-core' ) . '</li>'
-			. '<li>' . esc_html__( 'the programmes Qeverisje e mirë and Edukim demokratik, with their main activities, and links news to them from the old programme categories;', 'inpo-core' ) . '</li>'
-			. '<li>' . esc_html__( 'two clean news filters, Aktivitete and Publikime (old categories stay as they are);', 'inpo-core' ) . '</li>'
-			. '<li>' . esc_html__( 'Team and Donors, copied from the old "Anëtarët" and "Donatorët" entries with their photos and logos.', 'inpo-core' ) . '</li></ul>'
-			. '<p>' . esc_html__( 'Afterwards, review and edit everything under INPO (Settings, Team, Donors), Posts > Categories, Publications > Types and Publications > Programmes.', 'inpo-core' ) . '</p>';
+			. '<li>' . esc_html__( 'the publication categories from INPO\'s brief (Raporte të monitorimit, Hulumtime dhe studime, Analiza të politikave publike, Analiza ligjore, Infografika, Rekomandime për politika publike) as labels on the existing types, plus the two new ones;', 'inpo-core' ) . '</li>'
+			. '<li>' . esc_html__( 'thematic fields and institutions on publications, read from their titles, for the library filters;', 'inpo-core' ) . '</li>'
+			. '<li>' . esc_html__( 'the five news sections (Aktivitete, Komunikata për media, Reagime dhe qëndrime publike, Opinione dhe artikuj, INPO në media), filled from the old categories, tags and titles;', 'inpo-core' ) . '</li>'
+			. '<li>' . esc_html__( 'the programmes with their objectives and main activities, and links from news and publications to them;', 'inpo-core' ) . '</li>'
+			. '<li>' . esc_html__( 'Transparency documents: the audit reports and the work report, copied from "Raporte për INPO" (same PDFs);', 'inpo-core' ) . '</li>'
+			. '<li>' . esc_html__( 'projects known from the site, as drafts; Team and Donors, copied from the old "Anëtarët" and "Donatorët" entries.', 'inpo-core' ) . '</li></ul>'
+			. '<p>' . esc_html__( 'Keyword sorting runs once and only adds labels; old categories and names stay as they are. Review everything afterwards: Posts > Categories, Publications > Types, Thematic fields and Institutions, Projects, Documents, INPO > Team.', 'inpo-core' ) . '</p>';
 		if ( $prepared ) {
 			/* translators: %s: date */
 			echo '<p><strong>' . esc_html( sprintf( __( 'Prepared on %s. Safe to run again: existing items are kept.', 'inpo-core' ), $date( $prepared ) ) ) . '</strong></p>';
@@ -150,7 +165,7 @@ function inpo_core_setup_page() {
 		echo '</div>';
 
 		echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'Step 2. Go live (automatic)', 'inpo-core' ) . '</h2>';
-		echo '<p>' . esc_html__( 'Happens by itself when you activate the INPO theme under Appearance > Themes: Ballina, Rreth nesh and Kontakti get their new content, Lajme becomes the news page, the main menu is created and old programme pages redirect to the new ones. Permalinks are not changed.', 'inpo-core' ) . '</p>';
+		echo '<p>' . esc_html__( 'Happens by itself when you activate the INPO theme under Appearance > Themes: Ballina, Rreth nesh and Kontakti get their new content, the Transparenca page is created, Lajme becomes the news page, projects from facts are published, the main menu is built with the eight sections of INPO\'s brief and old programme pages redirect to the new ones. Permalinks are not changed.', 'inpo-core' ) . '</p>';
 		echo '<p>' . esc_html__( 'Everything it changes is backed up first. Switching back to the old theme restores the old page content and settings automatically.', 'inpo-core' ) . '</p>';
 		if ( $live ) {
 			/* translators: %s: date */
@@ -168,6 +183,29 @@ function inpo_core_setup_page() {
 		$button( 'demo', __( 'Import demo content', 'inpo-core' ), true );
 		echo '</div>';
 	}
+	// Update to the brief's structure (sites set up with 1.x).
+	if ( inpo_core_site_mode() ) {
+		echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'Structure from INPO\'s brief', 'inpo-core' ) . '</h2>';
+		echo '<p>' . esc_html__( 'Runs by itself after an update. It adds the news sections, publication categories, thematic fields, institutions, Transparency documents, board and projects, gives Ballina and Rreth nesh their new layout (only when they were not edited since), creates the Transparency page and rebuilds the menu (only when it is still the one INPO made). Safe to run again.', 'inpo-core' ) . '</p>';
+		$button( 'upgrade', __( 'Apply the new structure', 'inpo-core' ) );
+		$button( 'menu', __( 'Rebuild the main menu', 'inpo-core' ) );
+		echo '<p class="description">' . esc_html__( '"Rebuild the main menu" makes a fresh menu with the eight sections and keeps the current one under Appearance > Menus.', 'inpo-core' ) . '</p>';
+		echo '</div>';
+	}
+
+	// Sample procurement data, for demos on staging.
+	$samples = get_posts( array( 'post_type' => INPO_CORE_DATASET, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_inpo_sample', 'meta_value' => '1' ) );
+	echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'Sample procurement data', 'inpo-core' ) . '</h2>';
+	echo '<p>' . esc_html__( 'Six datasets with made-up values (contract values, negotiated contracts, cancelled tenders, complaints, bids per tender, procedures) to show the interactive charts under Data. Each is labelled "Të dhëna ilustruese" on the site. Remove them before real statistics go public.', 'inpo-core' ) . '</p>';
+	if ( $samples ) {
+		/* translators: %d: number of datasets */
+		echo '<p><strong>' . esc_html( sprintf( __( 'Sample datasets on this site: %d', 'inpo-core' ), count( $samples ) ) ) . '</strong></p>';
+		$button( 'samples-off', __( 'Remove the sample datasets', 'inpo-core' ) );
+	} else {
+		$button( 'samples', __( 'Add sample datasets', 'inpo-core' ) );
+	}
+	echo '</div>';
+
 	// PDF covers.
 	$missing = inpo_core_pdfs_without_preview();
 	echo '<div class="card" style="max-width:820px"><h2>' . esc_html__( 'PDF covers', 'inpo-core' ) . '</h2>';
@@ -251,22 +289,6 @@ function inpo_core_make_previews_all() {
 /* ---------- Shared data (facts from inpo-ks.org) ---------- */
 
 /**
- * Publication types: slug => array( plural name, singular label, order ).
- * Slugs are the live site's (infographics live under "publikime", audit reports under "raporte-per-inpo").
- */
-function inpo_core_type_definitions() {
-	return array(
-		'analiza'          => array( 'Analiza', 'Analizë', 0 ),
-		'hulumtime'        => array( 'Hulumtime', 'Hulumtim', 1 ),
-		'publikime'        => array( 'Infografika', 'Infografikë', 2 ),
-		'buletine'         => array( 'Buletine', 'Buletin', 3 ),
-		'raporte'          => array( 'Raporte', 'Raport', 4 ),
-		'raporte-per-inpo' => array( 'Raporte për INPO', 'Raport për INPO', 5 ),
-		'mundesi-punesimi' => array( 'Mundësi punësimi', 'Mundësi punësimi', 6 ),
-	);
-}
-
-/**
  * Main activities per programme, from the old programme pages.
  */
 function inpo_core_program_activities() {
@@ -313,10 +335,10 @@ function inpo_core_known_donors() {
  */
 function inpo_core_known_team() {
 	return array(
+		array( 'Albulena Nrecaj', 'Drejtore Ekzekutive', 'albulena.nrecaj@inpo-ks.org', '2017/07/81988036_3224758080874887_2546643430155485184_n.jpg' ),
 		array( 'Merita Bunjaku Sylaj', 'Menaxhere e Financave dhe Administratës', 'merita@inpo-ks.org', '2024/10/962fd0e5-4558-4a2c-b9c5-2f9d42774990.jpg' ),
 		array( 'Elza Tullari Celina', 'Monitoruese', 'elza@inpo-ks.org', '2024/10/Untitled-design-9.png' ),
 		array( 'Arbër Kabashi', 'Monitorues', 'arber@inpo-ks.org', '2023/10/DSC_4328-1-scaled-e1696854058731.jpg' ),
-		array( 'Albulena Nrecaj', 'Drejtore Ekzekutive', 'albulena.nrecaj@inpo-ks.org', '2017/07/81988036_3224758080874887_2546643430155485184_n.jpg' ),
 	);
 }
 
@@ -333,37 +355,23 @@ function inpo_core_pattern_content( $name, $fallback ) {
 }
 
 function inpo_core_home_content() {
-	return inpo_core_pattern_content( 'inpo/page-home', "<!-- wp:inpo/hero /-->\n\n<!-- wp:inpo/bento /-->\n\n<!-- wp:inpo/programs /-->\n\n<!-- wp:inpo/publications /-->\n\n<!-- wp:inpo/news-list /-->\n\n<!-- wp:inpo/donors /-->" );
+	return inpo_core_pattern_content( 'inpo/page-home', "<!-- wp:inpo/hero /-->\n\n<!-- wp:inpo/bento /-->\n\n<!-- wp:inpo/field /-->\n\n<!-- wp:inpo/publications /-->\n\n<!-- wp:inpo/impact /-->\n\n<!-- wp:inpo/programs /-->\n\n<!-- wp:inpo/news-list /-->\n\n<!-- wp:inpo/projects /-->" );
 }
 
 function inpo_core_about_content() {
-	return inpo_core_pattern_content( 'inpo/page-about', "<!-- wp:inpo/team /-->\n\n<!-- wp:inpo/transparency /-->\n\n<!-- wp:inpo/donors /-->" );
+	return inpo_core_pattern_content( 'inpo/page-about', "<!-- wp:inpo/team /-->\n\n<!-- wp:inpo/documents {\"layout\":\"list\",\"categories\":\"strategjite-dhe-dokumentet-organizative\"} /-->" );
 }
 
 /**
- * Publication types: create the missing ones (new installs) and set singular labels and order.
- * Existing names are never changed.
+ * Page layouts made by an earlier version (1.x) and not edited since, which go-live may replace.
+ * Markers: the 1.x home had the programmes but no figures; the 1.x About had the old transparency box.
  */
-function inpo_core_setup_types( $create ) {
-	$done = 0;
-	foreach ( inpo_core_type_definitions() as $slug => $def ) {
-		$term = get_term_by( 'slug', $slug, INPO_CORE_PUB_TYPE );
-		if ( ! $term && $create ) {
-			$new  = wp_insert_term( $def[0], INPO_CORE_PUB_TYPE, array( 'slug' => $slug ) );
-			$term = is_wp_error( $new ) ? null : get_term( $new['term_id'], INPO_CORE_PUB_TYPE );
-		}
-		if ( $term ) {
-			if ( ! get_term_meta( $term->term_id, 'inpo_singular', true ) ) {
-				update_term_meta( $term->term_id, 'inpo_singular', $def[1] );
-			}
-			if ( '' === get_term_meta( $term->term_id, 'inpo_order', true ) ) {
-				update_term_meta( $term->term_id, 'inpo_order', $def[2] );
-			}
-			$done++;
-		}
+function inpo_core_layout_outdated( $page, $kind ) {
+	$c = $page->post_content;
+	if ( 'home' === $kind ) {
+		return false !== strpos( $c, '<!-- wp:inpo/programs' ) && false === strpos( $c, '<!-- wp:inpo/impact' );
 	}
-	/* translators: %d: number of types */
-	return sprintf( __( 'Publication types labelled: %d', 'inpo-core' ), $done );
+	return false !== strpos( $c, '<!-- wp:inpo/transparency' ) && false === strpos( $c, 'id="historia"' );
 }
 
 /**
@@ -389,6 +397,9 @@ function inpo_core_setup_programs() {
 			update_term_meta( $term->term_id, 'inpo_ways', $p['ways'] );
 			update_term_meta( $term->term_id, 'inpo_order', $i );
 			update_term_meta( $term->term_id, 'inpo_show_news', 'qeverisje' === $slug );
+			if ( ! empty( $p['goals'] ) ) {
+				update_term_meta( $term->term_id, 'inpo_objectives', implode( "\n", $p['goals'] ) );
+			}
 		}
 		if ( isset( $acts[ $slug ] ) && ! get_term_meta( $term->term_id, 'inpo_activities', true ) ) {
 			update_term_meta( $term->term_id, 'inpo_activities', $acts[ $slug ] );
@@ -503,6 +514,8 @@ function inpo_core_setup_donors() {
 			set_post_thumbnail( $id, $d[2] );
 		}
 	}
+	// Donors the old media library has no logo for get the bundled one.
+	inpo_core_attach_donor_logos();
 	/* translators: 1: number added, 2: source */
 	return sprintf( __( 'Donors added: %1$d (from %2$s)', 'inpo-core' ), $count, $source );
 }
@@ -550,6 +563,8 @@ function inpo_core_setup_team() {
 			set_post_thumbnail( $id, $m[3] );
 		}
 	}
+	// Members the old media library has no photo for get the bundled one.
+	inpo_core_attach_team_photos();
 	/* translators: 1: number added, 2: source */
 	return sprintf( __( 'Team members added: %1$d (from %2$s)', 'inpo-core' ), $count, $source );
 }
@@ -568,28 +583,8 @@ function inpo_core_prepare_site() {
 	/* translators: %s: programme slugs */
 	$log[] = sprintf( __( 'Programmes: %s', 'inpo-core' ), implode( ', ', array_keys( $programs ) ) );
 
-	// Clean news filters. Old categories stay; posts are added to the new ones (append only).
-	$filters = array(
-		'aktivitete' => array( 'Aktivitete', array( 'aktivitete-shkolla-e-aktivizmit', 'aktivitete-edukimi-demokratik', 'aktivitete-qeverisje-te-mire', 'aktivitetet-qeverisja-e-mire' ) ),
-		'publikime'  => array( 'Publikime', array( 'analiza', 'buletine', 'hulumtime', 'raporte' ) ),
-	);
-	foreach ( $filters as $slug => $f ) {
-		$term = get_term_by( 'slug', $slug, 'category' );
-		if ( ! $term ) {
-			$new  = wp_insert_term( $f[0], 'category', array( 'slug' => $slug ) );
-			$term = is_wp_error( $new ) ? null : get_term( $new['term_id'], 'category' );
-		}
-		if ( ! $term ) {
-			continue;
-		}
-		update_term_meta( $term->term_id, 'inpo_chip', '1' );
-		$ids = inpo_core_posts_in_categories( $f[1] );
-		foreach ( $ids as $id ) {
-			wp_set_object_terms( $id, (int) $term->term_id, 'category', true );
-		}
-		/* translators: 1: filter name, 2: number of posts */
-		$log[] = sprintf( __( 'News filter "%1$s": %2$d posts added', 'inpo-core' ), $f[0], count( $ids ) );
-	}
+	// INPO's brief: the five news sections (old categories stay; posts are added, never removed).
+	$log = array_merge( $log, inpo_core_setup_news_sections() );
 
 	// Programmes on news, from the old programme categories (append only).
 	$by_program = array(
@@ -619,7 +614,15 @@ function inpo_core_prepare_site() {
 	$log[] = sprintf( __( 'Shared cover images (not shown as article photos): %d', 'inpo-core' ), count( $generic ) );
 
 	$log[] = inpo_core_setup_donors();
+	/* translators: %d: number of pages */
+	$log[] = sprintf( __( 'List pages made under Pages (heading and intro of publications, projects, data): %d', 'inpo-core' ), inpo_core_setup_listing_pages() );
 	$log[] = inpo_core_setup_team();
+	$log[] = inpo_core_setup_board();
+
+	// INPO's brief: publication categories, fields and institutions, transparency documents, projects.
+	$log   = array_merge( $log, inpo_core_sort_publications() );
+	$log[] = inpo_core_setup_documents();
+	$log   = array_merge( $log, inpo_core_setup_brief_content() );
 
 	update_option( 'inpo_core_prepared', time() );
 	return $log;
@@ -671,6 +674,7 @@ function inpo_core_go_live() {
 			'page_for_posts' => get_option( 'page_for_posts' ),
 		),
 		'pages'   => array(),
+		'created' => array(),
 	);
 	$keep = function ( $page ) use ( &$backup ) {
 		$backup['pages'][ $page->ID ] = array(
@@ -691,7 +695,7 @@ function inpo_core_go_live() {
 	$front    = $front ? get_post( $front ) : get_page_by_path( 'ballina' );
 	if ( $front ) {
 		$keep( $front );
-		inpo_core_adopt_page( $front, inpo_core_home_content(), array( 'template' => 'page-landing' ) );
+		inpo_core_adopt_page( $front, inpo_core_home_content(), array( 'template' => 'page-landing', 'replace' => inpo_core_layout_outdated( $front, 'home' ) ) );
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $front->ID );
 		/* translators: %s: page title */
@@ -714,6 +718,7 @@ function inpo_core_go_live() {
 			array(
 				'kicker'  => 'Rreth nesh',
 				'excerpt' => 'Organizatë joqeveritare dhe jofitimprurëse, e themeluar në vitin 2005. Politikat publike janë fokusi i punës sonë.',
+				'replace' => inpo_core_layout_outdated( $about, 'about' ),
 			)
 		);
 		$page_ids['rreth-nesh'] = $about->ID;
@@ -734,6 +739,13 @@ function inpo_core_go_live() {
 		$page_ids['kontakti'] = $contact->ID;
 		$log[]                = __( 'Contact page: new contact form', 'inpo-core' );
 	}
+	$transparency = inpo_core_transparency_page( $backup['created'] );
+	if ( $transparency ) {
+		$page_ids['transparenca'] = $transparency;
+		$log[]                    = __( 'Transparency page: documents by category and year', 'inpo-core' );
+	}
+	/* translators: %d: number of projects */
+	$log[] = sprintf( __( 'Projects published: %d', 'inpo-core' ), inpo_core_publish_seeded_projects() );
 	update_option( 'inpo_core_live_backup', $backup, false );
 
 	// Old pages whose role the new design covers: send visitors (and search engines) on.
@@ -756,13 +768,14 @@ function inpo_core_go_live() {
 	/* translators: %d: number of redirects */
 	$log[] = sprintf( __( 'Redirects from old pages: %d', 'inpo-core' ), count( $redirects['pages'] ) + count( $redirects['paths'] ) );
 
-	if ( count( $page_ids ) === 3 ) {
+	if ( isset( $page_ids['lajme'], $page_ids['rreth-nesh'], $page_ids['kontakti'] ) ) {
 		$log[] = inpo_core_setup_menu( $page_ids );
 	}
 
 	// New URLs (programmes, publication archive): rebuild rewrite rules on the next request.
 	update_option( 'inpo_core_flush_rewrites', 1 );
 	update_option( 'inpo_core_live', time() );
+	inpo_core_setup_listing_pages();
 	return $log;
 }
 
@@ -794,6 +807,9 @@ function inpo_core_restore() {
 				delete_post_meta( $id, 'inpo_kicker' );
 			}
 		}
+		foreach ( isset( $backup['created'] ) ? (array) $backup['created'] : array() as $id ) {
+			wp_update_post( array( 'ID' => $id, 'post_status' => 'draft' ) );
+		}
 		/* translators: %d: number of pages */
 		$log[] = sprintf( __( 'Pages restored: %d', 'inpo-core' ), count( (array) $backup['pages'] ) );
 		$log[] = __( 'Reading settings restored (home page and news page).', 'inpo-core' );
@@ -811,10 +827,10 @@ function inpo_core_restore() {
  *
  * @param WP_Post $page    Page.
  * @param string  $content New block content.
- * @param array   $extra   template, title, kicker, excerpt.
+ * @param array   $extra   template, title, kicker, excerpt, replace (an unedited earlier INPO layout).
  */
 function inpo_core_adopt_page( $page, $content, $extra = array() ) {
-	if ( false === strpos( $page->post_content, '<!-- wp:inpo/' ) ) {
+	if ( false === strpos( $page->post_content, '<!-- wp:inpo/' ) || ! empty( $extra['replace'] ) ) {
 		wp_save_post_revision( $page->ID );
 		$update = array( 'ID' => $page->ID, 'post_content' => $content );
 		if ( ! empty( $extra['title'] ) ) {
@@ -848,21 +864,24 @@ function inpo_core_run_setup() {
 	$data = inpo_core_seed();
 	$log  = array();
 
-	// Categories.
+	// News sections (INPO's brief). Prototype keys => category slugs.
+	inpo_core_setup_news_sections();
+	update_option( 'inpo_core_sorted_v2', time() ); // Demo content arrives sorted; no keyword sorting.
 	$cat_ids = array();
-	foreach ( array( 'reagim' => array( 'Reagim publik', 'reagim-publik' ), 'prokurimi' => array( 'Prokurimi i hapur', 'prokurimi-i-hapur' ) ) as $key => $c ) {
-		$term = get_term_by( 'slug', $c[1], 'category' );
-		if ( ! $term ) {
-			$term = get_term_by( 'name', $c[0], 'category' );
-		}
-		if ( ! $term ) {
-			$new  = wp_insert_term( $c[0], 'category', array( 'slug' => $c[1] ) );
-			$term = is_wp_error( $new ) ? null : get_term( $new['term_id'], 'category' );
-		}
+	foreach ( array( 'aktivitete' => 'aktivitete', 'komunikata' => 'komunikata-per-media', 'reagime' => 'reagime-dhe-qendrime-publike', 'opinione' => 'opinione-dhe-artikuj', 'media' => 'inpo-ne-media' ) as $key => $slug ) {
+		$term            = get_term_by( 'slug', $slug, 'category' );
 		$cat_ids[ $key ] = $term ? (int) $term->term_id : (int) get_option( 'default_category' );
 	}
 	/* translators: %d: number */
 	$log[] = sprintf( __( 'Categories: %d', 'inpo-core' ), count( $cat_ids ) );
+	$themes = inpo_core_ensure_terms( INPO_CORE_THEME, inpo_core_theme_definitions() );
+	$insts  = inpo_core_ensure_terms( INPO_CORE_INST, inpo_core_institution_definitions() );
+	foreach ( $data['INSTS'] as $slug => $name ) {
+		if ( ! isset( $insts[ $slug ] ) ) {
+			$insts = $insts + inpo_core_ensure_terms( INPO_CORE_INST, array( $slug => array( $name ) ) );
+		}
+	}
+	$theme_slug = array( 'prokurimi' => 'prokurimi-publik', 'transparenca' => 'transparenca', 'llogaridhenia' => 'llogaridhenia', 'integriteti' => 'integriteti-dhe-antikorrupsioni', 'ligji' => 'sundimi-i-ligjit', 'lokale' => 'qeverisja-lokale', 'edukimi' => 'edukimi-demokratik' );
 
 	$log[] = inpo_core_setup_types( true );
 	$programs = inpo_core_setup_programs();
@@ -870,7 +889,7 @@ function inpo_core_run_setup() {
 	$log[]    = sprintf( __( 'Programmes: %d', 'inpo-core' ), count( $programs ) );
 
 	// Publications, in prototype order. Types use the live site's slugs.
-	$type_slug = array( 'infografika' => 'publikime', 'inpo' => 'raporte-per-inpo' );
+	$type_slug = array( 'monitorim' => 'raporte', 'hulumtime' => 'hulumtime', 'politika' => 'analiza', 'ligjore' => 'analiza-ligjore', 'infografika' => 'publikime', 'rekomandime' => 'rekomandime' );
 	$pub_ids   = array();
 	$variants  = array( 'rings', 'bars', 'dots', 'word' );
 	$now       = time();
@@ -894,7 +913,7 @@ function inpo_core_run_setup() {
 					'post_title'  => $p['title'],
 					'post_name'   => $p['id'],
 					'menu_order'  => $i,
-					'post_date'   => wp_date( 'Y-m-d H:i:s', $now - $i * MINUTE_IN_SECONDS ),
+					'post_date'   => ! empty( $p['date'] ) ? implode( '-', array_reverse( explode( '.', $p['date'] ) ) ) . ' 09:00:00' : wp_date( 'Y-m-d H:i:s', $now - $i * MINUTE_IN_SECONDS ),
 					'meta_input'  => $meta,
 				)
 			)
@@ -905,10 +924,18 @@ function inpo_core_run_setup() {
 			if ( $p['prog'] ) {
 				wp_set_object_terms( $id, $p['prog'], INPO_CORE_PROGRAM );
 			}
+			if ( ! empty( $p['theme'] ) && isset( $theme_slug[ $p['theme'] ], $themes[ $theme_slug[ $p['theme'] ] ] ) ) {
+				wp_set_object_terms( $id, $themes[ $theme_slug[ $p['theme'] ] ], INPO_CORE_THEME );
+			}
+			if ( ! empty( $p['inst'] ) && isset( $insts[ $p['inst'] ] ) ) {
+				wp_set_object_terms( $id, $insts[ $p['inst'] ], INPO_CORE_INST );
+			}
 		}
 	}
 	/* translators: %d: number */
 	$log[] = sprintf( __( 'Publications: %d', 'inpo-core' ), count( $pub_ids ) );
+	/* translators: %d: number */
+	$log[] = sprintf( __( 'Infographics with charts: %d', 'inpo-core' ), inpo_core_setup_infographics() );
 
 	// News, under the same slugs as on inpo-ks.org (the home page blocks refer to them).
 	$real_slug = array(
@@ -942,6 +969,9 @@ function inpo_core_run_setup() {
 		if ( ! empty( $n['pub'] ) && isset( $pub_ids[ $n['pub'] ] ) ) {
 			$meta['inpo_publication'] = $pub_ids[ $n['pub'] ];
 		}
+		if ( in_array( $n['id'], (array) $data['CASES'], true ) ) {
+			$meta['inpo_impact'] = true;
+		}
 		$id = wp_insert_post(
 			wp_slash(
 				array(
@@ -965,7 +995,11 @@ function inpo_core_run_setup() {
 	$log[] = sprintf( __( 'News added: %d', 'inpo-core' ), $count );
 
 	$log[] = inpo_core_setup_donors();
+	/* translators: %d: number of pages */
+	$log[] = sprintf( __( 'List pages made under Pages (heading and intro of publications, projects, data): %d', 'inpo-core' ), inpo_core_setup_listing_pages() );
 	$log[] = inpo_core_setup_team();
+	$log[] = inpo_core_setup_board();
+	$log = array_merge( $log, inpo_core_demo_brief( $data, $pub_ids ) );
 
 	// Pages.
 	$pages = array(
@@ -1009,6 +1043,8 @@ function inpo_core_run_setup() {
 		}
 		$page_ids[ $slug ] = wp_insert_post( wp_slash( $args ) );
 	}
+	$created = array();
+	$page_ids['transparenca'] = inpo_core_transparency_page( $created );
 	/* translators: %s: page slugs */
 	$log[] = sprintf( __( 'Pages: %s', 'inpo-core' ), implode( ', ', array_keys( $page_ids ) ) );
 
@@ -1066,6 +1102,8 @@ function inpo_core_run_setup() {
 	delete_option( 'rewrite_rules' );
 	update_option( 'inpo_core_flush_rewrites', 1 );
 	update_option( 'inpo_core_setup_done', time() );
+	// Again at the end: the Posts page (news list) is assigned above.
+	inpo_core_setup_listing_pages();
 	return $log;
 }
 
@@ -1081,56 +1119,187 @@ function inpo_core_deferred_flush() {
 }
 
 /**
- * Creates the "Kryesore" menu and assigns it to the theme's primary location.
+ * Does the header menu (or "Kryesore") already have the sections of INPO's brief?
  */
-function inpo_core_setup_menu( $page_ids ) {
-	$name = 'Kryesore';
-	$menu = wp_get_nav_menu_object( $name );
-	if ( $menu ) {
-		$menu_id = $menu->term_id;
-		$note    = __( 'Main menu exists', 'inpo-core' );
-	} else {
-		$menu_id = wp_create_nav_menu( $name );
-		if ( is_wp_error( $menu_id ) ) {
-			return __( 'The menu could not be created.', 'inpo-core' );
-		}
-		$add = function ( $args ) use ( $menu_id ) {
-			return wp_update_nav_menu_item( $menu_id, 0, array_merge( array( 'menu-item-status' => 'publish' ), $args ) );
-		};
-		$add( array( 'menu-item-title' => 'Kryefaqja', 'menu-item-type' => 'custom', 'menu-item-url' => home_url( '/' ) ) );
-		$add( array( 'menu-item-title' => 'Lajme', 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $page_ids['lajme'] ) );
-		$programs = inpo_core_programs();
-		$parent   = $add(
-			array(
-				'menu-item-title' => 'Programet',
-				'menu-item-type'  => 'custom',
-				'menu-item-url'   => $programs ? get_term_link( $programs[0] ) : home_url( '/' ),
-			)
-		);
-		$taglines = array(
-			'qeverisje' => 'Transparencë, llogaridhënie, sundim i ligjit',
-			'edukim'    => 'Të rinj aktivë për një shoqëri të hapur',
-		);
-		foreach ( $programs as $t ) {
-			$add(
-				array(
-					'menu-item-title'       => $t->name,
-					'menu-item-type'        => 'taxonomy',
-					'menu-item-object'      => INPO_CORE_PROGRAM,
-					'menu-item-object-id'   => $t->term_id,
-					'menu-item-parent-id'   => $parent,
-					'menu-item-description' => isset( $taglines[ $t->slug ] ) ? $taglines[ $t->slug ] : '',
-				)
-			);
-		}
-		$add( array( 'menu-item-title' => 'Publikimet', 'menu-item-type' => 'post_type_archive', 'menu-item-object' => INPO_CORE_PUB ) );
-		$add( array( 'menu-item-title' => 'Rreth nesh', 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $page_ids['rreth-nesh'] ) );
-		$add( array( 'menu-item-title' => 'Kontakti', 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $page_ids['kontakti'] ) );
-		$note = __( 'Main menu created', 'inpo-core' );
+function inpo_core_menu_is_current( $menu = null ) {
+	if ( ! $menu ) {
+		$locations = (array) get_theme_mod( 'nav_menu_locations', array() );
+		$menu      = ! empty( $locations['primary'] ) ? wp_get_nav_menu_object( (int) $locations['primary'] ) : wp_get_nav_menu_object( 'Kryesore' );
 	}
-	$locations            = (array) get_theme_mod( 'nav_menu_locations', array() );
+	if ( ! $menu ) {
+		return false;
+	}
+	$titles = wp_list_pluck( (array) wp_get_nav_menu_items( $menu->term_id ), 'title' );
+	return (bool) array_intersect( $titles, array( 'Hulumtime dhe publikime', 'Lajme dhe qëndrime', 'Projektet dhe ndikimi', 'Transparenca' ) );
+}
+
+/**
+ * Creates the "Kryesore" menu with the structure from INPO's brief and assigns it to the header.
+ * A menu without the brief's sections is kept, renamed "Kryesore (e vjetër)", and a new one is made;
+ * a menu that already has them is left as it is (unless $force).
+ */
+function inpo_core_setup_menu( $page_ids, $force = false ) {
+	$menu = wp_get_nav_menu_object( 'Kryesore' );
+	// The menu in the header may have another name: judge that one.
+	$locations = (array) get_theme_mod( 'nav_menu_locations', array() );
+	$current   = ! empty( $locations['primary'] ) ? wp_get_nav_menu_object( (int) $locations['primary'] ) : false;
+	$menu      = $current ? $current : $menu;
+	if ( $menu && ! $force && inpo_core_menu_is_current( $menu ) ) {
+		$locations['primary'] = $menu->term_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
+		return __( 'Main menu already has the new structure and is assigned to the header', 'inpo-core' );
+	}
+	// The old menu stays under Appearance > Menus (renamed when it was called "Kryesore").
+	if ( $menu && 'Kryesore' === $menu->name ) {
+		wp_update_nav_menu_object( $menu->term_id, array( 'menu-name' => 'Kryesore (e vjetër ' . wp_date( 'Y-m-d H.i' ) . ')' ) );
+	}
+	$menu_id = 0;
+	$error   = '';
+	foreach ( array( 'Kryesore', 'Kryesore (INPO)', 'Kryesore (INPO ' . wp_date( 'Y-m-d H.i.s' ) . ')' ) as $name ) {
+		$taken = wp_get_nav_menu_object( $name );
+		if ( $taken ) {
+			if ( ! wp_get_nav_menu_items( $taken->term_id ) ) {
+				$menu_id = $taken->term_id; // An empty menu with this name: use it.
+				break;
+			}
+			continue;
+		}
+		$res = wp_create_nav_menu( $name );
+		if ( ! is_wp_error( $res ) ) {
+			$menu_id = (int) $res;
+			break;
+		}
+		$error = $res->get_error_message();
+	}
+	if ( ! $menu_id ) {
+		/* translators: %s: WordPress error */
+		return sprintf( __( 'The menu could not be created: %s', 'inpo-core' ), $error ? $error : __( 'unknown error', 'inpo-core' ) );
+	}
+	inpo_core_build_menu( $menu_id, $page_ids );
 	$locations['primary'] = $menu_id;
 	set_theme_mod( 'nav_menu_locations', $locations );
-	/* translators: %s: status */
-	return sprintf( __( '%s and assigned to the header', 'inpo-core' ), $note );
+	return $menu
+		/* translators: %s: old menu name */
+		? sprintf( __( 'Main menu rebuilt with the eight sections and assigned to the header. The previous menu is kept under Appearance > Menus (%s).', 'inpo-core' ), wp_get_nav_menu_object( $menu->term_id )->name )
+		: __( 'Main menu created with the eight sections and assigned to the header', 'inpo-core' );
+}
+
+/**
+ * Page IDs the menu links to.
+ */
+function inpo_core_menu_pages() {
+	$id = function ( $slug ) {
+		$p = get_page_by_path( $slug );
+		return $p ? $p->ID : 0;
+	};
+	return array( 'lajme' => (int) get_option( 'page_for_posts' ), 'rreth-nesh' => $id( 'rreth-nesh' ), 'kontakti' => $id( 'kontakti' ), 'transparenca' => $id( 'transparenca' ) );
+}
+
+/**
+ * The eight sections and their sub-items, as in INPO's brief.
+ */
+function inpo_core_build_menu( $menu_id, $page_ids ) {
+	$add    = function ( $args ) use ( $menu_id ) {
+		return wp_update_nav_menu_item( $menu_id, 0, array_merge( array( 'menu-item-status' => 'publish' ), $args ) );
+	};
+	$custom = function ( $title, $url, $parent = 0 ) use ( $add ) {
+		return $add( array( 'menu-item-title' => $title, 'menu-item-type' => 'custom', 'menu-item-url' => $url, 'menu-item-parent-id' => $parent ) );
+	};
+	$page   = function ( $title, $id, $parent = 0 ) use ( $add ) {
+		return $add( array( 'menu-item-title' => $title, 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $id, 'menu-item-parent-id' => $parent ) );
+	};
+
+	$custom( 'Kryefaqja', home_url( '/' ) );
+
+	$about  = get_permalink( $page_ids['rreth-nesh'] );
+	$parent = $page( 'Rreth nesh', $page_ids['rreth-nesh'] );
+	foreach ( array( 'historia' => 'Historia e organizatës', 'misioni' => 'Misioni, vizioni dhe vlerat', 'ekipi' => 'Ekipi dhe bordi', 'dokumentet' => 'Strategjitë dhe dokumentet organizative' ) as $anchor => $title ) {
+		$custom( $title, $about . '#' . $anchor, $parent );
+	}
+
+	$programs = inpo_core_programs();
+	$parent   = $custom( 'Programet', $programs ? get_term_link( $programs[0] ) : home_url( '/' ) );
+	foreach ( $programs as $t ) {
+		$add( array( 'menu-item-title' => $t->name, 'menu-item-type' => 'taxonomy', 'menu-item-object' => INPO_CORE_PROGRAM, 'menu-item-object-id' => $t->term_id, 'menu-item-parent-id' => $parent ) );
+	}
+
+	$parent = $custom( 'Hulumtime dhe publikime', inpo_core_pubs_url() );
+	foreach ( inpo_core_type_definitions() as $slug => $def ) {
+		if ( $def[2] < 6 && term_exists( $slug, INPO_CORE_PUB_TYPE ) ) {
+			$custom( $def[0], inpo_core_pubs_url( array( 'lloji' => $slug ) ), $parent );
+		}
+	}
+	$data = get_post_type_archive_link( INPO_CORE_DATASET );
+	$custom( 'Të dhëna dhe statistika', $data ? $data : home_url( '/te-dhenat/' ), $parent );
+
+	$news   = get_permalink( $page_ids['lajme'] );
+	$parent = $page( 'Lajme dhe qëndrime', $page_ids['lajme'] );
+	foreach ( inpo_core_news_sections() as $slug => $def ) {
+		if ( term_exists( $slug, 'category' ) ) {
+			$custom( $def[0], add_query_arg( 'kategoria', $slug, $news ), $parent );
+		}
+	}
+
+	$projects = inpo_core_projects_url();
+	$parent   = $custom( 'Projektet dhe ndikimi', $projects );
+	$custom( 'Projektet aktive', add_query_arg( 'statusi', 'aktive', $projects ), $parent );
+	$custom( 'Projektet e përfunduara', add_query_arg( 'statusi', 'perfunduara', $projects ), $parent );
+	$custom( 'Partnerët dhe donatorët', $projects . '#partneret', $parent );
+	$custom( 'Rezultatet dhe ndikimi institucional', $projects . '#ndikimi', $parent );
+
+	if ( ! empty( $page_ids['transparenca'] ) ) {
+		$url    = get_permalink( $page_ids['transparenca'] );
+		$parent = $page( 'Transparenca', $page_ids['transparenca'] );
+		foreach ( array_slice( inpo_core_doc_definitions(), 0, 5, true ) as $slug => $def ) {
+			$custom( $def[0], $url . '#' . $slug, $parent );
+		}
+	}
+
+	$page( 'Kontakti', $page_ids['kontakti'] );
+	update_option( 'inpo_core_menu_v', 2 );
+}
+
+/**
+ * Demo content for the brief's new sections: projects, documents, datasets (illustrative values).
+ *
+ * @return string[] Log lines.
+ */
+function inpo_core_demo_brief( $data, $pub_ids ) {
+	$log = array();
+	if ( ! get_posts( array( 'post_type' => INPO_CORE_PROJECT, 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids' ) ) ) {
+		foreach ( (array) $data['PROJECTS'] as $i => $p ) {
+			$results = array();
+			foreach ( (array) $p['results'] as $r ) {
+				$results[] = $r[0] . ' | ' . $r[1];
+			}
+			$meta = array(
+				'inpo_status'     => 'aktiv' === $p['status'] ? '' : 'perfunduar',
+				'inpo_period'     => $p['period'],
+				'inpo_donor_text' => $p['donor'],
+				'inpo_partners'   => $p['partners'],
+				'inpo_goals'      => implode( "\n", (array) $p['goals'] ),
+				'inpo_results'    => implode( "\n", $results ),
+			);
+			if ( ! empty( $p['pub'] ) && isset( $pub_ids[ $p['pub'] ] ) ) {
+				$meta['inpo_publication'] = $pub_ids[ $p['pub'] ];
+			}
+			$id = wp_insert_post( wp_slash( array( 'post_type' => INPO_CORE_PROJECT, 'post_status' => 'publish', 'post_title' => $p['title'], 'post_name' => $p['id'], 'menu_order' => $i, 'meta_input' => array_filter( $meta, 'strlen' ) ) ) );
+			if ( $id && ! is_wp_error( $id ) ) {
+				wp_set_object_terms( $id, $p['prog'], INPO_CORE_PROGRAM );
+			}
+		}
+		/* translators: %d: number */
+		$log[] = sprintf( __( 'Projects: %d', 'inpo-core' ), count( (array) $data['PROJECTS'] ) );
+	}
+	$log[]   = inpo_core_setup_documents();
+	$doc_cat = array( 'vjetore' => 'raportet-vjetore', 'financiare' => 'raportet-financiare', 'auditimi' => 'raportet-e-auditimit', 'qeverisja' => 'dokumentet-e-qeverisjes-organizative', 'politikat' => 'politikat-dhe-procedurat-e-brendshme', 'strategjite' => 'strategjite-dhe-dokumentet-organizative' );
+	foreach ( (array) $data['DOCS'] as $i => $d ) {
+		list( $id, $new ) = inpo_core_find_or_create( INPO_CORE_DOC, $d['title'], $i );
+		if ( $id && $new ) {
+			update_post_meta( $id, 'inpo_year', $d['year'] );
+			wp_set_object_terms( $id, $doc_cat[ $d['cat'] ], INPO_CORE_DOC_CAT );
+		}
+	}
+	$log = array_merge( $log, inpo_core_add_sample_data() );
+	return $log;
 }

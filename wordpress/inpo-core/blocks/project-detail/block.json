@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/project-detail",
+	"title": "Project details",
+	"category": "inpo",
+	"icon": "portfolio",
+	"description": "Status, period, donor, partners, objectives and results of a project.",
+	"textdomain": "inpo-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

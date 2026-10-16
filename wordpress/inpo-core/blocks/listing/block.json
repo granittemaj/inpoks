@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/listing",
+	"title": "List page: heading or extra sections",
+	"category": "inpo",
+	"icon": "list-view",
+	"description": "For list templates (publications, projects, data, news): the heading and intro, or the sections added under the list, taken from the list's page under Pages.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"for": {
+			"type": "string",
+			"default": "publikimet"
+		},
+		"part": {
+			"type": "string",
+			"default": "head"
+		},
+		"kicker": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"lead": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true,
+		"inserter": false
+	},
+	"editorScript": "inpo-core-editor"
+}

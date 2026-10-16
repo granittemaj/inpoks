@@ -14,11 +14,11 @@
 		},
 		"kicker": {
 			"type": "string",
-			"default": "Lajme"
+			"default": "Lajme dhe qëndrime"
 		},
 		"heading": {
 			"type": "string",
-			"default": "Lajme dhe reagime"
+			"default": "Lajmet dhe reagimet më të fundit"
 		},
 		"lead": {
 			"type": "string",

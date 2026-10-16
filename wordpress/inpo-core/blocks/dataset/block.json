@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/dataset",
+	"title": "Dataset",
+	"category": "inpo",
+	"icon": "chart-bar",
+	"description": "A dataset as an interactive chart, a sortable table and a CSV download.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"notice": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

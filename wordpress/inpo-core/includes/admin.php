@@ -13,8 +13,16 @@ defined( 'ABSPATH' ) || exit;
 add_action( 'admin_menu', 'inpo_core_admin_menu' );
 function inpo_core_admin_menu() {
 	add_menu_page( 'INPO', 'INPO', 'edit_posts', 'inpo-core', 'inpo_core_settings_page', 'dashicons-building', 3 );
-	add_submenu_page( 'inpo-core', __( 'INPO settings', 'inpo-core' ), __( 'Settings', 'inpo-core' ), 'manage_options', 'inpo-core', 'inpo_core_settings_page' );
+	// Editors (not only administrators) keep the organisation details up to date.
+	add_submenu_page( 'inpo-core', __( 'INPO settings', 'inpo-core' ), __( 'Settings', 'inpo-core' ), 'edit_pages', 'inpo-core', 'inpo_core_settings_page' );
+	add_submenu_page( 'inpo-core', __( 'Where to edit what', 'inpo-core' ), __( 'Help: where to edit', 'inpo-core' ), 'edit_posts', 'inpo-help', 'inpo_core_help_page' );
 }
+add_filter(
+	'option_page_capability_inpo_core',
+	function () {
+		return 'edit_pages';
+	}
+);
 
 /**
  * INPO submenu in a fixed order: Settings, Setup, Team, Donors, Messages, Subscribers.
@@ -26,7 +34,7 @@ add_action(
 		if ( empty( $submenu['inpo-core'] ) ) {
 			return;
 		}
-		$order = array( 'inpo-core', 'inpo-setup', 'edit.php?post_type=' . INPO_CORE_MEMBER, 'edit.php?post_type=' . INPO_CORE_DONOR, 'edit.php?post_type=' . INPO_CORE_MESSAGE, 'edit.php?post_type=' . INPO_CORE_SUBSCRIBER );
+		$order = array( 'inpo-help', 'inpo-core', 'inpo-setup', 'edit.php?post_type=' . INPO_CORE_MEMBER, 'edit.php?post_type=' . INPO_CORE_DONOR, 'edit.php?post_type=' . INPO_CORE_MESSAGE, 'edit.php?post_type=' . INPO_CORE_SUBSCRIBER );
 		usort(
 			$submenu['inpo-core'],
 			function ( $a, $b ) use ( $order ) {
@@ -61,6 +69,8 @@ function inpo_core_setting_fields() {
 			'facebook' => array( 'Facebook', 'url' ),
 			'x'        => array( 'X', 'url' ),
 			'youtube'  => array( 'YouTube', 'url' ),
+			'instagram' => array( 'Instagram', 'url' ),
+			'linkedin'  => array( 'LinkedIn', 'url' ),
 		),
 		__( 'Donors and forms', 'inpo-core' )    => array(
 			'fineprint' => array( __( 'Grant note under the donors', 'inpo-core' ), 'textarea' ),
@@ -106,8 +116,8 @@ function inpo_core_sanitize_settings( $input ) {
 }
 
 function inpo_core_settings_page() {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		echo '<div class="wrap"><h1>INPO</h1><p>' . esc_html__( 'Use the menu for team, donors, messages and subscribers.', 'inpo-core' ) . '</p></div>';
+	if ( ! current_user_can( 'edit_pages' ) ) {
+		inpo_core_help_page();
 		return;
 	}
 	$saved    = get_option( INPO_CORE_OPTION, array() );
@@ -144,7 +154,10 @@ function inpo_core_meta_boxes() {
 	add_meta_box( 'inpo-pub', __( 'INPO: publication details', 'inpo-core' ), 'inpo_core_pub_box', INPO_CORE_PUB, 'side' );
 	add_meta_box( 'inpo-page', __( 'INPO: page head', 'inpo-core' ), 'inpo_core_page_box', 'page', 'side' );
 	add_meta_box( 'inpo-donor', __( 'Donor link', 'inpo-core' ), 'inpo_core_donor_box', INPO_CORE_DONOR, 'normal' );
-	add_meta_box( 'inpo-member', __( 'Role and email', 'inpo-core' ), 'inpo_core_member_box', INPO_CORE_MEMBER, 'normal' );
+	add_meta_box( 'inpo-member', __( 'Role, email and group', 'inpo-core' ), 'inpo_core_member_box', INPO_CORE_MEMBER, 'normal' );
+	add_meta_box( 'inpo-project', __( 'INPO: project details', 'inpo-core' ), 'inpo_core_project_box', INPO_CORE_PROJECT, 'normal', 'high' );
+	add_meta_box( 'inpo-doc', __( 'Document file and year', 'inpo-core' ), 'inpo_core_doc_box', INPO_CORE_DOC, 'normal', 'high' );
+	add_meta_box( 'inpo-dataset', __( 'Data and chart', 'inpo-core' ), 'inpo_core_dataset_box', INPO_CORE_DATASET, 'normal', 'high' );
 	add_meta_box( 'inpo-message', __( 'Sender', 'inpo-core' ), 'inpo_core_message_box', INPO_CORE_MESSAGE, 'side' );
 }
 
@@ -156,7 +169,9 @@ function inpo_core_field( $post, $key, $label, $type = 'text', $help = '', $opti
 		echo '<label><input type="checkbox" name="' . esc_attr( $key ) . '" value="1"' . checked( (bool) $value, true, false ) . '> ' . esc_html( $label ) . '</label>';
 	} else {
 		echo '<label for="' . esc_attr( $id ) . '"><strong>' . esc_html( $label ) . '</strong></label><br>';
-		if ( 'select' === $type ) {
+		if ( 'textarea' === $type ) {
+			echo '<textarea class="widefat" rows="' . ( isset( $options['rows'] ) ? (int) $options['rows'] : 4 ) . '" id="' . esc_attr( $id ) . '" name="' . esc_attr( $key ) . '"' . ( ! empty( $options['mono'] ) ? ' style="font-family:monospace"' : '' ) . '>' . esc_textarea( $value ) . '</textarea>';
+		} elseif ( 'select' === $type ) {
 			echo '<select class="widefat" id="' . esc_attr( $id ) . '" name="' . esc_attr( $key ) . '">';
 			foreach ( $options as $k => $l ) {
 				echo '<option value="' . esc_attr( $k ) . '"' . selected( (string) $value, (string) $k, false ) . '>' . esc_html( $l ) . '</option>';
@@ -183,13 +198,16 @@ function inpo_core_post_box( $post ) {
 	inpo_core_field( $post, 'inpo_date_label', __( 'Displayed date', 'inpo-core' ), 'text', __( 'Empty = the publish date. E.g. "Maj 2025" when the exact day is unknown.', 'inpo-core' ) );
 	inpo_core_field( $post, 'inpo_publication', __( 'Related publication', 'inpo-core' ), 'select', __( 'Shown in the article sidebar.', 'inpo-core' ), $options );
 	inpo_core_field( $post, 'inpo_todo', __( 'Show the "full text imported during migration" note', 'inpo-core' ), 'checkbox' );
+	inpo_core_field( $post, 'inpo_impact', __( 'Impact example: an institution acted after INPO (shown under Projects > Results and impact)', 'inpo-core' ), 'checkbox' );
+	echo '<p class="description">' . esc_html__( 'Programme: when left empty, the programme of the related publication is used.', 'inpo-core' ) . '</p>';
 }
 
 function inpo_core_pub_box( $post ) {
 	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
 	inpo_core_field( $post, 'inpo_pdf', __( 'PDF file (URL)', 'inpo-core' ), 'url', __( 'Optional. Empty = the newest PDF attached to this publication in Media.', 'inpo-core' ) );
 	echo '<p><button type="button" class="button" id="inpo-pick-pdf">' . esc_html__( 'Choose from Media', 'inpo-core' ) . '</button></p>';
-	inpo_core_field( $post, 'inpo_year', __( 'Year', 'inpo-core' ), 'text', __( 'Empty = the publish year.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_authors', __( 'Author or research team', 'inpo-core' ), 'text', __( 'E.g. the names of the researchers, or "Ekipi hulumtues i INPO-s".', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_year', __( 'Year', 'inpo-core' ), 'text', __( 'Empty = the publish date is shown. The publish date is the "Data e publikimit".', 'inpo-core' ) );
 	inpo_core_field( $post, 'inpo_partners', __( 'Partners', 'inpo-core' ), 'text', __( 'If filled in, shown instead of the year.', 'inpo-core' ) );
 	inpo_core_field( $post, 'inpo_donor', __( 'Supported by', 'inpo-core' ), 'text' );
 	inpo_core_field( $post, 'inpo_short', __( 'Cover word', 'inpo-core' ), 'text', __( 'E.g. OShP. Used on the "word" cover style.', 'inpo-core' ) );
@@ -207,19 +225,12 @@ function inpo_core_pub_box( $post ) {
 			'word'  => __( 'Word', 'inpo-core' ),
 		)
 	);
-	?>
-	<script>
-	(function () {
-		var b = document.getElementById('inpo-pick-pdf');
-		if (!b || !window.wp || !wp.media) return;
-		b.addEventListener('click', function () {
-			var f = wp.media({ title: 'Choose PDF', library: { type: 'application/pdf' }, multiple: false });
-			f.on('select', function () { document.getElementById('inpo-inpo_pdf').value = f.state().get('selection').first().get('url'); });
-			f.open();
-		});
-	})();
-	</script>
-	<?php
+	echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Data (infographics)', 'inpo-core' ) . '</h4>';
+	echo '<p class="description">' . esc_html__( 'Optional. The numbers of an infographic, shown on the page as key figures and interactive charts (with a table and CSV download), and as small bars on the cover.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_figures', __( 'Key figures', 'inpo-core' ), 'textarea', __( 'One per line: number | label. E.g. 192 | kontrata me procedurë të negociuar.', 'inpo-core' ), array( 'rows' => 4 ) );
+	inpo_core_field( $post, 'inpo_csv', __( 'Charts (CSV)', 'inpo-core' ), 'textarea', __( 'One chart per block, blocks separated by an empty line. First line of a block: # Title | bar, line or table | unit. Then the column names, then one row per category.', 'inpo-core' ), array( 'rows' => 12, 'mono' => true ) );
+	inpo_core_field( $post, 'inpo_source', __( 'Source of the data', 'inpo-core' ), 'text' );
+	inpo_core_pdf_picker();
 }
 
 function inpo_core_page_box( $post ) {
@@ -236,6 +247,61 @@ function inpo_core_member_box( $post ) {
 	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
 	inpo_core_field( $post, 'inpo_role', __( 'Role (Albanian)', 'inpo-core' ), 'text', __( 'E.g. Drejtore Ekzekutive. The photo is the featured image; "Order" sets the position.', 'inpo-core' ) );
 	inpo_core_field( $post, 'inpo_email', __( 'Email', 'inpo-core' ), 'email', __( 'Optional. Shown as a link on the About page.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_group', __( 'Group', 'inpo-core' ), 'select', __( 'The About page shows the team and the board separately.', 'inpo-core' ), array( '' => __( 'Team', 'inpo-core' ), 'bordi' => __( 'Board', 'inpo-core' ) ) );
+}
+
+function inpo_core_project_box( $post ) {
+	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
+	echo '<p class="description">' . esc_html__( 'Public text, in Albanian. The title is the project name; the Excerpt is a short summary; the main text describes the project. Set the programme in the sidebar.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_status', __( 'Status', 'inpo-core' ), 'select', '', array( '' => __( 'Active', 'inpo-core' ), 'perfunduar' => __( 'Completed', 'inpo-core' ) ) );
+	inpo_core_field( $post, 'inpo_period', __( 'Implementation period', 'inpo-core' ), 'text', __( 'E.g. Janar 2024 - Dhjetor 2025.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_donor_text', __( 'Donor', 'inpo-core' ), 'text' );
+	inpo_core_field( $post, 'inpo_partners', __( 'Partners', 'inpo-core' ), 'text' );
+	inpo_core_field( $post, 'inpo_goals', __( 'Objectives', 'inpo-core' ), 'textarea', __( 'One per line.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_results', __( 'Measurable results', 'inpo-core' ), 'textarea', __( 'One per line. "160 | aktivitete prokurimi të monitoruara" shows as a big figure; a line without "|" shows as a sentence.', 'inpo-core' ) );
+	$pubs    = get_posts( array( 'post_type' => INPO_CORE_PUB, 'posts_per_page' => 300, 'orderby' => 'title', 'order' => 'ASC' ) );
+	$options = array( '' => __( 'None', 'inpo-core' ) );
+	foreach ( $pubs as $p ) {
+		$options[ $p->ID ] = wp_strip_all_tags( get_the_title( $p ) );
+	}
+	inpo_core_field( $post, 'inpo_publication', __( 'Publication of the project', 'inpo-core' ), 'select', '', $options );
+}
+
+function inpo_core_doc_box( $post ) {
+	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
+	echo '<p class="description">' . esc_html__( 'Set the category in the sidebar (Raportet vjetore, Raportet financiare, Raportet e auditimit...). The Transparency page lists documents by category and year.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_year', __( 'Year', 'inpo-core' ), 'text', __( 'The year the document covers, e.g. 2024.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_pdf', __( 'PDF file (URL)', 'inpo-core' ), 'url' );
+	echo '<p><button type="button" class="button" id="inpo-pick-pdf">' . esc_html__( 'Choose from Media', 'inpo-core' ) . '</button></p>';
+	inpo_core_pdf_picker();
+}
+
+function inpo_core_dataset_box( $post ) {
+	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
+	echo '<p class="description">' . esc_html__( 'Paste the data from a spreadsheet: first line = column names, first column = categories (years, quarters, municipalities), other columns = numbers. Comma, semicolon or tab separated. The Excerpt is shown under the title.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_csv', __( 'Data (CSV)', 'inpo-core' ), 'textarea', '', array( 'rows' => 10, 'mono' => true ) );
+	inpo_core_field( $post, 'inpo_chart', __( 'Chart', 'inpo-core' ), 'select', '', array( 'bar' => __( 'Bars', 'inpo-core' ), 'line' => __( 'Lines', 'inpo-core' ), 'table' => __( 'Table only', 'inpo-core' ) ) );
+	inpo_core_field( $post, 'inpo_unit', __( 'Unit', 'inpo-core' ), 'text', __( 'E.g. kontrata, tenderë, euro. Read out with each value.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_source', __( 'Source', 'inpo-core' ), 'text', __( 'E.g. e-Prokurimi, KRPP; monitorimi i INPO-s.', 'inpo-core' ) );
+}
+
+/**
+ * "Choose from Media" for a PDF field (publications and documents).
+ */
+function inpo_core_pdf_picker() {
+	?>
+	<script>
+	(function () {
+		var b = document.getElementById('inpo-pick-pdf');
+		if (!b || !window.wp || !wp.media) return;
+		b.addEventListener('click', function () {
+			var f = wp.media({ title: 'Choose PDF', library: { type: 'application/pdf' }, multiple: false });
+			f.on('select', function () { document.getElementById('inpo-inpo_pdf').value = f.state().get('selection').first().get('url'); });
+			f.open();
+		});
+	})();
+	</script>
+	<?php
 }
 
 function inpo_core_message_box( $post ) {
@@ -246,7 +312,7 @@ function inpo_core_message_box( $post ) {
 }
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
-	if ( in_array( $hook, array( 'post.php', 'post-new.php' ), true ) && INPO_CORE_PUB === get_post_type() ) {
+	if ( in_array( $hook, array( 'post.php', 'post-new.php' ), true ) && in_array( get_post_type(), array( INPO_CORE_PUB, INPO_CORE_DOC ), true ) ) {
 		wp_enqueue_media();
 	}
 } );
@@ -260,11 +326,14 @@ function inpo_core_save_meta( $post_id, $post ) {
 		return;
 	}
 	$keys = array(
-		'post'          => array( 'inpo_short_title' => 'text', 'inpo_date_label' => 'text', 'inpo_publication' => 'int', 'inpo_todo' => 'bool' ),
-		INPO_CORE_PUB   => array( 'inpo_pdf' => 'url', 'inpo_year' => 'text', 'inpo_partners' => 'text', 'inpo_donor' => 'text', 'inpo_short' => 'text', 'inpo_cover' => 'text' ),
+		'post'          => array( 'inpo_short_title' => 'text', 'inpo_date_label' => 'text', 'inpo_publication' => 'int', 'inpo_todo' => 'bool', 'inpo_impact' => 'bool' ),
+		INPO_CORE_PUB   => array( 'inpo_pdf' => 'url', 'inpo_year' => 'text', 'inpo_partners' => 'text', 'inpo_donor' => 'text', 'inpo_short' => 'text', 'inpo_cover' => 'text', 'inpo_authors' => 'text', 'inpo_figures' => 'textarea', 'inpo_csv' => 'textarea', 'inpo_source' => 'text' ),
+		INPO_CORE_PROJECT => array( 'inpo_status' => 'text', 'inpo_period' => 'text', 'inpo_donor_text' => 'text', 'inpo_partners' => 'text', 'inpo_goals' => 'textarea', 'inpo_results' => 'textarea', 'inpo_publication' => 'int' ),
+		INPO_CORE_DOC     => array( 'inpo_year' => 'text', 'inpo_pdf' => 'url' ),
+		INPO_CORE_DATASET => array( 'inpo_csv' => 'textarea', 'inpo_chart' => 'text', 'inpo_unit' => 'text', 'inpo_source' => 'text' ),
 		'page'          => array( 'inpo_kicker' => 'text' ),
 		INPO_CORE_DONOR  => array( 'inpo_url' => 'url' ),
-		INPO_CORE_MEMBER => array( 'inpo_role' => 'text', 'inpo_email' => 'email' ),
+		INPO_CORE_MEMBER => array( 'inpo_role' => 'text', 'inpo_email' => 'email', 'inpo_group' => 'text' ),
 	);
 	if ( empty( $keys[ $post->post_type ] ) ) {
 		return;
@@ -279,6 +348,8 @@ function inpo_core_save_meta( $post_id, $post ) {
 			$value = esc_url_raw( $raw );
 		} elseif ( 'email' === $type ) {
 			$value = sanitize_email( $raw );
+		} elseif ( 'textarea' === $type ) {
+			$value = trim( sanitize_textarea_field( $raw ) );
 		} else {
 			$value = sanitize_text_field( $raw );
 		}
@@ -314,7 +385,10 @@ function inpo_core_program_fields( $term ) {
 	}
 	echo '</select>' . $close; // phpcs:ignore WordPress.Security.EscapeOutput
 
-	printf( $open, esc_html__( '"Si punojmë" cards', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+	printf( $open, esc_html__( 'Objectives', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+	echo '<textarea name="inpo_objectives" rows="4">' . esc_textarea( implode( "\n", inpo_core_lines( $is_edit ? $term->term_id : 0, 'inpo_objectives', true ) ) ) . '</textarea><p class="description">' . esc_html__( 'One per line. Shown first on the programme page.', 'inpo-core' ) . '</p>' . $close; // phpcs:ignore WordPress.Security.EscapeOutput
+
+	printf( $open, esc_html__( 'Areas of intervention (cards)', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 	for ( $i = 0; $i < 3; $i++ ) {
 		$w = isset( $ways[ $i ] ) ? (array) $ways[ $i ] : array( '', '' );
 		echo '<p><input type="text" name="inpo_ways[' . $i . '][0]" placeholder="' . esc_attr__( 'Title', 'inpo-core' ) . '" value="' . esc_attr( isset( $w[0] ) ? $w[0] : '' ) . '"></p>'; // phpcs:ignore WordPress.Security.EscapeOutput
@@ -324,6 +398,9 @@ function inpo_core_program_fields( $term ) {
 
 	printf( $open, esc_html__( 'Main activities', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 	echo '<textarea name="inpo_activities" rows="5">' . esc_textarea( implode( "\n", (array) $get( 'inpo_activities' ) ) ) . '</textarea><p class="description">' . esc_html__( 'One activity per line. Shown as a numbered list on the programme page.', 'inpo-core' ) . '</p>' . $close; // phpcs:ignore WordPress.Security.EscapeOutput
+
+	printf( $open, esc_html__( 'Results', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+	echo '<textarea name="inpo_results" rows="4">' . esc_textarea( implode( "\n", inpo_core_lines( $is_edit ? $term->term_id : 0, 'inpo_results', true ) ) ) . '</textarea><p class="description">' . esc_html__( 'One per line: number | label, e.g. 160 | aktivitete prokurimi të monitoruara. Shown with the counts of the programme\'s publications, projects and news.', 'inpo-core' ) . '</p>' . $close; // phpcs:ignore WordPress.Security.EscapeOutput
 
 	printf( $open, esc_html__( 'Order', 'inpo-core' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 	echo '<input type="number" name="inpo_order" value="' . esc_attr( $get( 'inpo_order' ) ) . '" style="width:6em">' . $close; // phpcs:ignore WordPress.Security.EscapeOutput
@@ -342,6 +419,8 @@ function inpo_core_type_fields( $term ) {
 	if ( $is_edit ) {
 		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Singular label', 'inpo-core' ) . '</th><td><input type="text" name="inpo_singular" value="' . esc_attr( $singular ) . '"><p class="description">' . esc_html__( 'The label on one publication, e.g. Analizë. The name (plural) labels the filter.', 'inpo-core' ) . '</p></td></tr>';
 		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Order', 'inpo-core' ) . '</th><td><input type="number" name="inpo_order" value="' . esc_attr( $order ) . '" style="width:6em"></td></tr>';
+		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Filter label', 'inpo-core' ) . '</th><td><input type="text" name="inpo_plural" value="' . esc_attr( get_term_meta( $term->term_id, 'inpo_plural', true ) ) . '"><p class="description">' . esc_html__( 'The label on the library filter and in the menu, e.g. Raporte të monitorimit. Empty = the name. Changing this does not change the old site.', 'inpo-core' ) . '</p></td></tr>';
+		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Library', 'inpo-core' ) . '</th><td><label><input type="checkbox" name="inpo_hidden" value="1"' . checked( '1', get_term_meta( $term->term_id, 'inpo_hidden', true ), false ) . '> ' . esc_html__( 'Hide from the publication library (e.g. reports about INPO, which are on the Transparency page)', 'inpo-core' ) . '</label></td></tr>';
 	} else {
 		echo '<div class="form-field"><label>' . esc_html__( 'Singular label', 'inpo-core' ) . '</label><input type="text" name="inpo_singular"><p>' . esc_html__( 'The label on one publication, e.g. Analizë.', 'inpo-core' ) . '</p></div>';
 		echo '<div class="form-field"><label>' . esc_html__( 'Order', 'inpo-core' ) . '</label><input type="number" name="inpo_order" style="width:6em"></div>';
@@ -357,7 +436,7 @@ function inpo_core_save_term( $term_id ) {
 		return;
 	}
 	// phpcs:disable WordPress.Security.ValidatedSanitizedInput
-	foreach ( array( 'inpo_full', 'inpo_icon', 'inpo_singular' ) as $key ) {
+	foreach ( array( 'inpo_full', 'inpo_icon', 'inpo_singular', 'inpo_plural' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_term_meta( $term_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		}
@@ -378,6 +457,14 @@ function inpo_core_save_term( $term_id ) {
 	if ( isset( $_POST['inpo_icon'] ) ) {
 		update_term_meta( $term_id, 'inpo_show_news', ! empty( $_POST['inpo_show_news'] ) );
 	}
+	if ( isset( $_POST['inpo_plural'] ) ) {
+		update_term_meta( $term_id, 'inpo_hidden', empty( $_POST['inpo_hidden'] ) ? '' : '1' );
+	}
+	foreach ( array( 'inpo_objectives', 'inpo_results' ) as $key ) {
+		if ( isset( $_POST[ $key ] ) ) {
+			update_term_meta( $term_id, $key, trim( sanitize_textarea_field( inpo_core_str( wp_unslash( $_POST[ $key ] ) ) ) ) );
+		}
+	}
 	if ( isset( $_POST['inpo_activities'] ) ) {
 		$lines = array_filter( array_map( 'sanitize_text_field', preg_split( '/\R/', inpo_core_str( wp_unslash( $_POST['inpo_activities'] ) ) ) ) );
 		update_term_meta( $term_id, 'inpo_activities', array_values( $lines ) );
@@ -391,6 +478,8 @@ add_action( 'category_edit_form_fields', function ( $term ) {
 	wp_nonce_field( 'inpo_term', 'inpo_term_nonce' );
 	echo '<tr class="form-field"><th scope="row">' . esc_html__( 'News filter', 'inpo-core' ) . '</th><td><label><input type="checkbox" name="inpo_chip" value="1"' . checked( '1', get_term_meta( $term->term_id, 'inpo_chip', true ), false ) . '> ' . esc_html__( 'Show as a filter on the news page and as the label on news cards', 'inpo-core' ) . '</label>'
 		. '<p class="description">' . esc_html__( 'Once at least one category is ticked, only ticked categories are shown as filters. Other categories stay, they are just not offered as filters.', 'inpo-core' ) . '</p></td></tr>';
+	echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Card label', 'inpo-core' ) . '</th><td><input type="text" name="inpo_singular" value="' . esc_attr( get_term_meta( $term->term_id, 'inpo_singular', true ) ) . '"><p class="description">' . esc_html__( 'Singular, shown on news cards, e.g. Reagim publik. Empty = the name.', 'inpo-core' ) . '</p></td></tr>';
+	echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Filter order', 'inpo-core' ) . '</th><td><input type="number" name="inpo_order" value="' . esc_attr( get_term_meta( $term->term_id, 'inpo_order', true ) ) . '" style="width:6em"></td></tr>';
 } );
 add_action( 'edited_category', function ( $term_id ) {
 	if ( ! isset( $_POST['inpo_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['inpo_term_nonce'] ), 'inpo_term' ) || ! current_user_can( 'manage_categories' ) ) {
@@ -400,6 +489,10 @@ add_action( 'edited_category', function ( $term_id ) {
 		delete_term_meta( $term_id, 'inpo_chip' );
 	} else {
 		update_term_meta( $term_id, 'inpo_chip', '1' );
+	}
+	update_term_meta( $term_id, 'inpo_singular', sanitize_text_field( inpo_core_str( wp_unslash( isset( $_POST['inpo_singular'] ) ? $_POST['inpo_singular'] : '' ) ) ) );
+	if ( isset( $_POST['inpo_order'] ) && '' !== $_POST['inpo_order'] ) {
+		update_term_meta( $term_id, 'inpo_order', (int) $_POST['inpo_order'] );
 	}
 } );
 
@@ -443,3 +536,59 @@ function inpo_core_export_subscribers() {
 	fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 	exit;
 }
+
+/* ---------- Help: where to edit what ---------- */
+
+/**
+ * One screen that tells editors where each part of the site is edited. Links open the right screen.
+ */
+function inpo_core_help_page() {
+	$link  = function ( $url, $text ) {
+		return '<a href="' . esc_url( $url ) . '">' . esc_html( $text ) . '</a>';
+	};
+	$page  = function ( $path, $text ) use ( $link ) {
+		$p = get_page_by_path( $path );
+		return $p ? $link( get_edit_post_link( $p->ID, 'url' ), $text ) : esc_html( $text );
+	};
+	$list  = function ( $kind, $text ) use ( $link ) {
+		$p = function_exists( 'inpo_core_listing_page' ) ? inpo_core_listing_page( $kind ) : null;
+		return $p ? $link( get_edit_post_link( $p->ID, 'url' ), $text ) : esc_html( $text );
+	};
+	$front = (int) get_option( 'page_on_front' );
+	$rows  = array(
+		__( 'Pages', 'inpo-core' )                => array(
+			array( __( 'Home page: headline, photo, key findings, "Kush jemi" photos, figures, sections', 'inpo-core' ), $front ? $link( get_edit_post_link( $front, 'url' ), __( 'Pages > Home', 'inpo-core' ) ) : __( 'Pages > Home', 'inpo-core' ), __( 'Click a section, then change it in the sidebar on the right (Settings). Photos: "Choose photo from Media".', 'inpo-core' ) ),
+			array( __( 'About: history, mission, vision, values, team, documents', 'inpo-core' ), $page( 'rreth-nesh', __( 'Pages > Rreth nesh', 'inpo-core' ) ), __( 'Text blocks are edited in place. The team and board come from INPO > Team.', 'inpo-core' ) ),
+			array( __( 'Contact and Transparency pages', 'inpo-core' ), $page( 'kontakti', __( 'Pages > Kontakti', 'inpo-core' ) ) . ', ' . $page( 'transparenca', __( 'Pages > Transparenca', 'inpo-core' ) ), __( 'Addresses and phone come from INPO > Settings.', 'inpo-core' ) ),
+			array( __( 'Heading and intro of the lists (Publications, Projects, Data, News), and sections under them', 'inpo-core' ), $list( 'publikimet', __( 'Publications', 'inpo-core' ) ) . ', ' . $list( 'projektet', __( 'Projects', 'inpo-core' ) ) . ', ' . $list( 'te-dhenat', __( 'Data', 'inpo-core' ) ) . ', ' . $list( 'lajme', __( 'News', 'inpo-core' ) ), __( 'Pages marked "… list". Title = heading, Excerpt = intro, Kicker = small label. Blocks you add appear under the list.', 'inpo-core' ) ),
+			array( __( 'A new page', 'inpo-core' ), $link( admin_url( 'post-new.php?post_type=page' ), __( 'Pages > Add New', 'inpo-core' ) ), __( 'Use the INPO blocks (category "INPO") or the patterns, then add the page to the menu.', 'inpo-core' ) ),
+		),
+		__( 'Content', 'inpo-core' )              => array(
+			array( __( 'News, reactions, press releases', 'inpo-core' ), $link( admin_url( 'edit.php' ), __( 'Posts', 'inpo-core' ) ), __( 'Pick the section in Categories. "Impact example" in the INPO box shows the story under results.', 'inpo-core' ) ),
+			array( __( 'Publications, infographics and their charts', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_PUB ), __( 'Publications', 'inpo-core' ) ), __( 'PDF, authors, year in the Publication box; type, programme, thematic field and institution in the sidebar; an infographic\'s figures and charts under "Data".', 'inpo-core' ) ),
+			array( __( 'Projects', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_PROJECT ), __( 'Projects', 'inpo-core' ) ), __( 'Status, period, donor, partners, objectives and results in the Project box.', 'inpo-core' ) ),
+			array( __( 'Transparency documents (reports, audits, policies)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_DOC ), __( 'Documents', 'inpo-core' ) ), __( 'Category in the sidebar, year and PDF in the Document box.', 'inpo-core' ) ),
+			array( __( 'Data and statistics (charts)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_DATASET ), __( 'Data', 'inpo-core' ) ), __( 'Paste the table from a spreadsheet into "Data (CSV)".', 'inpo-core' ) ),
+			array( __( 'Programmes: description, objectives, focus areas, activities, results', 'inpo-core' ), $link( admin_url( 'edit-tags.php?taxonomy=' . INPO_CORE_PROGRAM . '&post_type=' . INPO_CORE_PUB ), __( 'Publications > Programmes', 'inpo-core' ) ), __( 'Click a programme to edit its fields.', 'inpo-core' ) ),
+			array( __( 'Team and board (photos, roles, emails)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_MEMBER ), __( 'INPO > Team', 'inpo-core' ) ), __( 'Photo = Featured image. "Group" chooses team or board. Order = Page Attributes > Order.', 'inpo-core' ) ),
+			array( __( 'Donors and partners (logos)', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_DONOR ), __( 'INPO > Donors', 'inpo-core' ) ), __( 'Logo = Featured image.', 'inpo-core' ) ),
+		),
+		__( 'Whole site', 'inpo-core' )           => array(
+			array( __( 'Main menu and its sub-items', 'inpo-core' ), $link( admin_url( 'nav-menus.php' ), __( 'Appearance > Menus', 'inpo-core' ) ), __( 'A short label for the bar goes in "Title Attribute".', 'inpo-core' ) ),
+			array( __( 'Footer, addresses, phone, email, social links, grant note', 'inpo-core' ), $link( admin_url( 'admin.php?page=inpo-core' ), __( 'INPO > Settings', 'inpo-core' ) ), '' ),
+			array( __( 'Logo and browser icon', 'inpo-core' ), $link( admin_url( 'site-editor.php' ), __( 'Appearance > Editor > Site Identity', 'inpo-core' ) ), __( 'Leave empty to use INPO\'s logo and icon that come with the theme.', 'inpo-core' ) ),
+			array( __( 'Messages from the contact form', 'inpo-core' ), $link( admin_url( 'edit.php?post_type=' . INPO_CORE_MESSAGE ), __( 'INPO > Messages', 'inpo-core' ) ), '' ),
+		),
+	);
+	echo '<div class="wrap"><h1>' . esc_html__( 'Where to edit what', 'inpo-core' ) . '</h1>';
+	echo '<p>' . esc_html__( 'Everything on the website is edited here in wp-admin. No code is needed.', 'inpo-core' ) . '</p>';
+	foreach ( $rows as $group => $items ) {
+		echo '<h2>' . esc_html( $group ) . '</h2><table class="widefat striped" style="max-width:1100px"><thead><tr><th style="width:34%">' . esc_html__( 'To change', 'inpo-core' ) . '</th><th style="width:26%">' . esc_html__( 'Go to', 'inpo-core' ) . '</th><th>' . esc_html__( 'How', 'inpo-core' ) . '</th></tr></thead><tbody>';
+		foreach ( $items as $r ) {
+			echo '<tr><td>' . esc_html( $r[0] ) . '</td><td>' . wp_kses_post( $r[1] ) . '</td><td>' . esc_html( $r[2] ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+	}
+	echo '</div>';
+}
+

@@ -53,7 +53,11 @@ function inpo_theme_head() {
 	echo '<link rel="preload" href="' . esc_url( get_template_directory_uri() . '/assets/fonts/Geist-Variable.woff2' ) . '" as="font" type="font/woff2" crossorigin>' . "\n";
 	echo "<script>(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('inpo-theme');if(t)d.dataset.theme=t;}catch(e){}})();</script>\n";
 	if ( ! has_site_icon() ) {
-		echo '<link rel="icon" href="' . esc_url( get_template_directory_uri() . '/assets/favicon.svg' ) . '" type="image/svg+xml">' . "\n";
+		// INPO's mark ("IN" in the logo's frame); a Site Icon set in the editor replaces it.
+		$img = get_template_directory_uri() . '/assets/img/';
+		echo '<link rel="icon" href="' . esc_url( $img . 'favicon-32.png' ) . '" sizes="32x32" type="image/png">' . "\n";
+		echo '<link rel="icon" href="' . esc_url( $img . 'favicon-192.png' ) . '" sizes="192x192" type="image/png">' . "\n";
+		echo '<link rel="apple-touch-icon" href="' . esc_url( $img . 'apple-touch-icon.png' ) . '">' . "\n";
 	}
 }
 
@@ -108,5 +112,18 @@ add_filter(
 	'document_title_separator',
 	function () {
 		return '·';
+	}
+);
+
+// Search and 404 titles in Albanian even when the site has no Albanian language pack.
+add_filter(
+	'document_title_parts',
+	function ( $parts ) {
+		if ( is_search() ) {
+			$parts['title'] = 'Kërkimi: “' . get_search_query( false ) . '”';
+		} elseif ( is_404() ) {
+			$parts['title'] = 'Faqja nuk u gjet';
+		}
+		return $parts;
 	}
 );

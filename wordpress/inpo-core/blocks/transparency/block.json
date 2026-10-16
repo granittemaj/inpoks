@@ -34,11 +34,11 @@
 		},
 		"jobsText": {
 			"type": "string",
-			"default": "Pozitat dhe thirrjet e hapura publikohen këtu. Abonohuni për të marrë njoftim kur hapet një pozitë e re."
+			"default": "Pozitat dhe thirrjet e hapura publikohen këtu."
 		},
 		"jobsButton": {
 			"type": "string",
-			"default": "Merr njoftime"
+			"default": "Na kontaktoni"
 		}
 	},
 	"supports": {

@@ -1,0 +1,90 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/impact",
+	"title": "Results and impact",
+	"category": "inpo",
+	"icon": "chart-area",
+	"description": "Figures on an indigo panel. Each figure counts real content (reactions, publications, projects, years) or shows a number you type.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"kicker": {
+			"type": "string",
+			"default": "Rezultatet dhe ndikimi"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Ndikimi i punës sonë, në numra."
+		},
+		"tone": {
+			"type": "string",
+			"default": "accent"
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Shembuj të ndikimit"
+		},
+		"buttonUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		},
+		"item1Source": {
+			"type": "string",
+			"default": "reagime"
+		},
+		"item1Number": {
+			"type": "string",
+			"default": ""
+		},
+		"item1Label": {
+			"type": "string",
+			"default": "reagime dhe qëndrime publike"
+		},
+		"item2Source": {
+			"type": "string",
+			"default": "publikime"
+		},
+		"item2Number": {
+			"type": "string",
+			"default": ""
+		},
+		"item2Label": {
+			"type": "string",
+			"default": "hulumtime dhe publikime"
+		},
+		"item3Source": {
+			"type": "string",
+			"default": "manual"
+		},
+		"item3Number": {
+			"type": "string",
+			"default": ""
+		},
+		"item3Label": {
+			"type": "string",
+			"default": "rekomandime për institucionet"
+		},
+		"item4Source": {
+			"type": "string",
+			"default": "vite"
+		},
+		"item4Number": {
+			"type": "string",
+			"default": ""
+		},
+		"item4Label": {
+			"type": "string",
+			"default": "vjet që nga themelimi në 2005"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

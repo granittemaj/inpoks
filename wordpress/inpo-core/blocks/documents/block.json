@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/documents",
+	"title": "Documents",
+	"category": "inpo",
+	"icon": "media-spreadsheet",
+	"description": "Transparency documents grouped by category, with a year filter.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"categories": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": "grouped"
+		},
+		"showLinks": {
+			"type": "boolean",
+			"default": true
+		},
+		"yearFilter": {
+			"type": "boolean",
+			"default": true
+		},
+		"wrapped": {
+			"type": "boolean",
+			"default": true
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor",
+	"viewScript": "inpo-core-view"
+}

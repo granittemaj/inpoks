@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/field",
+	"title": "Who we are (photos)",
+	"category": "inpo",
+	"icon": "format-gallery",
+	"description": "Who we are, with photos from INPO's work in the field: meetings, roundtables, report launches.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"kicker": {
+			"type": "string",
+			"default": "Kush jemi"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Në terren, pranë institucioneve dhe qytetarëve."
+		},
+		"text": {
+			"type": "string",
+			"default": "INPO është organizatë joqeveritare dhe jofitimprurëse, e themeluar në Ferizaj në vitin 2005, me zyra në Ferizaj dhe Prishtinë. Takojmë zyrtarët, monitorojmë tenderët dhe gjetjet i sjellim para institucioneve dhe qytetarëve."
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Më shumë për INPO"
+		},
+		"buttonUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"photos": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

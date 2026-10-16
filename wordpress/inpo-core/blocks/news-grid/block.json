@@ -5,12 +5,20 @@
 	"title": "News cards",
 	"category": "inpo",
 	"icon": "excerpt-view",
-	"description": "News cards with category filters. Uses the page query.",
+	"description": "News cards with search, category, programme, year and order filters. Uses the page query.",
 	"textdomain": "inpo-core",
 	"attributes": {
+		"placeholder": {
+			"type": "string",
+			"default": "Kërko, p.sh. OShP, stadiume, Vushtrri"
+		},
 		"allLabel": {
 			"type": "string",
 			"default": "Të gjitha"
+		},
+		"programLabel": {
+			"type": "string",
+			"default": "Programi"
 		}
 	},
 	"supports": {
@@ -18,5 +26,6 @@
 		"className": true,
 		"customClassName": true
 	},
-	"editorScript": "inpo-core-editor"
+	"editorScript": "inpo-core-editor",
+	"viewScript": "inpo-core-view"
 }

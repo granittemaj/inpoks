@@ -3,37 +3,25 @@
  * Title: INPO: About page
  * Slug: inpo/page-about
  * Categories: inpo
- * Description: Mission and vision, who we are, values, history, team, transparency and donors. Texts are edited directly on the page.
+ * Description: INPO's brief: history, mission, vision and values, team and board, strategies and organisational documents. Texts are edited directly on the page.
  * Post Types: page
  * Viewport Width: 1440
  */
 ?>
-<!-- wp:group {"className":"wrap","layout":{"type":"default"}} -->
-<div class="wp-block-group wrap"><!-- wp:group {"className":"mv","layout":{"type":"default"}} -->
-<div class="wp-block-group mv"><!-- wp:group {"className":"m","layout":{"type":"default"}} -->
-<div class="wp-block-group m"><!-- wp:heading -->
-<h2 class="wp-block-heading">Misioni</h2>
-<!-- /wp:heading -->
+<!-- wp:inpo/section-links {"items":"historia | Historia e organizatës\nmisioni | Misioni, vizioni dhe vlerat\nekipi | Ekipi dhe bordi\ndokumentet | Strategjitë dhe dokumentet organizative"} /-->
 
-<!-- wp:paragraph -->
-<p>Të promovojmë demokratizimin e qeverisjes lokale përmes aktivizmit qytetar dhe të avancojmë vlerat e një shoqërie të hapur.</p>
-<!-- /wp:paragraph --></div>
+<!-- wp:group {"tagName":"section","anchor":"historia","className":"wrap sec anchor","layout":{"type":"default"}} -->
+<section id="historia" class="wp-block-group wrap sec anchor"><!-- wp:group {"className":"grid12 sec-head","layout":{"type":"default"}} -->
+<div class="wp-block-group grid12 sec-head"><!-- wp:paragraph {"className":"kicker"} -->
+<p class="kicker">Historia e organizatës</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"h2"} -->
+<h2 class="wp-block-heading h2">Nga performancat protestuese te auditimi i tenderëve.</h2>
+<!-- /wp:heading --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"v","layout":{"type":"default"}} -->
-<div class="wp-block-group v"><!-- wp:heading -->
-<h2 class="wp-block-heading">Vizioni</h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>Institucione lokale që qeverisen me vlera demokratike, ku qytetari është bashkëvendimmarrës.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"tagName":"section","className":"wrap sec","layout":{"type":"default"}} -->
-<section class="wp-block-group wrap sec"><!-- wp:group {"className":"grid12 about-text","layout":{"type":"default"}} -->
+<!-- wp:group {"className":"grid12 about-text","layout":{"type":"default"}} -->
 <div class="wp-block-group grid12 about-text"><!-- wp:paragraph {"className":"kicker"} -->
 <p class="kicker">Kush jemi</p>
 <!-- /wp:paragraph -->
@@ -47,86 +35,6 @@
 <p>INPO që nga themelimi ka shtyrë përpara agjendat për më shumë transparencë në shpenzimet financiare publike, përfshirjen më të mirë dhe më të gjerë të qytetarëve në proceset e vendimmarrjes publike dhe llogaridhënien e zyrtarëve publik të ndjeshëm ndaj korrupsionit dhe sjelljeve të tjera të këqija në institucionet publike. Organizata është vlerësuar shumë për profesionalizmin e saj dhe qasjen e paanshme dhe ka arritur rezultate të shumta konkrete që nga themelimi.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
-<!-- /wp:group --></section>
-<!-- /wp:group -->
-
-<!-- wp:group {"tagName":"section","className":"wrap sec","layout":{"type":"default"}} -->
-<section class="wp-block-group wrap sec"><!-- wp:heading {"className":"h2"} -->
-<h2 class="wp-block-heading h2">Vlerat që promovon organizata</h2>
-<!-- /wp:heading -->
-
-<!-- wp:group {"className":"ways","layout":{"type":"default"}} -->
-<div class="wp-block-group ways"><!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Aktivizmi</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>INPO do të nxis aktivizmin qytetar përmes aktivistëve të saj për të krijuar bashkëpunim sa më gjithpërfshirës qytetar për të implementuar misionin e organizatës.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Profesionalizmi</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>INPO do të mundohet gjithnjë të nxis profesionalizmin dhe aktivitetet e idetë e organizatës do të shtyhen nga profesionalizmi i brendshëm e i jashtëm që shfrytëzohen.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Integriteti etik dhe moral</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>Aktivistët e INPO-së do të jetë individë me integritet etik dhe moral për të përmbushur në mënyrë sa më të denjë misionin dhe vizionin e organizatës.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Paanshmëria</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>INPO do të nxitet të veproj nga hulumtime, analiza e gjykime objektive duke mënjuar ato subjektive e duke krijuar paanshmëri politike duke mbrojtur gjithnjë interesin e përgjithshëm.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Respekti</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>INPO do të përmbush e nxit respektin ndërqytetar e ndërinstitucional.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
-<div class="wp-block-group way"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Shumëllojshmëria</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>INPO do të jetë promotor i shumëllojshmërisë së komuniteteve të ndryshme dhe komunikimit mes tyre me qëllim eliminimin e diskriminimeve të bazave të ndryshme.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></section>
-<!-- /wp:group -->
-
-<!-- wp:group {"tagName":"section","className":"wrap sec","layout":{"type":"default"}} -->
-<section class="wp-block-group wrap sec"><!-- wp:group {"className":"grid12 sec-head","layout":{"type":"default"}} -->
-<div class="wp-block-group grid12 sec-head"><!-- wp:paragraph {"className":"kicker"} -->
-<p class="kicker">Historia</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:heading {"className":"h2"} -->
-<h2 class="wp-block-heading h2">Nga performancat protestuese te auditimi i tenderëve.</h2>
-<!-- /wp:heading --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"timeline","layout":{"type":"default"}} -->
@@ -158,8 +66,160 @@ foreach ( $inpo_timeline as $inpo_item ) :
 <!-- /wp:group --></section>
 <!-- /wp:group -->
 
-<!-- wp:inpo/team /-->
+<!-- wp:group {"tagName":"section","anchor":"misioni","className":"wrap sec anchor","layout":{"type":"default"}} -->
+<section id="misioni" class="wp-block-group wrap sec anchor"><!-- wp:group {"className":"grid12 sec-head","layout":{"type":"default"}} -->
+<div class="wp-block-group grid12 sec-head"><!-- wp:paragraph {"className":"kicker"} -->
+<p class="kicker">Misioni, vizioni dhe vlerat</p>
+<!-- /wp:paragraph -->
 
-<!-- wp:inpo/transparency /-->
+<!-- wp:heading {"className":"h2"} -->
+<h2 class="wp-block-heading h2">Pse ekzistojmë dhe si punojmë.</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
 
-<!-- wp:inpo/donors /-->
+<!-- wp:group {"className":"mv","layout":{"type":"default"}} -->
+<div class="wp-block-group mv"><!-- wp:group {"className":"m","layout":{"type":"default"}} -->
+<div class="wp-block-group m"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Misioni</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Të promovojmë demokratizimin e qeverisjes lokale përmes aktivizmit qytetar dhe të avancojmë vlerat e një shoqërie të hapur.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"v","layout":{"type":"default"}} -->
+<div class="wp-block-group v"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Vizioni</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Institucione lokale që qeverisen me vlera demokratike, ku qytetari është bashkëvendimmarrës.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:heading {"level":3,"className":"sub-h"} -->
+<h3 class="wp-block-heading sub-h">Vlerat që promovon organizata</h3>
+<!-- /wp:heading -->
+
+<!-- wp:group {"className":"ways","layout":{"type":"default"}} -->
+<div class="wp-block-group ways"><!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Aktivizmi</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>INPO do të nxis aktivizmin qytetar përmes aktivistëve të saj për të krijuar bashkëpunim sa më gjithpërfshirës qytetar për të implementuar misionin e organizatës.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Profesionalizmi</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>INPO do të mundohet gjithnjë të nxis profesionalizmin dhe aktivitetet e idetë e organizatës do të shtyhen nga profesionalizmi i brendshëm e i jashtëm që shfrytëzohen.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Integriteti etik dhe moral</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Aktivistët e INPO-së do të jetë individë me integritet etik dhe moral për të përmbushur në mënyrë sa më të denjë misionin dhe vizionin e organizatës.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Paanshmëria</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>INPO do të nxitet të veproj nga hulumtime, analiza e gjykime objektive duke mënjuar ato subjektive e duke krijuar paanshmëri politike duke mbrojtur gjithnjë interesin e përgjithshëm.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Respekti</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>INPO do të përmbush e nxit respektin ndërqytetar e ndërinstitucional.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"way","layout":{"type":"default"}} -->
+<div class="wp-block-group way"><!-- wp:heading {"level":4} -->
+<h4 class="wp-block-heading">Shumëllojshmëria</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>INPO do të jetë promotor i shumëllojshmërisë së komuniteteve të ndryshme dhe komunikimit mes tyre me qëllim eliminimin e diskriminimeve të bazave të ndryshme.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></section>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","anchor":"ekipi","className":"wrap sec anchor","layout":{"type":"default"}} -->
+<section id="ekipi" class="wp-block-group wrap sec anchor"><!-- wp:group {"className":"grid12 sec-head","layout":{"type":"default"}} -->
+<div class="wp-block-group grid12 sec-head"><!-- wp:paragraph {"className":"kicker"} -->
+<p class="kicker">Ekipi dhe bordi</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"h2"} -->
+<h2 class="wp-block-heading h2">Njerëzit pas punës sonë.</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:inpo/team {"wrapped":false} /-->
+</section>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","anchor":"dokumentet","className":"wrap sec anchor","layout":{"type":"default"}} -->
+<section id="dokumentet" class="wp-block-group wrap sec anchor"><!-- wp:group {"className":"grid12 sec-head","layout":{"type":"default"}} -->
+<div class="wp-block-group grid12 sec-head"><!-- wp:paragraph {"className":"kicker"} -->
+<p class="kicker">Dokumentet</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"className":"h2"} -->
+<h2 class="wp-block-heading h2">Strategjitë dhe dokumentet organizative</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"duo","layout":{"type":"default"}} -->
+<div class="wp-block-group duo"><!-- wp:group {"className":"box box-pad","layout":{"type":"default"}} -->
+<div class="wp-block-group box box-pad"><!-- wp:heading {"level":3,"className":"box-h"} -->
+<h3 class="wp-block-heading box-h">Strategjitë dhe dokumentet</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"className":"muted"} -->
+<p class="muted">Plani strategjik, statuti dhe dokumentet që rregullojnë punën e organizatës.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:inpo/documents {"layout":"list","categories":"strategjite-dhe-dokumentet-organizative, dokumentet-e-qeverisjes-organizative","wrapped":false} /--></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"box box-pad soft","layout":{"type":"default"}} -->
+<div class="wp-block-group box box-pad soft"><!-- wp:heading {"level":3,"className":"box-h"} -->
+<h3 class="wp-block-heading box-h">Mundësi punësimi</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"className":"muted"} -->
+<p class="muted">Pozitat dhe thirrjet e hapura publikohen këtu.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-ink"} -->
+<div class="wp-block-button is-style-ink"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/kontakti/' ) ); ?>">Na kontaktoni</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+</section>
+<!-- /wp:group -->

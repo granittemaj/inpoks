@@ -3,51 +3,109 @@
 (function(){
 'use strict';
 
-const { NEWS, CATS, PUBS, PTYPES, PFILTERS, PROGS, DONORS } = window.INPO_DATA;
+const D = window.INPO_DATA;
+const { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV } = D;
 
 /* ---------- Helpers ---------- */
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
 const DL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>';
+const CHEV = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+const SEARCH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+const X = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const rings = (size, n, cls='') => { const c=size/2, step=(c-8)/n; let s=''; for(let i=1;i<=n;i++) s+=`<circle cx="${c}" cy="${c}" r="${Math.round(step*i+ (i===1?step*.4:0))}"/>`; return `<svg class="rings ${cls}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${s}</svg>`; };
 const ICO = {
   qeverisje:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v8"/><path d="M12 11c-4 0-7 1.5-7 4.5"/><path d="M12 11c4 0 7 1.5 7 4.5"/></svg>',
   edukim:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>'
 };
 const DOTS_ON = [2,7,10,15];
+const YEARS = String(new Date().getFullYear() - 2005);
+const yearOf = p => p.year || (p.date ? p.date.slice(-4) : '');
+const isoOf = d => d ? d.split('.').reverse().join('-') : '';
 
+// Bars for a cover from a chart's first series (at most 8), the highest in the accent colour.
+function coverBars(c){
+  const vals = c.rows.slice(0,8).map(r=>+r[1]||0), max = Math.max(...vals, 1);
+  return '<div class="bars data" aria-hidden="true">' + vals.map(v=>`<i style="height:${Math.max(6, Math.round(v/max*100))}%"${v===max?' class="on"':''}></i>`).join('') + '</div>';
+}
 function cover(p, i){
-  const v = ['rings','bars','dots','word'][i % 4];
-  const top = `<div class="cover-top"><span class="pill">${PTYPES[p.type]}</span>${p.year ? `<span class="cover-year">${p.year}</span>` : ''}</div>`;
+  const v = p.data ? 'bars' : ['rings','bars','dots','word'][i % 4];
+  const y = yearOf(p);
+  const top = `<div class="cover-top"><span class="pill">${PTYPES[p.type]}</span>${y ? `<span class="cover-year">${y}</span>` : ''}</div>`;
   const foot = `<div class="cover-foot"><span class="cover-mark">INPO</span><span class="dl">PDF ${DL}</span></div>`;
   let art = '';
   if (v==='rings') art = rings(260,3);
   if (v==='bars') art = '<div class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
+  // An infographic with data: its chart with the most bars, drawn small on the cover.
+  if (p.data) art = coverBars(p.data.charts.filter(c=>c.chart!=='table').sort((x,y)=>y.rows.length-x.rows.length)[0] || p.data.charts[0]);
   if (v==='dots') art = '<div class="dots" aria-hidden="true">' + Array.from({length:18},(_,k)=>`<i${DOTS_ON.includes(k)?' class="on"':''}></i>`).join('') + '</div>';
   if (v==='word') art = `<span class="word" aria-hidden="true">${p.short}</span>`;
   // A document cover: decorative, so hidden from screen readers (the title is in the card or the h1).
   return `<div class="cover cv-${v}" aria-hidden="true">${art}${top}<span class="cover-title">${p.title}</span>${foot}</div>`;
 }
 const pubCard = (p,i) => `<div class="pub"><a class="pub-cover" href="#/publikimet/${p.id}" tabindex="-1" aria-hidden="true">${cover(p,i)}</a><a class="pub-title" href="#/publikimet/${p.id}">${p.title}</a></div>`;
-const newsRow = n => `<a class="row" href="#/lajme/${n.id}"><div class="row-meta"><time datetime="${n.iso}">${n.date}</time><span>${CATS[n.cat]}</span></div><span class="row-title">${n.title}</span><span class="arrow-circle">${ARROW}</span></a>`;
-const donorsHTML = () => `<div class="donors">${DONORS.map(d=>`<div class="donor">${d}</div>`).join('')}</div><p class="fineprint">Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).</p>`;
+const newsRow = n => `<a class="row" href="#/lajme/${n.id}"><div class="row-meta"><time datetime="${n.iso}">${n.date}</time><span>${CAT1[n.cat]}</span></div><span class="row-title">${n.title}</span><span class="arrow-circle">${ARROW}</span></a>`;
+// Columns (5, 4 or 3) that leave the fewest empty cells in the last row; same rule as inpo_core_grid_cols().
+const gridCols = n => n < 3 ? Math.max(1,n) : [5,4,3].filter(c=>n>=c).reduce((b,c)=>((c-n%c)%c) < ((b-n%b)%b) ? c : b);
+const donorsHTML = () => `<div class="donors" style="--cols:${gridCols(DONORS.length)}">${DONORS.map(d=>`<div class="donor">${DONOR_LOGOS[d]?`<img src="assets/img/donors/${DONOR_LOGOS[d]}" alt="${d}" loading="lazy" decoding="async">`:d}</div>`).join('')}</div><p class="fineprint">Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).</p>`;
 const pageHead = (kicker, title, lead, crumbs) => `<section class="wrap grid12 page-head"><div class="ph-l">${crumbs||`<span class="kicker">${kicker}</span>`}<h1 class="h-page" data-focus>${title}</h1></div><div class="ph-r">${lead?`<p class="lead">${lead}</p>`:''}</div></section>`;
+// In-page links to the sections of a page (About, Projects, Transparency).
+const subnav = (label, items, base) => `<nav class="subnav" aria-label="${label}"><span class="subnav-k" aria-hidden="true">Në këtë faqe</span><span class="subnav-l">${items.map(([k,l])=>`<a href="#/${base}?seksioni=${k}">${l}</a>`).join('')}</span></nav>`;
+// Figures: big number, short label.
+const impactGrid = items => `<dl class="impact-grid">${items.map(([n,l])=>`<div><dt>${l}</dt><dd>${n==='YEARS'?YEARS:n}</dd></div>`).join('')}</dl>`;
+const projStatus = p => p.status==='aktiv' ? 'Aktiv' : 'I përfunduar';
+// Cards leave out values still in [brackets]; the project page lists every field.
+const known = v => v && !/^\[/.test(v);
+const projCard = p => `<a class="proj" href="#/projektet/${p.id}"><div class="proj-top"><span class="pill${p.status==='aktiv'?' on':''}">${projStatus(p)}</span>${known(p.period)?`<span class="proj-period">${p.period}</span>`:''}</div><h3>${p.title}</h3><dl class="proj-meta">${known(p.donor)?`<div><dt>Donatori</dt><dd>${p.donor}</dd></div>`:''}${known(p.partners)?`<div><dt>Partnerët</dt><dd>${p.partners}</dd></div>`:''}</dl><span class="link-u">Shiko projektin ${ARROW}</span></a>`;
+const docRow = d => `<div class="doc-row" data-year="${d.year}"><span class="doc-yr">${d.year}</span><span class="doc-title">${d.title}</span><span class="doc-act"><a class="btn btn-line btn-sm" href="#" data-noop data-toast="Skedari PDF lidhet gjatë migrimit të përmbajtjes.">${DL} PDF</a></span></div>`;
+// The board: names and roles in a ruled list (no photos).
+const boardList = list => `<ul class="board">${list.map(([name, role])=>`<li${/^Kryesues/.test(role)?' class="chair"':''}><span class="board-n">${name}</span><span class="board-r">${role}</span></li>`).join('')}</ul>`;
+const member = ([name, role, email, photo]) => `<div class="member"><div class="member-photo">${photo?`<img src="assets/img/team/${photo}" alt="" width="640" height="800" loading="lazy" decoding="async">`:`<span class="member-initials" aria-hidden="true">${/^\[/.test(name)?'':name.split(/\s+/).slice(0,2).map(w=>w[0]).join('')}</span>`}</div><h4>${name}</h4><p>${role}</p>${email?`<a class="link-u" href="mailto:${email}">${email}</a>`:''}</div>`;
+
+/* ---------- Chrome: navigation and mobile menu (built from NAV) ---------- */
+const sectionOf = h => (h.replace(/^#\/?/,'').split(/[/?]/)[0] || '');
+const SHORT = { 'Hulumtime dhe publikime':'Publikime', 'Lajme dhe qëndrime':'Lajme', 'Projektet dhe ndikimi':'Projektet' };
+function buildChrome(){
+  const nav = $('#nav'), menuLinks = $('#menu-links');
+  let n = 0;
+  // Desktop bar: no "Kryefaqja" (the logo is the link home) and short labels; full names in the dropdowns.
+  nav.innerHTML = NAV.filter(([, href]) => href !== '#/').map(([label, href, kids]) => {
+    const key = sectionOf(href), short = SHORT[label] || label;
+    if (!kids) return `<a href="${href}" data-nav="${key}">${short}</a>`;
+    n++;
+    const all = kids[0][1] === href ? '' : `<a class="dd-all" href="${href}">${label}<small>Përmbledhje</small></a>`;
+    return `<div class="dd" data-nav="${key}"><button type="button" aria-expanded="false" aria-controls="dd-${n}">${short} ${CHEV}</button><div class="dd-menu" id="dd-${n}">${all}${kids.map(([l,h])=>`<a href="${h}">${l}</a>`).join('')}</div></div>`;
+  }).join('');
+  menuLinks.innerHTML = NAV.map(([label, href, kids]) => !kids ? `<a href="${href}">${label}</a>`
+    : `<details class="menu-group"><summary>${label} ${CHEV}</summary><div class="menu-sub">${kids[0][1] === href ? '' : `<a href="${href}">${label}: përmbledhje</a>`}${kids.map(([l,h])=>`<a href="${h}">${l}</a>`).join('')}</div></details>`).join('');
+}
+buildChrome();
 
 /* ---------- Pages ---------- */
+// Who we are, with photos from INPO's work in the field.
+const fieldHTML = () => `<section class="wrap sec field" aria-labelledby="h-field"><div class="grid12 field-grid">
+    <div class="field-intro"><span class="kicker">${D.FIELD.kicker}</span><h2 class="h2" id="h-field">${D.FIELD.title}</h2><p class="lead">${D.FIELD.text}</p><a class="btn btn-line" href="#/rreth-nesh">Më shumë për INPO</a></div>
+    <div class="field-photos">${D.FIELD.photos.map(([f,c],i)=>`<figure class="fp${i===0?' big':''}"><img src="assets/img/photos/${f}" alt="${c}" width="${i===0?1280:800}" height="${i===0?800:600}" loading="lazy" decoding="async"><figcaption>${c}</figcaption></figure>`).join('')}</div>
+  </div></section>`;
 function home(){
-  const latestPubs = [PUBS[0],PUBS[1],PUBS[2],PUBS[3]];
+  const latestPubs = PUBS.slice(0,4);
+  // Active projects first, then the latest completed ones.
+  const projects = PROJECTS.filter(p=>p.status==='aktiv').concat(PROJECTS.filter(p=>p.status!=='aktiv')).slice(0,3);
   return `
   <section class="wrap grid12 hero">
-    <span class="badge"><span class="dot"></span>Organizatë joqeveritare në Ferizaj dhe Prishtinë, që nga 2005</span>
     <h1 class="h-display" data-focus><span class="line"><span>Llogaridhënie,</span></span><span class="line accent"><span>jo premtime.</span></span></h1>
     <div class="hero-side">
       <p class="lead">Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj.</p>
       <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
     </div>
+    <figure class="hero-photo"><img src="assets/img/photos/${D.HERO_PHOTO[0]}" alt="${D.HERO_PHOTO[1]}" width="960" height="1200" fetchpriority="high" decoding="async"><figcaption>${D.HERO_PHOTO[1]}</figcaption></figure>
+    <div class="areas"><span class="areas-k" id="areas-k">Fushat e veprimit</span><ul aria-labelledby="areas-k">${D.AREAS.map(([l,h])=>`<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>
   </section>
-  <section class="wrap" aria-label="Rastet që po ndjekim">
+  <section class="wrap" aria-labelledby="h-gjetjet">
+    <div class="bento-head"><h2 class="kicker" id="h-gjetjet">Gjetjet kryesore nga monitorimet</h2><a class="link-u" href="#/lajme?kategoria=reagime">Të gjitha reagimet ${ARROW}</a></div>
     <div class="bento">
       <a class="feat" href="#/lajme/pastrimi">
         ${rings(620,4)}
@@ -64,6 +122,21 @@ function home(){
       </a>
     </div>
   </section>
+  ${fieldHTML()}
+  <section class="wrap sec">
+    <div class="pub-head">
+      <div class="pub-head-l"><span class="kicker">Hulumtime dhe publikime</span><h2 class="h2">Hulumtimet dhe publikimet më të fundit</h2></div>
+      <div class="chips">${PFILTERS.slice(0,4).map(([k,l],i)=>`<a class="chip${i===0?' on':''}" href="#/publikimet${k==='all'?'':'?lloji='+k}">${l}</a>`).join('')}</div>
+    </div>
+    <div class="pubs">${latestPubs.map(pubCard).join('')}</div>
+  </section>
+  <section class="wrap sec">
+    <div class="impact">${rings(640,4)}
+      <div class="impact-head"><span class="kicker">Rezultatet dhe ndikimi</span><h2 class="h2">Ndikimi i punës sonë, në numra.</h2></div>
+      ${impactGrid(IMPACT)}
+      <a class="btn" href="#/projektet?seksioni=ndikimi">Shembuj të ndikimit</a>
+    </div>
+  </section>
   <section class="wrap sec">
     <div class="grid12 sec-head"><span class="kicker">Programet</span><h2 class="h2">Dy programe, një qëllim: institucione që u përgjigjen qytetarëve.</h2></div>
     <div class="progs">${['qeverisje','edukim'].map(k=>`
@@ -73,43 +146,154 @@ function home(){
       </a>`).join('')}
     </div>
   </section>
-  <section class="wrap sec">
-    <div class="pub-head">
-      <div style="display:flex;flex-direction:column;gap:20px"><span class="kicker">Publikimet</span><h2 class="h2">Të dhëna, jo opinione.</h2></div>
-      <div class="chips">${PFILTERS.slice(0,5).map(([k,l],i)=>`<a class="chip${i===0?' on':''}" href="#/publikimet${k==='all'?'':'?lloji='+k}">${l}</a>`).join('')}</div>
-    </div>
-    <div class="pubs">${latestPubs.map(pubCard).join('')}</div>
-  </section>
   <section class="wrap sec grid12 news-sec">
     <div class="news-intro">
-      <span class="kicker">Lajme</span>
-      <h2 class="h2">Lajme dhe reagime</h2>
-      <p class="lead" style="font-size:17px">Qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë.</p>
+      <span class="kicker">Lajme dhe qëndrime</span>
+      <h2 class="h2">Lajmet dhe reagimet më të fundit</h2>
+      <p class="lead">Qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë.</p>
       <a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a>
     </div>
     <div class="news-list">${[NEWS[1],NEWS[3],NEWS[5]].map(newsRow).join('')}</div>
   </section>
-  <section class="wrap sec"><span class="kicker">Donatorët dhe partnerët</span>${donorsHTML()}</section>`;
+  <section class="wrap sec">
+    <div class="pub-head"><div class="pub-head-l"><span class="kicker">Projektet dhe partnerët</span><h2 class="h2">Projektet tona</h2></div><a class="btn btn-line btn-sm" href="#/projektet">Të gjitha projektet</a></div>
+    <div class="projs">${projects.map(projCard).join('')}</div>
+    <h3 class="sub-h">Donatorët dhe partnerët</h3>${donorsHTML()}
+  </section>`;
+}
+
+/* ---------- Filters (Lajme, Publikimet) ----------
+   Same markup and behaviour as the WordPress blocks: search, selects, chips with counts,
+   a live count and removable active filters. State lives in the hash, so a view can be shared. */
+const SORTS = [['','Më të rejat'],['te-vjetrat','Më të vjetrat'],['titulli','Sipas titullit']];
+const FILTERS = {
+  lajme: {
+    key:'news', facet:'kategoria', facets:Object.entries(CATS), items:()=>NEWS, of:n=>n.cat, year:n=>n.iso.slice(0,4), selects:[],
+    text:n=>n.title+' '+n.excerpt, label:'Kërko në lajme', ph:'Kërko, p.sh. OShP, stadiume, Vushtrri',
+    count:n=>n===1?'1 artikull':n+' artikuj', none:'Asnjë lajm nuk përputhet me këtë kërkim.', grid:'news-grid', card:(n,i,big)=>ncard(n,big)
+  },
+  publikimet: {
+    key:'pub', facet:'lloji', facets:PFILTERS.slice(1), items:()=>PUBS, of:p=>p.type, year:yearOf,
+    // As in INPO's brief: filter by year, thematic field, institution and category (plus programme).
+    selects:[['programi','Programi',p=>p.prog,PROGS,v=>v.name],['fusha','Fusha tematike',p=>p.theme,THEMES,v=>v],['institucioni','Institucioni',p=>p.inst,INSTS,v=>v]],
+    text:p=>p.title+' '+PTYPES[p.type]+' '+(THEMES[p.theme]||'')+' '+(INSTS[p.inst]||''), label:'Kërko në publikime', ph:'Kërko, p.sh. OShP, tenderë, komuna',
+    count:n=>n===1?'1 publikim':n+' publikime', none:'Asnjë publikim nuk përputhet me këtë kërkim.', grid:'pubs three', card:(p)=>pubCard(p,PUBS.indexOf(p))
+  }
+};
+const ncard = (n, big) => `<a class="ncard${big?' big':''}" href="#/lajme/${n.id}">${big?rings(560,4):''}<div class="ncard-meta"><span class="pill">${CAT1[n.cat]}</span><time datetime="${n.iso}">${n.date}</time></div><div><h2>${n.title}</h2><p>${n.excerpt}</p></div></a>`;
+function selPill(id, name, label, opts, val){
+  const cur = (opts.find(o=>o[0]===val)||opts[0])[1];
+  return `<div class="sel-pill${val?' is-set':''}"><label class="sel-k" for="${id}">${label}</label><span class="sel-v" aria-hidden="true">${cur}</span><select id="${id}" name="${name}">${opts.map(([v,l])=>`<option value="${v}"${v===val?' selected':''}>${l}</option>`).join('')}</select></div>`;
+}
+function filterState(kind, q){
+  const c = FILTERS[kind], keys = c.facets.map(f=>f[0]);
+  const st = { q:q.q||'', f:keys.includes(q[c.facet])?q[c.facet]:'', viti:q.viti||'', rendit:SORTS.some(s=>s[0]===q.rendit)?q.rendit:'' };
+  c.selects.forEach(([name,,,dict]) => { st[name] = dict[q[name]] ? q[name] : ''; });
+  return st;
+}
+function filtersHTML(kind, st){
+  const c = FILTERS[kind], items = c.items(), k = c.key;
+  const years = [...new Set(items.map(c.year).filter(Boolean))].sort().reverse();
+  let sels = '';
+  // A select appears once the content carries that field.
+  c.selects.forEach(([name,label,get,dict,lab]) => {
+    const used = [...new Set(items.map(get).filter(Boolean))];
+    if (used.length) sels += selPill(`${k}-${name}`, name, label, [['','Të gjitha']].concat(Object.keys(dict).filter(x=>used.includes(x)).map(x=>[x,lab(dict[x])])), st[name]);
+  });
+  if (years.length > 1) sels += selPill(`${k}-year`,'viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),st.viti);
+  // Categories without content stay out of the way (the chosen one always shows).
+  const chips = [['','Të gjitha']].concat(c.facets).filter(([k2])=>!k2 || k2===st.f || items.some(x=>c.of(x)===k2)).map(([k2,l])=>`<button type="button" class="chip" data-facet="${k2}" aria-pressed="${k2===st.f}">${l}<span class="chip-n"></span></button>`).join('');
+  // One row: search and filters. Then the categories. Then the count, active filters and the order.
+  return `<form class="filters" role="search" aria-label="${c.label}" data-filters="${kind}">
+      <div class="filters-top">
+        <div class="search-inline">${SEARCH}<label for="${k}-q" class="sr">${c.label}</label><input id="${k}-q" name="q" type="search" placeholder="${c.ph}" value="${esc(st.q)}" autocomplete="off"></div>
+        ${sels?`<div class="filters-sel">${sels}</div>`:''}
+      </div>
+      <div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div>
+      <div class="res-bar"><p class="res-count" id="${k}-count" role="status"></p><div class="res-active" id="${k}-active"></div><div class="res-sort">${selPill(`${k}-sort`,'rendit','Rendit',SORTS,st.rendit)}</div></div>
+    </form>
+    <div class="results" id="${k}-results"></div>`;
+}
+// A row that scrolls sideways: fade the side that has more to show.
+function scrollFade(el){
+  if (!el) return;
+  const set = () => { const max = el.scrollWidth - el.clientWidth; el.classList.toggle('fade-l', el.scrollLeft > 2); el.classList.toggle('fade-r', max > 2 && el.scrollLeft < max - 2); };
+  el.addEventListener('scroll', set, { passive:true }); window.addEventListener('resize', set); set();
+  // Keep the chosen chip in view.
+  const on = $('[aria-pressed="true"]', el); if (on && on.offsetLeft + on.offsetWidth > el.clientWidth) el.scrollLeft = on.offsetLeft - 24;
+}
+function bindFilters(kind, q){
+  const c = FILTERS[kind], st = filterState(kind, q), form = $('[data-filters]');
+  const count = $(`#${c.key}-count`), active = $(`#${c.key}-active`), results = $(`#${c.key}-results`);
+  const input = form.elements.q;
+  const extra = c.selects.map(s=>s[0]);
+  const match = (x, skipFacet) => {
+    const needle = norm(st.q.trim());
+    return (skipFacet || !st.f || c.of(x)===st.f)
+      && c.selects.every(([name,,get]) => !st[name] || get(x)===st[name])
+      && (!st.viti || String(c.year(x))===st.viti) && (!needle || norm(c.text(x)).includes(needle));
+  };
+  const sorted = list => {
+    if (st.rendit==='titulli') return list.slice().sort((a,b)=>a.title.localeCompare(b.title,'sq'));
+    if (st.rendit==='te-vjetrat') return list.slice().reverse();
+    return list;
+  };
+  const facetName = k => (c.facets.find(f=>f[0]===k)||['',''])[1];
+  function draw(){
+    const base = c.items().filter(x=>match(x,true));
+    const list = sorted(base.filter(x=>!st.f || c.of(x)===st.f));
+    // Counts per chip under the other active filters.
+    $$('[data-facet]', form).forEach(b => {
+      const k = b.dataset.facet;
+      $('.chip-n', b).textContent = k ? base.filter(x=>c.of(x)===k).length : base.length;
+      b.setAttribute('aria-pressed', String(k===st.f));
+    });
+    $$('.sel-pill', form).forEach(p => { const s=$('select',p); p.classList.toggle('is-set', !!s.value); $('.sel-v',p).textContent = s.options[s.selectedIndex].text; });
+    count.textContent = c.count(list.length);
+    const tags = [];
+    if (st.q.trim()) tags.push(['q', `“${esc(st.q.trim())}”`]);
+    if (st.f) tags.push(['f', facetName(st.f)]);
+    c.selects.forEach(([name,,,dict,lab]) => { if (st[name]) tags.push([name, lab(dict[st[name]])]); });
+    if (st.viti) tags.push(['viti', st.viti]);
+    active.innerHTML = tags.length ? tags.map(([k,l])=>`<button type="button" class="tag" data-clear="${k}" aria-label="Hiq filtrin: ${l.replace(/"/g,'')}">${l}${X}</button>`).join('') + (tags.length>1?'<button type="button" class="res-clear" data-clear="all">Hiq të gjitha</button>':'') : '';
+    const plain = !st.q.trim() && !st.viti && !st.rendit && extra.every(k=>!st[k]);
+    let html;
+    if (list.length) html = `<div class="${c.grid}">${list.map((x,i)=>c.card(x,i,plain && i===0)).join('')}</div>`;
+    else {
+      const wide = st.q.trim() && (st.f || st.viti || extra.some(k=>st[k]));
+      html = `<div class="empty"><b>${c.none}</b><span class="muted">Provoni një fjalë tjetër ose hiqni disa filtra.</span><div class="hero-ctas">${wide?`<button class="btn btn-line btn-sm" type="button" data-clear="keep-q">Kërko “${esc(st.q.trim())}” kudo</button>`:''}<button class="btn btn-ink btn-sm" type="button" data-clear="all">Hiq filtrat</button></div></div>`;
+    }
+    results.innerHTML = html;
+    // Keep the view shareable without re-rendering the page.
+    const params = new URLSearchParams();
+    if (st.q.trim()) params.set('q', st.q.trim());
+    if (st.f) params.set(c.facet, st.f);
+    extra.concat(['viti','rendit']).forEach(k=>{ if (st[k]) params.set(k, st[k]); });
+    const qs = params.toString();
+    history.replaceState(null, '', `#/${kind}${qs?'?'+qs:''}`);
+  }
+  function clear(k){
+    if (k==='all' || k==='keep-q') { st.f=''; st.viti=''; st.rendit=''; extra.forEach(x=>{ st[x]=''; }); if (k==='all') st.q=''; }
+    else if (k==='f') st.f=''; else st[k]='';
+    input.value = st.q;
+    $$('select', form).forEach(s=>{ s.value = st[s.name]; });
+    draw();
+    const next = $('.tag', active) || input; next.focus();
+  }
+  let t;
+  input.addEventListener('input', ()=>{ clearTimeout(t); t=setTimeout(()=>{ st.q=input.value; draw(); }, 150); });
+  form.addEventListener('submit', e=>{ e.preventDefault(); st.q=input.value; draw(); });
+  form.addEventListener('change', e=>{ if (e.target.tagName==='SELECT') { st[e.target.name]=e.target.value; draw(); } });
+  form.addEventListener('click', e=>{ const b=e.target.closest('[data-facet]'); if (b) { st.f=b.dataset.facet; draw(); } });
+  active.addEventListener('click', e=>{ const b=e.target.closest('[data-clear]'); if (b) clear(b.dataset.clear); });
+  results.addEventListener('click', e=>{ const b=e.target.closest('[data-clear]'); if (b) clear(b.dataset.clear); });
+  draw();
+  scrollFade($('.chips', form));
 }
 
 function newsPage(q){
-  const f = q.kategoria && CATS[q.kategoria] ? q.kategoria : 'all';
-  const list = NEWS.filter(n => f==='all' || n.cat===f);
-  const chips = [['all','Të gjitha'],['reagim','Reagim publik'],['prokurimi','Prokurimi i hapur']];
-  return pageHead('Lajme','Lajme dhe reagime','Qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë.') + `
-  <section class="wrap">
-    <div class="toolbar">
-      <div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips.map(([k,l])=>`<a class="chip${k===f?' on':''}" href="#/lajme${k==='all'?'':'?kategoria='+k}" ${k===f?'aria-current="true"':''}>${l}</a>`).join('')}</div>
-      <span class="muted" style="font-size:14px">${list.length} artikuj</span>
-    </div>
-    <div class="news-grid">${list.map((n,i)=>`
-      <a class="ncard${i===0?' big':''}" href="#/lajme/${n.id}">
-        ${i===0?rings(560,4):''}
-        <div class="ncard-meta"><span class="pill">${CATS[n.cat]}</span><time datetime="${n.iso}">${n.date}</time></div>
-        <div><h2>${n.title}</h2><p>${n.excerpt}</p></div>
-      </a>`).join('')}
-    </div>
-  </section>`;
+  return pageHead('Lajme dhe qëndrime','Lajme dhe qëndrime','Aktivitetet, komunikatat, reagimet dhe qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë.') + `
+  <section class="wrap">${filtersHTML('lajme', filterState('lajme', q))}</section>`;
 }
 
 function articlePage(id){
@@ -121,9 +305,9 @@ function articlePage(id){
   return `
   <article class="wrap article">
     <div class="art-head">
-      <nav class="crumbs" aria-label="Gjurma"><a href="#/lajme">Lajme</a><span aria-hidden="true">/</span><a href="#/lajme?kategoria=${n.cat}">${CATS[n.cat]}</a></nav>
+      <nav class="crumbs" aria-label="Gjurma"><a href="#/lajme">Lajme dhe qëndrime</a><span aria-hidden="true">/</span><a href="#/lajme?kategoria=${n.cat}">${CATS[n.cat]}</a></nav>
       <h1 data-focus>${n.title}</h1>
-      <div class="art-meta"><span class="pill">${CATS[n.cat]}</span><time datetime="${n.iso}">${n.date}</time><span>${mins} min lexim</span></div>
+      <div class="art-meta"><span class="pill">${CAT1[n.cat]}</span><time datetime="${n.iso}">${n.date}</time><span>${mins} min lexim</span></div>
     </div>
     <div class="grid12 art-body">
       <div class="prose">
@@ -149,73 +333,58 @@ function articlePage(id){
 }
 
 function pubsPage(q){
-  const f = q.lloji && PTYPES[q.lloji] ? q.lloji : 'all';
-  return pageHead('Biblioteka','Publikimet','Analiza, hulumtime, infografika dhe buletine mbi prokurimin publik dhe qeverisjen në Kosovë. Të gjitha falas, në PDF.') + `
-  <section class="wrap">
-    <div class="toolbar" style="border-bottom:0;padding-bottom:0">
-      <div style="flex:1 1 420px;max-width:560px">
-        <label for="q-pubs" class="sr">Kërko në publikime</label>
-        <div class="search-inline"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q-pubs" type="search" placeholder="Kërko, p.sh. OShP, tenderë, komuna" value="${q.q?q.q.replace(/"/g,'&quot;'):''}"></div>
-      </div>
-    </div>
-    <div class="toolbar" style="margin-top:20px">
-      <div class="chips" role="group" aria-label="Filtro sipas llojit">${PFILTERS.map(([k,l])=>`<button type="button" class="chip" data-ptype="${k}" aria-pressed="${k===f}">${l}</button>`).join('')}</div>
-      <div class="toolbar-r">
-        <span class="muted" style="font-size:14px" id="pub-count" aria-live="polite"></span>
-        <label for="pub-prog" style="font-size:14px;font-weight:500">Programi</label>
-        <select class="sel" id="pub-prog"><option value="all">Të gjitha</option><option value="qeverisje">Qeverisje e mirë</option><option value="edukim">Edukim demokratik</option></select>
-      </div>
-    </div>
-    <div class="results"><div class="pubs three" id="pub-grid"></div></div>
-  </section>`;
-}
-function bindPubs(q){
-  const state = { type: q.lloji && PTYPES[q.lloji] ? q.lloji : 'all', q: q.q||'', prog:'all' };
-  const grid = $('#pub-grid'), count = $('#pub-count'), input = $('#q-pubs');
-  function draw(){
-    const needle = norm(state.q.trim());
-    const list = PUBS.filter(p => (state.type==='all'||p.type===state.type) && (state.prog==='all'||p.prog===state.prog) && (!needle || norm(p.title+' '+PTYPES[p.type]).includes(needle)));
-    count.textContent = list.length===1 ? '1 publikim' : list.length+' publikime';
-    grid.innerHTML = list.length ? list.map(pubCard).join('') : `<div class="empty"><b>Asnjë publikim për këtë kërkim.</b><span class="muted">Provoni një fjalë tjetër ose hiqni filtrat.</span><button class="btn btn-line btn-sm" type="button" id="reset-pubs">Hiq filtrat</button></div>`;
-    $$('[data-ptype]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.ptype===state.type)));
-    const r = $('#reset-pubs'); if(r) r.onclick = ()=>{ state.type='all'; state.q=''; state.prog='all'; input.value=''; $('#pub-prog').value='all'; draw(); };
-  }
-  $$('[data-ptype]').forEach(b=>b.addEventListener('click',()=>{ state.type=b.dataset.ptype; draw(); }));
-  input.addEventListener('input',()=>{ state.q=input.value; draw(); });
-  $('#pub-prog').addEventListener('change',e=>{ state.prog=e.target.value; draw(); });
-  draw();
+  return pageHead('Hulumtime dhe publikime','Hulumtime dhe publikime','Raporte monitorimi, hulumtime, analiza të politikave publike dhe analiza ligjore, infografika dhe rekomandime për institucionet. Të gjitha falas, në PDF.') + `
+  <section class="wrap">${filtersHTML('publikimet', filterState('publikimet', q))}</section>`;
 }
 
+// An infographic's numbers on the page: key figures, then each chart (interactive, with a table and CSV).
+function pubData(p){
+  const d = p.data;
+  return `<section class="wrap sec" aria-labelledby="h-data">
+    <div class="grid12 sec-head"><span class="kicker">Infografika në numra</span><h2 class="h2" id="h-data">Të dhënat e infografikës</h2></div>
+    ${d.figures ? `<div class="pub-figures">${impactGrid(d.figures).replace('impact-grid','impact-grid plain')}</div>` : ''}
+    ${d.charts.map((c,k)=>`<div class="pub-chart"><h3 class="sub-h">${c.title}</h3><div class="dataset-view" data-dataset='${esc(JSON.stringify({ cols:c.cols, rows:c.rows, chart:c.chart, unit:c.unit, title:c.title, file:p.id+'-'+(k+1) }))}'></div></div>`).join('')}
+    ${d.source ? `<p class="fineprint">Burimi: ${d.source}</p>` : ''}
+  </section>`;
+}
 function pubDetail(id){
   const i = PUBS.findIndex(p=>p.id===id); if(i<0) return notFound();
   const p = PUBS[i];
   const more = PUBS.filter(x=>x.id!==id && x.type===p.type).concat(PUBS.filter(x=>x.id!==id && x.type!==p.type)).slice(0,3);
+  const fact = (k, v, link) => `<div><dt>${k}</dt><dd>${link?`<a href="${link}">${v}</a>`:v}</dd></div>`;
   return `
   <section class="wrap grid12 pd">
     ${cover(p,i)}
     <div class="pd-info">
-      <nav class="crumbs" aria-label="Gjurma"><a href="#/publikimet">Publikimet</a><span aria-hidden="true">/</span><a href="#/publikimet?lloji=${p.type}">${PTYPES[p.type]}</a></nav>
+      <nav class="crumbs" aria-label="Gjurma"><a href="#/publikimet">Hulumtime dhe publikime</a><span aria-hidden="true">/</span><a href="#/publikimet?lloji=${p.type}">${PFILTERS.find(f=>f[0]===p.type)[1]}</a></nav>
       <h1 data-focus>${p.title}</h1>
       <dl class="facts">
-        <div><dt>Lloji</dt><dd>${PTYPES[p.type]}</dd></div>
-        <div><dt>Programi</dt><dd>${p.prog?PROGS[p.prog].name:'INPO'}</dd></div>
-        <div><dt>${p.partners?'Partnerë':'Viti'}</dt><dd>${p.partners||p.year||'[Viti]'}</dd></div>
+        ${fact('Kategoria', PTYPES[p.type])}
+        ${fact('Data e publikimit', p.date ? `<time datetime="${isoOf(p.date)}">${p.date}</time>` : '[Data]')}
+        ${fact('Autori ose ekipi', p.authors || '[Autori ose ekipi hulumtues]')}
+        ${fact('Programi', p.prog ? PROGS[p.prog].name : 'INPO', p.prog ? `#/programet/${p.prog}` : '')}
+        ${fact('Fusha tematike', p.theme ? THEMES[p.theme] : '[Fusha tematike]', p.theme ? `#/publikimet?fusha=${p.theme}` : '')}
+        ${p.inst ? fact('Institucioni', INSTS[p.inst], `#/publikimet?institucioni=${p.inst}`) : (p.partners ? fact('Partnerë', p.partners) : fact('Institucioni', 'Disa institucione'))}
       </dl>
       <p class="lead">Përmbledhja e shkurtër e publikimit shfaqet këtu: pyetja që trajton, gjetjet kryesore dhe rekomandimet për institucionet.</p>
       <div class="hero-ctas"><a class="btn btn-accent" href="#" data-noop data-toast="Shkarkimi lidhet me skedarin PDF gjatë migrimit.">${DL} Shkarko PDF</a><button class="btn btn-line" type="button" data-copy>Kopjo linkun</button></div>
       ${p.donor?`<p class="muted" style="margin:0;font-size:14px">Me mbështetjen e ${p.donor}.</p>`:''}
     </div>
   </section>
+  ${p.data ? pubData(p) : ''}
   <section class="wrap sec">
-    <div class="pub-head"><h2 class="h2">Publikime të ngjashme</h2><a class="btn btn-line btn-sm" href="#/publikimet">Biblioteka</a></div>
+    <div class="pub-head"><h2 class="h2">Publikime të ngjashme</h2><a class="btn btn-line btn-sm" href="#/publikimet">Të gjitha publikimet</a></div>
     <div class="pubs three">${more.map(x=>pubCard(x,PUBS.indexOf(x))).join('')}</div>
   </section>`;
 }
 
 function progPage(id){
   const p = PROGS[id]; if(!p) return notFound();
-  const pubs = PUBS.filter(x=>x.prog===id).slice(0,3);
+  const pubs = PUBS.filter(x=>x.prog===id);
+  const projs = PROJECTS.filter(x=>x.prog===id);
   const other = id==='qeverisje'?'edukim':'qeverisje';
+  // Results: counted from the content linked to the programme, plus figures INPO adds.
+  const results = [[String(pubs.length),'hulumtime dhe publikime'],[String(projs.length),'projekte'],['[N]','rekomandime për institucionet']];
   return `
   <section class="wrap page-head" style="display:block">
     <nav class="crumbs" aria-label="Gjurma" style="margin-bottom:22px"><span>Programet</span><span aria-hidden="true">/</span><span>${p.name}</span></nav>
@@ -223,39 +392,164 @@ function progPage(id){
   </section>
   <section class="wrap"><div class="prog-hero">${rings(700,4)}<span class="prog-ico">${ICO[id]}</span><p>${p.desc}</p></div></section>
   <section class="wrap sec">
-    <h2 class="h2">Si punojmë</h2>
+    <div class="grid12 sec-head"><span class="kicker">Objektivat</span><h2 class="h2">Çfarë synon programi</h2></div>
+    <ol class="goals">${p.goals.map((g,i)=>`<li><span>${String(i+1).padStart(2,'0')}</span>${g}</li>`).join('')}</ol>
+  </section>
+  <section class="wrap sec">
+    <div class="grid12 sec-head"><span class="kicker">Fushat e ndërhyrjes</span><h2 class="h2">Ku ndërhyjmë</h2></div>
     <div class="ways">${p.ways.map(w=>`<div class="way"><h3>${w[0]}</h3><p>${w[1]}</p></div>`).join('')}</div>
   </section>
-  ${pubs.length?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Publikime nga programi</h2><a class="btn btn-line btn-sm" href="#/publikimet">Të gjitha publikimet</a></div><div class="pubs three">${pubs.map(x=>pubCard(x,PUBS.indexOf(x))).join('')}</div></section>`:''}
-  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Reagimet e fundit</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div>${NEWS.slice(0,3).map(newsRow).join('')}</div></section>`:''}
-  <section class="wrap sec"><a class="prog" href="#/programet/${other}" style="min-height:0;flex-direction:row;align-items:center;justify-content:space-between"><div><span class="muted" style="font-size:14px">Programi tjetër</span><h3 style="margin:6px 0 0">${PROGS[other].name}</h3></div><span class="arrow-circle">${ARROW}</span></a></section>`;
+  <section class="wrap sec">
+    <div class="grid12 sec-head"><span class="kicker">Aktivitetet</span><h2 class="h2">Aktivitetet kryesore</h2></div>
+    <ol class="timeline acts">${p.acts.map((a,i)=>`<li><span class="yr">${String(i+1).padStart(2,'0')}</span><div><p>${a}</p></div></li>`).join('')}</ol>
+  </section>
+  ${pubs.length?`<section class="wrap sec"><div class="pub-head"><div class="pub-head-l"><span class="kicker">Hulumtimet</span><h2 class="h2">Hulumtime dhe publikime nga programi</h2></div><a class="btn btn-line btn-sm" href="#/publikimet?programi=${id}">Të gjitha (${pubs.length})</a></div><div class="pubs three">${pubs.slice(0,3).map(x=>pubCard(x,PUBS.indexOf(x))).join('')}</div></section>`:''}
+  <section class="wrap sec">
+    <div class="impact light"><div class="impact-head"><span class="kicker">Rezultatet</span><h2 class="h2">Rezultatet e programit</h2></div>${impactGrid(results)}</div>
+  </section>
+  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Lajme dhe reagime nga programi</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div>${NEWS.slice(0,3).map(newsRow).join('')}</div></section>`:''}
+  <section class="wrap sec"><a class="prog prog-next" href="#/programet/${other}"><div><span class="muted" style="font-size:14px">Programi tjetër</span><h3 style="margin:6px 0 0">${PROGS[other].name}</h3></div><span class="arrow-circle">${ARROW}</span></a></section>`;
 }
 
+const ABOUT_SECTIONS = [['historia','Historia e organizatës'],['misioni','Misioni, vizioni dhe vlerat'],['ekipi','Ekipi dhe bordi'],['dokumentet','Strategjitë dhe dokumentet organizative']];
 function aboutPage(){
-  const tl = [
-    ['2005','Themelimi në Ferizaj','INPO nis me aktivitete që ndihmojnë integrimin e qytetarëve në proceset sociale dhe vendimmarrëse.'],
-    ['2010','Fushata “Zgjohuni”','Orë me zile për këshilltarët komunalë të Ferizajt, si kujtesë se janë të zgjedhurit e popullit.'],
-    ['2019','Monitorim në të gjitha komunat','Me Institutin e Kosovës për Drejtësi, 160 aktivitete prokurimi të monitoruara në komunat e Kosovës.'],
-    ['2023','Raporti për tenderët e anuluar','Publikuar me mbështetjen e Byrosë Ndërkombëtare për Çështje të Narkotikëve dhe Zbatimit të Ligjit (INL).']
-  ];
+  const strat = DOCS.filter(d=>d.cat==='strategjite' || d.cat==='qeverisja');
   return pageHead('Rreth nesh','Rreth nesh','Organizatë joqeveritare dhe jofitimprurëse, e themeluar në vitin 2005. Politikat publike janë fokusi i punës sonë.') + `
-  <section class="wrap"><div class="mv">
-    <div class="m">${rings(560,4)}<h2>Misioni</h2><p>Të promovojmë demokratizimin e qeverisjes lokale përmes aktivizmit qytetar dhe të avancojmë vlerat e një shoqërie të hapur.</p></div>
-    <div class="v"><h2>Vizioni</h2><p>Institucione lokale që qeverisen me vlera demokratike, ku qytetari është bashkëvendimmarrës.</p></div>
-  </div></section>
-  <section class="wrap sec">
-    <div class="grid12 sec-head"><span class="kicker">Historia</span><h2 class="h2">Nga performancat protestuese te auditimi i tenderëve.</h2></div>
-    <ol class="timeline">${tl.map(t=>`<li><span class="yr">${t[0]}</span><div><h3>${t[1]}</h3><p>${t[2]}</p></div></li>`).join('')}</ol>
+  <section class="wrap">${subnav('Seksionet e faqes', ABOUT_SECTIONS, 'rreth-nesh')}</section>
+  <section class="wrap sec anchor" id="historia" aria-labelledby="h-historia">
+    <div class="grid12 sec-head"><span class="kicker">Historia e organizatës</span><h2 class="h2" id="h-historia">Nga performancat protestuese te auditimi i tenderëve.</h2></div>
+    <div class="grid12 about-text"><span class="kicker">Kush jemi</span><div class="prose">${D.ABOUT.map(t=>`<p>${t}</p>`).join('')}</div></div>
+    <ol class="timeline">${D.HISTORY.map(t=>`<li><span class="yr">${t[0]}</span><div><h3>${t[1]}</h3><p>${t[2]}</p></div></li>`).join('')}</ol>
   </section>
-  <section class="wrap sec">
-    <h2 class="h2">Transparenca fillon nga ne</h2>
+  <section class="wrap sec anchor" id="misioni" aria-labelledby="h-misioni">
+    <div class="grid12 sec-head"><span class="kicker">Misioni, vizioni dhe vlerat</span><h2 class="h2" id="h-misioni">Pse ekzistojmë dhe si punojmë.</h2></div>
+    <div class="mv">
+      <div class="m">${rings(560,4)}<h3>Misioni</h3><p>${D.MISSION}</p></div>
+      <div class="v"><h3>Vizioni</h3><p>${D.VISION}</p></div>
+    </div>
+    <h3 class="sub-h">Vlerat që promovon organizata</h3>
+    <div class="ways">${D.VALUES.map(v=>`<div class="way"><h4>${v[0]}</h4><p>${v[1]}</p></div>`).join('')}</div>
+  </section>
+  <section class="wrap sec anchor" id="ekipi" aria-labelledby="h-ekipi">
+    <div class="grid12 sec-head"><span class="kicker">Ekipi dhe bordi</span><h2 class="h2" id="h-ekipi">Njerëzit pas punës sonë.</h2></div>
+    <h3 class="sub-h">Ekipi</h3><div class="team">${TEAM.map(member).join('')}</div>
+    <h3 class="sub-h">Bordi</h3>${boardList(BOARD)}
+  </section>
+  <section class="wrap sec anchor" id="dokumentet" aria-labelledby="h-dokumentet">
+    <div class="grid12 sec-head"><span class="kicker">Dokumentet</span><h2 class="h2" id="h-dokumentet">Strategjitë dhe dokumentet organizative</h2></div>
     <div class="duo">
-      <div class="box" style="padding:36px"><h2 style="font-size:22px;letter-spacing:-.02em">Raportet e auditimit</h2><p class="muted" style="margin:0">Pasqyrat financiare të audituara, të publikuara çdo vit.</p>
-        <div class="doc-list"><a href="#/publikimet/auditimi-2018">Raporti i auditimit 2018 <span class="arrow-circle">${DL}</span></a><a href="#/publikimet?lloji=inpo">Të gjitha raportet për INPO <span class="arrow-circle">${ARROW}</span></a></div></div>
-      <div class="box" style="padding:36px;background:var(--bg-soft);border-color:transparent"><h2 style="font-size:22px;letter-spacing:-.02em">Mundësi punësimi</h2><p class="muted" style="margin:0">Pozitat dhe thirrjet e hapura publikohen këtu. Abonohuni për të marrë njoftim kur hapet një pozitë e re.</p><button class="btn btn-ink btn-sm" style="align-self:flex-start;margin-top:auto" type="button" data-scroll="newsletter">Merr njoftime</button></div>
+      <div class="box box-pad"><h3 class="box-h">Strategjitë dhe dokumentet</h3><p class="muted" style="margin:0">Plani strategjik, statuti dhe dokumentet që rregullojnë punën e organizatës.</p>
+        <div class="doc-list">${strat.length ? strat.map(d=>`<a href="#" data-noop>${d.title} <span class="arrow-circle">${DL}</span></a>`).join('') : '<p class="muted doc-empty">[Plani strategjik dhe statuti shtohen këtu.]</p>'}<a href="#/transparenca">Të gjitha dokumentet në Transparenca <span class="arrow-circle">${ARROW}</span></a></div></div>
+      <div class="box box-pad soft"><h3 class="box-h">Mundësi punësimi</h3><p class="muted" style="margin:0">Pozitat dhe thirrjet e hapura publikohen këtu.</p><a class="btn btn-ink btn-sm" style="align-self:flex-start;margin-top:auto" href="#/kontakti">Na kontaktoni</a></div>
+    </div>
+  </section>`;
+}
+
+const PROJ_SECTIONS = [['ndikimi','Rezultatet dhe ndikimi institucional'],['partneret','Partnerët dhe donatorët']];
+function projectsPage(q){
+  const f = q.statusi==='aktive' ? 'aktiv' : q.statusi==='perfunduara' ? 'perfunduar' : '';
+  const list = PROJECTS.filter(p=>!f || p.status===f);
+  const n = s => PROJECTS.filter(p=>!s || p.status===s).length;
+  const chip = (v, s, l) => `<a class="chip${f===s?' on':''}" href="#/projektet${v?'?statusi='+v:''}"${f===s?' aria-current="true"':''}>${l}<span class="chip-n">${n(s)}</span></a>`;
+  const cases = CASES.map(id=>NEWS.find(x=>x.id===id)).filter(Boolean);
+  const results = PROJECTS.flatMap(p=>p.results.map(r=>[r[0], r[1], p]));
+  return pageHead('Projektet dhe ndikimi','Projektet dhe ndikimi','Projektet që zbatojmë me partnerët dhe donatorët tanë, dhe ndryshimet që kanë sjellë në institucione.') + `
+  <section class="wrap">${subnav('Seksionet e faqes', PROJ_SECTIONS, 'projektet')}</section>
+  <section class="wrap anchor" id="projektet" aria-labelledby="h-projektet">
+    <h2 class="sr" id="h-projektet">Projektet</h2>
+    <div class="filters"><div class="chips" role="group" aria-label="Filtro sipas statusit">${chip('','','Të gjitha')}${chip('aktive','aktiv','Projektet aktive')}${chip('perfunduara','perfunduar','Projektet e përfunduara')}</div></div>
+    <div class="results"><div class="projs">${list.map(projCard).join('')}</div></div>
+  </section>
+  <section class="wrap sec anchor" id="ndikimi" aria-labelledby="h-ndikimi">
+    <div class="impact">${rings(640,4)}
+      <div class="impact-head"><span class="kicker">Rezultatet dhe ndikimi institucional</span><h2 class="h2" id="h-ndikimi">Ndikimi i punës sonë, në numra.</h2></div>
+      ${impactGrid(IMPACT)}
+    </div>
+    <div class="grid12 cases">
+      <div class="cases-intro"><span class="kicker">Shembuj konkretë</span><h3 class="sub-h">Kur institucionet veprojnë pas INPO-s</h3><p class="muted">Raste ku një institucion ndryshoi vendim, publikoi dokumente ose rishikoi një tender pas monitorimit dhe reagimit tonë.</p></div>
+      <div class="cases-list">${cases.map(newsRow).join('')}${results.map(([num,label,p])=>`<a class="row" href="#/projektet/${p.id}"><div class="row-meta"><span class="case-num">${num}</span><span>Projekt</span></div><span class="row-title">${label[0].toUpperCase()+label.slice(1)}. ${p.title}</span><span class="arrow-circle">${ARROW}</span></a>`).join('')}</div>
     </div>
   </section>
-  <section class="wrap sec"><span class="kicker">Donatorët dhe partnerët</span>${donorsHTML()}</section>`;
+  <section class="wrap sec anchor" id="partneret" aria-labelledby="h-partneret">
+    <div class="grid12 sec-head"><span class="kicker">Partnerët dhe donatorët</span><h2 class="h2" id="h-partneret">Me kë punojmë.</h2></div>
+    ${donorsHTML()}
+  </section>`;
+}
+function projectPage(id){
+  const p = PROJECTS.find(x=>x.id===id); if(!p) return notFound();
+  const pub = p.pub ? PUBS.find(x=>x.id===p.pub) : null;
+  const others = PROJECTS.filter(x=>x.id!==id).slice(0,3);
+  return `
+  <section class="wrap grid12 page-head">
+    <div class="ph-l"><nav class="crumbs" aria-label="Gjurma"><a href="#/projektet">Projektet dhe ndikimi</a><span aria-hidden="true">/</span><a href="#/projektet?statusi=${p.status==='aktiv'?'aktive':'perfunduara'}">${p.status==='aktiv'?'Projektet aktive':'Projektet e përfunduara'}</a></nav>
+      <h1 class="h-headline" data-focus>${p.title}</h1></div>
+    <div class="ph-r"><span class="pill${p.status==='aktiv'?' on':''}">${projStatus(p)}</span></div>
+  </section>
+  <section class="wrap grid12 proj-body">
+    <dl class="facts proj-facts">
+      <div><dt>Periudha e zbatimit</dt><dd>${p.period}</dd></div>
+      <div><dt>Donatori</dt><dd>${p.donor}</dd></div>
+      <div><dt>Partnerët</dt><dd>${p.partners}</dd></div>
+      <div><dt>Programi</dt><dd><a href="#/programet/${p.prog}">${PROGS[p.prog].name}</a></dd></div>
+    </dl>
+    <div class="proj-main">
+      <h2 class="sub-h">Objektivat</h2>
+      <ol class="goals one">${p.goals.map((g,i)=>`<li><span>${String(i+1).padStart(2,'0')}</span>${g}</li>`).join('')}</ol>
+      <h2 class="sub-h">Rezultatet</h2>
+      ${p.results.length ? `<dl class="impact-grid plain">${p.results.map(([n,l])=>`<div><dt>${l}</dt><dd>${n}</dd></div>`).join('')}</dl>` : '<p class="muted">[Rezultatet e matshme të projektit shtohen këtu.]</p>'}
+      ${pub?`<h2 class="sub-h">Publikimi i projektit</h2><div class="pubs three">${pubCard(pub, PUBS.indexOf(pub))}</div>`:''}
+    </div>
+  </section>
+  <section class="wrap sec"><div class="pub-head"><h2 class="h2">Projekte të tjera</h2><a class="btn btn-line btn-sm" href="#/projektet">Të gjitha projektet</a></div><div class="projs">${others.map(projCard).join('')}</div></section>`;
+}
+
+function transparencyPage(){
+  const years = [...new Set(DOCS.map(d=>d.year))].sort().reverse();
+  // Categories without documents go on one "coming soon" line (their anchors stay, for menu links).
+  const full = DCATS.filter(([k])=>DOCS.some(d=>d.cat===k)), soon = DCATS.filter(([k])=>!DOCS.some(d=>d.cat===k));
+  return pageHead('Transparenca','Transparenca','Raportet tona vjetore, financiare dhe të auditimit, si dhe dokumentet që rregullojnë punën e organizatës, sipas kategorisë dhe vitit.') + `
+  <section class="wrap">
+    <div class="filters docs-filters">
+      ${subnav('Kategoritë e dokumenteve', full, 'transparenca')}
+      ${selPill('docs-year','viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),'')}
+    </div>
+    ${full.map(([k,l])=>{ const rows = DOCS.filter(d=>d.cat===k); return `<section class="docs-group anchor" id="${k}" aria-labelledby="h-${k}"><h2 class="docs-h" id="h-${k}">${l}<span class="chip-n">${rows.length}</span></h2><div class="doc-rows">${rows.map(docRow).join('')}</div><p class="muted doc-empty" hidden>Asnjë dokument për këtë vit.</p></section>`; }).join('')}
+    ${soon.length?`<p class="docs-soon"><b>Së shpejti</b> ${soon.map(([k,l])=>`<span class="anchor" id="${k}">${l}</span>`).join('<span aria-hidden="true"> · </span>')}</p>`:''}
+  </section>`;
+}
+function bindTransparency(){
+  const sel = $('#docs-year');
+  sel.addEventListener('change', () => {
+    const y = sel.value;
+    $('.sel-v', sel.parentNode).textContent = sel.options[sel.selectedIndex].text;
+    sel.parentNode.classList.toggle('is-set', !!y);
+    $$('.docs-group').forEach(g => {
+      const rows = $$('.doc-row', g); let shown = 0;
+      rows.forEach(r => { const on = !y || r.dataset.year===y; r.hidden = !on; shown += on ? 1 : 0; });
+      $('.chip-n', g).textContent = shown;
+      $('.doc-empty', g).hidden = shown > 0;
+    });
+  });
+}
+
+function dataPage(){
+  return pageHead('Hulumtime dhe publikime','Të dhëna dhe statistika','Statistika të prokurimit publik nga monitorimi ynë, në grafikë interaktivë dhe tabela që mund t’i shkarkoni.') + `
+  <section class="wrap">
+    <p class="notice">Të dhëna ilustruese: vlerat këtu tregojnë si funksionojnë grafikët. INPO i zëvendëson me statistikat e veta të prokurimit.</p>
+    <div class="datasets">${DATASETS.map(d=>`<a class="dataset" href="#/te-dhenat/${d.id}"><span class="pill">${d.chart==='line'?'Grafik me vija':d.chart==='table'?'Tabelë':'Grafik me shtylla'}</span><h2>${d.title}</h2><p>${d.lead}</p><span class="link-u">Hap të dhënat ${ARROW}</span></a>`).join('')}</div>
+  </section>`;
+}
+function datasetPage(id){
+  const d = DATASETS.find(x=>x.id===id); if(!d) return notFound();
+  return `
+  <section class="wrap grid12 page-head">
+    <div class="ph-l"><nav class="crumbs" aria-label="Gjurma"><a href="#/publikimet">Hulumtime dhe publikime</a><span aria-hidden="true">/</span><a href="#/te-dhenat">Të dhëna dhe statistika</a></nav><h1 class="h-headline" data-focus>${d.title}</h1></div>
+    <div class="ph-r"><p class="lead">${d.lead}</p></div>
+  </section>
+  <section class="wrap">
+    ${d.sample?'<p class="notice">Të dhëna ilustruese: INPO i zëvendëson me statistikat e veta.</p>':''}
+    <div class="dataset-view" data-dataset='${esc(JSON.stringify({ cols:d.cols, rows:d.rows, chart:d.chart, unit:d.unit, title:d.title, file:d.id }))}'></div>
+  </section>`;
 }
 
 function contactPage(q){
@@ -327,22 +621,35 @@ function render(){
   const [a, b] = parts;
   let html, title='INPO · Iniciativa për Progres', section=a||'', after=null;
   if (!a) { html = home(); }
-  else if (a==='lajme' && !b) { html = newsPage(q); title='Lajme · INPO'; }
+  else if (a==='lajme' && !b) { html = newsPage(q); title='Lajme dhe qëndrime · INPO'; after=()=>bindFilters('lajme', q); }
   else if (a==='lajme') { html = articlePage(b); const n=NEWS.find(x=>x.id===b); title=(n?n.title.slice(0,60)+'… ':'')+'· INPO'; }
-  else if (a==='publikimet' && !b) { html = pubsPage(q); title='Publikimet · INPO'; after=()=>bindPubs(q); }
-  else if (a==='publikimet') { html = pubDetail(b); title='Publikim · INPO'; }
+  else if (a==='publikimet' && !b) { html = pubsPage(q); title='Hulumtime dhe publikime · INPO'; after=()=>bindFilters('publikimet', q); }
+  else if (a==='publikimet') { html = pubDetail(b); title='Publikim · INPO'; after=()=>$$('[data-dataset]').forEach(el=>window.inpoCharts && window.inpoCharts.mount(el)); }
+  else if (a==='te-dhenat') { html = b ? datasetPage(b) : dataPage(); title='Të dhëna dhe statistika · INPO'; section='publikimet'; after=()=>$$('[data-dataset]').forEach(el=>window.inpoCharts && window.inpoCharts.mount(el)); }
   else if (a==='programet') { html = progPage(b); title=(PROGS[b]?PROGS[b].full:'Programet')+' · INPO'; }
+  else if (a==='projektet') { html = b ? projectPage(b) : projectsPage(q); title='Projektet dhe ndikimi · INPO'; }
+  else if (a==='transparenca') { html = transparencyPage(); title='Transparenca · INPO'; after=bindTransparency; }
   else if (a==='rreth-nesh') { html = aboutPage(); title='Rreth nesh · INPO'; }
   else if (a==='kontakti') { html = contactPage(q); title='Kontakti · INPO'; after=bindContact; }
   else { html = notFound(); section='404'; }
   app.innerHTML = html;
   document.title = title;
-  $$('[data-nav]').forEach(l => { if (l.dataset.nav===section) l.setAttribute('aria-current','page'); else l.removeAttribute('aria-current'); });
-  $('#dd').classList.toggle('current', section==='programet');
+  $$('[data-nav]').forEach(l => {
+    const on = l.dataset.nav===section;
+    if (l.tagName==='A') { if (on) l.setAttribute('aria-current','page'); else l.removeAttribute('aria-current'); }
+    else l.classList.toggle('current', on);
+  });
   closeDD();
   if (menu.open) menu.close();
   if (after) after();
-  if (!firstRender) { window.scrollTo(0,0); const h=$('[data-focus]',app); if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});} }
+  // ?seksioni=x jumps to a section of the page (the nav's sub-items) and focuses its heading.
+  const target = q.seksioni && document.getElementById(q.seksioni);
+  if (target) {
+    const h = $('h2', target) || target;
+    h.setAttribute('tabindex','-1');
+    target.scrollIntoView({block:'start'});
+    h.focus({preventScroll:true});
+  } else if (!firstRender) { window.scrollTo(0,0); const h=$('[data-focus]',app); if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});} }
   if (!a) heroIntro(firstRender);
   firstRender = false;
 }
@@ -352,7 +659,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function heroIntro(){
   document.body.classList.remove('loaded');
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('loaded')));
-  $$('[data-count]', app).forEach(el => {
+  $$('.bento [data-count]', app).forEach(el => {
     if (reduce) return;
     const to=parseFloat(el.dataset.count), dec=+(el.dataset.dec||0), pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
     const fmt = v => pre + v.toFixed(dec).replace('.',',') + suf;
@@ -363,24 +670,30 @@ function heroIntro(){
   });
 }
 
-/* ---------- UI: dropdown, dialogs, search, theme, forms ---------- */
-const dd = $('#dd'), ddBtn = $('#dd>button');
-function closeDD(){ dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded','false'); }
-ddBtn.addEventListener('click', e => { e.stopPropagation(); const o=!dd.classList.contains('open'); dd.classList.toggle('open',o); ddBtn.setAttribute('aria-expanded',String(o)); });
-document.addEventListener('click', e => { if(!dd.contains(e.target)) closeDD(); });
+/* ---------- UI: dropdowns, dialogs, search, theme, forms ---------- */
+const dds = $$('.nav .dd');
+function closeDD(except){ dds.forEach(dd => { if (dd===except) return; dd.classList.remove('open'); $('button',dd).setAttribute('aria-expanded','false'); }); }
+dds.forEach(dd => {
+  const btn = $('button', dd);
+  btn.addEventListener('click', e => { e.stopPropagation(); const o=!dd.classList.contains('open'); closeDD(dd); dd.classList.toggle('open',o); btn.setAttribute('aria-expanded',String(o)); });
+  dd.addEventListener('focusout', e => { if (e.relatedTarget && !dd.contains(e.relatedTarget)) closeDD(); });
+});
+document.addEventListener('click', e => { if(!e.target.closest('.dd')) closeDD(); });
 
 const menu = $('#menu'), search = $('#search');
 $('#open-menu').addEventListener('click', ()=>{ menu.showModal(); $('#open-menu').setAttribute('aria-expanded','true'); });
 menu.addEventListener('close', ()=>$('#open-menu').setAttribute('aria-expanded','false'));
 $$('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
-$$('.menu-links a, #menu .logo').forEach(a=>a.addEventListener('click',()=>menu.close()));
+menu.addEventListener('click', e=>{ if (e.target.closest('.menu-links a, .menu-top .logo')) menu.close(); });
 
 function openSearch(){ search.showModal(); const i=$('#q-global'); i.value=''; drawSearch(''); i.focus(); }
 function drawSearch(v){
   const res = $('#search-res'), n = norm(v.trim());
   if (!n) { res.innerHTML = `<div class="search-empty">Shkruani një fjalë, p.sh. <b>Vushtrri</b>, <b>OShP</b> ose <b>stadiume</b>.</div>`; return; }
-  const hits = NEWS.filter(x=>norm(x.title+' '+x.excerpt).includes(n)).map(x=>({h:'#/lajme/'+x.id,t:x.title,k:CATS[x.cat]}))
-    .concat(PUBS.filter(p=>norm(p.title+' '+PTYPES[p.type]).includes(n)).map(p=>({h:'#/publikimet/'+p.id,t:p.title,k:PTYPES[p.type]})));
+  const hits = NEWS.filter(x=>norm(x.title+' '+x.excerpt).includes(n)).map(x=>({h:'#/lajme/'+x.id,t:x.title,k:CAT1[x.cat]}))
+    .concat(PUBS.filter(p=>norm(p.title+' '+PTYPES[p.type]).includes(n)).map(p=>({h:'#/publikimet/'+p.id,t:p.title,k:PTYPES[p.type]})))
+    .concat(PROJECTS.filter(p=>norm(p.title+' '+p.donor).includes(n)).map(p=>({h:'#/projektet/'+p.id,t:p.title,k:'Projekt'})))
+    .concat(DOCS.filter(d=>norm(d.title).includes(n)).map(d=>({h:'#/transparenca?seksioni='+d.cat,t:d.title,k:'Dokument'})));
   res.innerHTML = hits.length ? hits.slice(0,8).map(x=>`<a href="${x.h}"><small>${x.k}</small><span>${x.t}</span></a>`).join('') : `<div class="search-empty">Asnjë rezultat për “${v.replace(/</g,'&lt;')}”. Provoni një fjalë tjetër.</div>`;
 }
 $('#open-search').addEventListener('click', openSearch);
@@ -416,18 +729,11 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-top]')) { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); $('.logo').focus({ preventScroll: true }); }
 });
 
-/* Newsletter */
-$('#nl-form').addEventListener('submit', e => {
-  e.preventDefault();
-  const i=$('#nl-email'), m=$('#nl-msg'), v=i.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { m.textContent='Shkruani një adresë email të vlefshme, p.sh. emri@shembull.com.'; i.setAttribute('aria-invalid','true'); i.focus(); return; }
-  i.removeAttribute('aria-invalid');
-  $('#nl-form').innerHTML = `<div class="nl-done" role="status"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>U abonuat me <b>${v.replace(/</g,'&lt;')}</b>. Buletini i parë vjen në fillim të muajit.</span></div>`;
-});
-
 /* Header border on scroll */
 const hdr = $('#hdr');
-addEventListener('scroll', ()=>hdr.classList.toggle('scrolled', scrollY>8), {passive:true});
+const toTop = $('#to-top');
+const onScroll = () => { hdr.classList.toggle('scrolled', scrollY>8); toTop.classList.toggle('show', scrollY > innerHeight * .8); };
+addEventListener('scroll', onScroll, {passive:true}); onScroll();
 $('#yr').textContent = new Date().getFullYear();
 
 addEventListener('hashchange', render);

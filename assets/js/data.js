@@ -6,7 +6,7 @@ window.INPO_DATA = (function () {
   'use strict';
 
 const NEWS = [
-  { id:'pastrimi', date:'18.06.2025', iso:'2025-06-18', cat:'reagim',
+  { id:'pastrimi', date:'18.06.2025', iso:'2025-06-18', cat:'reagime',
     title:'Ankesa e KRM “Pastrimi” përjashtohet pas shqyrtimit. INPO kërkon rishikimin e vendimit të OShP-së',
     short:'Ankesa e KRM “Pastrimi” përjashtohet pas shqyrtimit. INPO kërkon rishikimin e vendimit të OShP-së.',
     excerpt:'INPO shpreh shqetësim për mënyrën se si Organi Shqyrtues i Prokurimit trajtoi ankesën e KRM “Pastrimi” ndaj Komunës së Prishtinës.',
@@ -15,55 +15,196 @@ const NEWS = [
       'OShP ka refuzuar të shqyrtojë ankesën duke u thirrur në mungesë juridiksioni, ndonëse paraprakisht e kishte pranuar atë për shqyrtim. Ky qëndrim krijon pasiguri juridike për operatorët ekonomikë dhe dobëson besimin në mekanizmin e ankesave.',
       'INPO kërkon që vendimi të rishikohet dhe që OShP të sqarojë publikisht bazën ligjore mbi të cilën ka ndryshuar qëndrimin për juridiksionin.'
     ], todo:true },
-  { id:'mkrs-procesverbal', date:'21.05.2025', iso:'2025-05-21', cat:'reagim',
+  { id:'mkrs-procesverbal', date:'21.05.2025', iso:'2025-05-21', cat:'reagime',
     title:'Pas reagimit të INPO-s, MKRS publikon procesverbalin e hapjes së tenderit 56 milionësh, por jo vendimin për fituesin',
     excerpt:'Ministria publikoi procesverbalin e hapjes së tenderit për stadiumet vetëm pas reagimit publik. Vendimi për fituesin e kontratës mungon ende.',
     body:['Pas reagimit publik të INPO-s, Ministria e Kulturës, Rinisë dhe Sportit (MKRS) ka publikuar procesverbalin e hapjes së tenderit 56 milionësh për stadiume. Vendimi për fituesin ose fituesit e kontratës ende nuk është publikuar.'], todo:true },
-  { id:'mkrs-125', date:'12.05.2025', iso:'2025-05-12', cat:'prokurimi',
+  { id:'mkrs-125', date:'12.05.2025', iso:'2025-05-12', cat:'reagime',
     title:'Tenderi 56 milionësh për stadiume i MKRS-së: 125 ditë pa vendim, pa transparencë, pa përgjegjësi',
     excerpt:'Tenderi për ndërtimin dhe rindërtimin e stadiumeve në Ferizaj, Pejë, Prizren dhe Vushtrri mbetet pa vendim 125 ditë pas hapjes.',
     body:['Tenderi i MKRS-së për ndërtimin dhe rindërtimin e stadiumeve në Ferizaj, Pejë, Prizren dhe Vushtrri, me vlerë 56 milionë euro, mbetet pa epilog 125 ditë pas hapjes së tij.','INPO kërkon që ministria të publikojë menjëherë të gjitha dokumentet e procedurës dhe të sqarojë arsyet e vonesës.'], todo:true },
-  { id:'prishtina-mbeturina', date:'30.04.2025', iso:'2025-04-30', cat:'reagim',
+  { id:'prishtina-mbeturina', date:'30.04.2025', iso:'2025-04-30', cat:'reagime',
     title:'INPO ngre shqetësime për mungesë transparence dhe ligjshmërie në prokurimin për menaxhimin e mbeturinave nga Komuna e Prishtinës',
     excerpt:'Iniciativa për Progres (INPO) ka identifikuar një sërë problemesh lidhur me veprimet e Komunës së Prishtinës në fushën e prokurimit për menaxhimin e mbeturinave.',
     body:['Iniciativa për Progres (INPO) ka identifikuar një sërë problemesh lidhur me veprimet e Komunës së Prishtinës në prokurimin për menaxhimin e mbeturinave.'], todo:true },
-  { id:'vushtrri', date:'28.04.2025', iso:'2025-04-28', cat:'reagim',
+  { id:'vushtrri', date:'28.04.2025', iso:'2025-04-28', cat:'reagime',
     title:'INPO kërkon anulimin dhe rishikimin e tenderit 4,98 milionë € të Komunës së Vushtrrisë për shkak të kritereve diskriminuese',
     excerpt:'Pas një analize të kujdesshme të dosjes së tenderit të shpallur nga Komuna e Vushtrrisë, INPO kërkon anulimin dhe rishikimin e tij.',
     body:['Iniciativa për Progres (INPO), pas një analize të kujdesshme të dosjes së tenderit të shpallur nga Komuna e Vushtrrisë me vlerë 4,98 milionë euro, ka identifikuar kritere që kufizojnë konkurrencën dhe diskriminojnë operatorët ekonomikë.','INPO kërkon anulimin dhe rishikimin e tenderit.'], todo:true },
-  { id:'tm4-2024', date:'24.02.2025', iso:'2025-02-24', cat:'prokurimi',
+  { id:'tm4-2024', date:'24.02.2025', iso:'2025-02-24', cat:'komunikata',
     title:'Infografikë: kontratat e negociuara pa publikim të njoftimit për kontratë në nivel vendi, tetor-dhjetor 2024',
     excerpt:'INPO ka analizuar trendin e kontratave të nënshkruara përmes procedurës së negociuar pa publikimin e njoftimit për kontratë.',
     body:['INPO ka analizuar trendin e kontratave të nënshkruara përmes procedurës së negociuar pa publikimin e njoftimit për kontratë, në nivel vendi, për tremujorin e katërt të vitit 2024.'], todo:true, pub:'tm4' }
 ];
-const CATS = { reagim:'Reagim publik', prokurimi:'Prokurimi i hapur' };
+// News sections (Lajme dhe qëndrime): filter label (plural) and card label (singular).
+const CATS = { aktivitete:'Aktivitete', komunikata:'Komunikata për media', reagime:'Reagime dhe qëndrime publike', opinione:'Opinione dhe artikuj', media:'INPO në media' };
+const CAT1 = { aktivitete:'Aktivitet', komunikata:'Komunikatë për media', reagime:'Reagim publik', opinione:'Opinion', media:'INPO në media' };
 
+// Publications (Hulumtime dhe publikime). Titles and dates from inpo-ks.org.
+// theme = fusha tematike, inst = institucioni (named in the title). Unknown authors stay empty.
 const PUBS = [
-  { id:'oshp', type:'analiza', prog:'qeverisje', short:'OShP', title:'Performanca e OShP-së: efikasiteti i ulët në shqyrtimin e ankesave' },
-  { id:'katalizatoret', type:'hulumtime', prog:'qeverisje', short:'KK', title:'Katalizatorët e korrupsionit: praktikat që cënojnë integritetin e prokurimit publik' },
-  { id:'integriteti', type:'hulumtime', prog:'edukim', short:'IK', title:'Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë', partners:'IKD, Lëvizja FOL', donor:'Rockefeller Brothers Fund' },
-  { id:'tm4', type:'infografika', prog:'qeverisje', short:'TM4', title:'Kontratat e negociuara pa publikim të njoftimit për kontratë në nivel vendi, tetor-dhjetor 2024' },
-  { id:'gjednj', type:'hulumtime', prog:'edukim', short:'GJEDNJ', title:'Aplikimi i jurisprudencës së GJEDNJ-së në Kosovë' },
-  { id:'rap', type:'analiza', prog:'qeverisje', short:'RAP', title:'Përfshirja e parimeve të reformës së administratës publike në sektorin e prokurimit' },
-  { id:'isa', type:'analiza', prog:'qeverisje', short:'ISA', title:'Udhëzuesi për trajtimin e informatave sekrete afariste në prokurimin publik' },
-  { id:'projektet', type:'analiza', prog:'qeverisje', short:'PE', title:'Performanca e komunave në përfshirjen e projekteve ekzekutive në tenderë' },
-  { id:'fsk', type:'buletine', prog:'qeverisje', short:'FSK', title:'Sfidat e prokurimit për ushqimin e FSK-së' },
-  { id:'ministrite', type:'buletine', prog:'qeverisje', short:'PP', title:'Performanca e ministrive në realizimin e planit të prokurimit për tenderët për punë' },
-  { id:'tm3', type:'infografika', prog:'qeverisje', short:'TM3', title:'Kontratat sipas procedurës së negociuar pa publikim të njoftimit, korrik-shtator' },
-  { id:'auditimi-2018', type:'inpo', prog:null, short:'2018', title:'Raporti i auditimit: INPO, 2018', year:'2018' }
+  { id:'gjednj', type:'ligjore', prog:'qeverisje', theme:'ligji', inst:null, short:'GJEDNJ', date:'28.05.2025', title:'Aplikimi i jurisprudencës së GJEDNJ-së në Kosovë' },
+  { id:'tm4', type:'infografika', prog:'qeverisje', theme:'prokurimi', inst:null, short:'TM4', date:'24.02.2025', title:'Kontratat e negociuara pa publikim të njoftimit për kontratë në nivel vendi, tetor-dhjetor 2024',
+    data:{ figures:[['2.838','kontrata të lidhura në nivel vendi, tetor-dhjetor 2024'],['192','me procedurë të negociuar pa publikim të njoftimit'],['6,7%','e kontratave sipas numrit'],['4,4%','e vlerës së kontratave']],
+      charts:[{ title:'Kontratat e lidhura, tetor-dhjetor 2024', chart:'bar', unit:'kontrata', cols:['Procedura','Kontrata'], rows:[['Të gjitha procedurat',2838],['E negociuar pa publikim',192]] },
+        { title:'Kontrata dhe aneks kontrata me procedurë të negociuar', chart:'table', unit:'', cols:['Lloji','Numri','Vlera (€)'], rows:[['Kontrata',86,8085354.99],['Aneks kontrata',106,5903345.62]] },
+        { title:'Vlera e kontratave të negociuara pa publikim, TM3 dhe TM4 2024', chart:'bar', unit:'€', cols:['Tremujori','Vlera (€)'], rows:[['TM3 2024',15817596.99],['TM4 2024',13988700.61]] }],
+      source:'Infografika e INPO-s, shkurt 2025.' } },
+  { id:'integriteti', type:'monitorim', prog:'qeverisje', theme:'ligji', inst:null, short:'IK', date:'06.02.2025', title:'Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë', partners:'IKD, Lëvizja FOL', donor:'Rockefeller Brothers Fund' },
+  { id:'oshp', type:'politika', prog:'qeverisje', theme:'prokurimi', inst:'oshp', short:'OShP', date:'29.01.2025', title:'Performanca e OShP-së: efikasiteti i ulët në shqyrtimin e ankesave' },
+  { id:'katalizatoret', type:'politika', prog:'qeverisje', theme:'integriteti', inst:null, short:'KK', date:'29.01.2025', title:'Katalizatorët e korrupsionit: praktikat që cënojnë integritetin e prokurimit publik' },
+  { id:'rap', type:'monitorim', prog:'qeverisje', theme:'prokurimi', inst:null, short:'RAP', date:'22.01.2025', title:'Përfshirja e parimeve të reformës së administratës publike në sektorin e prokurimit' },
+  { id:'isa', type:'rekomandime', prog:'qeverisje', theme:'prokurimi', inst:null, short:'ISA', date:'08.11.2024', title:'Udhëzuesi për trajtimin e informatave sekrete afariste në prokurimin publik' },
+  { id:'projektet', type:'infografika', prog:'qeverisje', theme:'lokale', inst:'komunat', short:'PE', date:'05.11.2024', title:'Performanca e komunave në përfshirjen e projekteve ekzekutive në tenderë',
+    data:{ figures:[['459','aktivitete prokurimi për punë të monitoruara në 8 komuna, 2023'],['192','të iniciuara me projekt ekzekutiv'],['267','pa projekt ekzekutiv'],['41,8%','me projekt ekzekutiv']],
+      charts:[{ title:'Aktivitetet e iniciuara me projekt ekzekutiv, sipas komunës, 2023', chart:'bar', unit:'%', cols:['Komuna','Me projekt ekzekutiv (%)'], rows:[['Gjakovë',84.2],['Gjilan',64.8],['Prishtinë',44.7],['Pejë',43.9],['Suharekë',32.4],['Rahovec',24.3],['Vushtrri',18.3],['Lipjan',8]] },
+        { title:'Me projekt ekzekutiv, 2021 deri 2023', chart:'line', unit:'%', cols:['Viti','Me projekt ekzekutiv (%)'], rows:[['2021',8.2],['2022',34.4],['2023',41.8]] }],
+      source:'Infografika e INPO-s, nëntor 2024. Të dhënat për 2021 dhe 2022 nga Aktiviteti i USAID-it për Integritetin e Komunave, për 2023 nga INPO.' } },
+  { id:'fsk', type:'politika', prog:'qeverisje', theme:'prokurimi', inst:'fsk', short:'FSK', date:'01.11.2024', title:'Sfidat e prokurimit për ushqimin e FSK-së' },
+  { id:'ministrite', type:'infografika', prog:'qeverisje', theme:'prokurimi', inst:'ministrite', short:'PP', date:'25.10.2024', title:'Performanca e ministrive në realizimin e planit të prokurimit për tenderët për punë',
+    data:{ figures:[['280','aktivitete prokurimi për punë të planifikuara në 6 ministri'],['82','prej tyre të iniciuara (29,28%)'],['22','të iniciuara pa qenë në plan'],['30','kontrata të nënshkruara']],
+      charts:[{ title:'Tenderët e planifikuar dhe kontratat e nënshkruara, janar-shtator 2024', chart:'bar', unit:'', cols:['Ministria','Tenderë të planifikuar për punë','Kontrata të nënshkruara'], rows:[['MASHT',64,5],['MMPH',15,6],['MKRS',144,11],['MPB',17,3],['MI',32,4],['MSH',8,1]] },
+        { title:'Vlera e planifikuar, e iniciuar dhe e kontraktuar', chart:'bar', unit:'€', cols:['Faza','Vlera (€)'], rows:[['E planifikuar',437195092.67],['E iniciuar',171253926.44],['E kontraktuar',20549678.02]] }],
+      source:'Infografika e INPO-s, tetor 2024. MI dhe MMPH paraqiten veçmas, si në e-Prokurimi.' } },
+  { id:'tm3', type:'infografika', prog:'qeverisje', theme:'prokurimi', inst:null, short:'TM3', date:'18.10.2024', title:'Kontratat sipas procedurës së negociuar pa publikim të njoftimit, korrik-shtator 2024',
+    data:{ figures:[['2.724','kontrata të lidhura në nivel vendi, korrik-shtator 2024'],['161','me procedurë të negociuar pa publikim të njoftimit'],['5,9%','e kontratave sipas numrit'],['5,8%','e vlerës së kontratave']],
+      charts:[{ title:'Kontratat e lidhura, korrik-shtator 2024', chart:'bar', unit:'kontrata', cols:['Procedura','Kontrata'], rows:[['Të gjitha procedurat',2724],['E negociuar pa publikim',161]] },
+        { title:'Kontrata dhe aneks kontrata me procedurë të negociuar', chart:'table', unit:'', cols:['Lloji','Numri','Vlera (€)'], rows:[['Kontrata',72,9710710.90],['Aneks kontrata',89,6106886.09]] },
+        { title:'Vlera e kontratave të negociuara pa publikim, TM2 dhe TM3 2024', chart:'bar', unit:'€', cols:['Tremujori','Vlera (€)'], rows:[['TM2 2024',9611574.28],['TM3 2024',15817596.99]] }],
+      source:'Infografika e INPO-s, tetor 2024.' } },
+  { id:'aip', type:'hulumtime', prog:'qeverisje', theme:'transparenca', inst:'aip', short:'AIP', date:'10.05.2024', title:'Agjencia për Informim dhe Privatësi nën llupën e INPO-s' },
+  { id:'qeveria', type:'hulumtime', prog:'qeverisje', theme:'prokurimi', inst:'qeveria', short:'QRK', date:'03.05.2024', title:'Performanca e Qeverisë së Republikës së Kosovës në realizimin e prokurimit' }
 ];
-const PTYPES = { analiza:'Analizë', hulumtime:'Hulumtim', infografika:'Infografikë', buletine:'Buletin', inpo:'Raport për INPO' };
-const PFILTERS = [['all','Të gjitha'],['analiza','Analiza'],['hulumtime','Hulumtime'],['infografika','Infografika'],['buletine','Buletine'],['inpo','Raporte për INPO']];
+// Their six categories, in their order: singular label and filter label.
+const PTYPES = { monitorim:'Raport monitorimi', hulumtime:'Hulumtim', politika:'Analizë e politikave publike', ligjore:'Analizë ligjore', infografika:'Infografikë', rekomandime:'Rekomandim për politika publike' };
+const PFILTERS = [['all','Të gjitha'],['monitorim','Raporte të monitorimit'],['hulumtime','Hulumtime dhe studime'],['politika','Analiza të politikave publike'],['ligjore','Analiza ligjore'],['infografika','Infografika'],['rekomandime','Rekomandime për politika publike']];
+const THEMES = { prokurimi:'Prokurimi publik', transparenca:'Transparenca dhe qasja në informata', llogaridhenia:'Llogaridhënia', integriteti:'Integriteti dhe antikorrupsioni', ligji:'Sundimi i ligjit', lokale:'Qeverisja lokale', edukimi:'Edukimi demokratik' };
+const INSTS = { oshp:'Organi Shqyrtues i Prokurimit (OShP)', aip:'Agjencia për Informim dhe Privatësi (AIP)', fsk:'Forca e Sigurisë së Kosovës (FSK)', qeveria:'Qeveria e Kosovës', ministrite:'Ministritë', komunat:'Komunat' };
 
+// Programmes. Intro, objectives and activities from the old programme pages on inpo-ks.org.
 const PROGS = {
   qeverisje:{ name:'Qeverisje e mirë', full:'Programi për Qeverisje të Mirë',
     desc:'Promovojmë qeverisjen e përgjegjshme duke nxitur përfshirjen e qytetarëve në vendimmarrje, transparencën, llogaridhënien dhe sundimin e ligjit.',
-    ways:[['Monitorim i prokurimit','Ndjekim tenderët e komunave dhe ministrive, nga planifikimi deri te nënshkrimi i kontratës.'],['Reagime publike','Kur gjejmë parregullsi, i bëjmë publike dhe kërkojmë veprim nga institucionet përgjegjëse.'],['Analiza dhe rekomandime','Publikojmë të dhëna, analiza dhe rekomandime për politika më të mira publike.']] },
+    goals:['Qeverisje e përgjegjshme në institucionet publike','Përfshirja e qytetarëve në vendimmarrje','Transparencë, llogaridhënie dhe sundim i ligjit'],
+    ways:[['Monitorim i prokurimit','Ndjekim tenderët e komunave dhe ministrive, nga planifikimi deri te nënshkrimi i kontratës.'],['Reagime publike','Kur gjejmë parregullsi, i bëjmë publike dhe kërkojmë veprim nga institucionet përgjegjëse.'],['Analiza dhe rekomandime','Publikojmë të dhëna, analiza dhe rekomandime për politika më të mira publike.']],
+    acts:['Monitorimi i vazhdueshëm i funksionalitetit të Kuvendit Komunal, Komisioneve Komunale, Drejtorive Komunale dhe Zyreve të Kryetarit të Komunës','Takime të vazhdueshme me qytetarë dhe avokim i kërkesave të qytetarëve kundrejt institucioneve lokale ekzekutive dhe legjislative','Hartimi i hulumtimeve dhe analizave për transparencën, llogaridhënien dhe sundimin e ligjit në komunë','Performancat rrugore dhe fushatat sensibilizuese'] },
   edukim:{ name:'Edukim demokratik', full:'Programi për Edukim Demokratik',
     desc:'Krijojmë mundësi që të rinjtë të jenë aktivë dhe promotorë të një shoqërie të hapur.',
-    ways:[['Debat','Hapësira ku të rinjtë diskutojnë politika publike dhe vendimet që prekin komunitetin e tyre.'],['Fushata avokuese','Fushata sensibilizuese që i shndërrojnë shqetësimet e qytetarëve në kërkesa konkrete.'],['Aktivizëm qytetar','Nga performancat protestuese te ndërmjetësimi me pushtetin lokal, që nga viti 2005.']] }
+    goals:['Të rinj aktivë në jetën publike','Promovimi i një shoqërie të hapur','Edukim për demokracinë dhe shoqërinë civile'],
+    ways:[['Debat','Hapësira ku të rinjtë diskutojnë politika publike dhe vendimet që prekin komunitetin e tyre.'],['Fushata avokuese','Fushata sensibilizuese që i shndërrojnë shqetësimet e qytetarëve në kërkesa konkrete.'],['Aktivizëm qytetar','Nga performancat protestuese te ndërmjetësimi me pushtetin lokal, që nga viti 2005.']],
+    acts:['Themelimi i klubeve të debatit dhe organizimi i garave të formateve të strukturuara të debatit','Organizimi i trajnimeve mbi edukimin demokratik dhe funksionalitetin e shoqërisë civile','Rritja e përfshirjes së të rinjve në zhvillimin e arsimit profesional','Krijimi i hapësirës për të rinj për të zhvilluar ide dhe aktivitete për një shoqëri të hapur'] }
 };
 const DONORS = ['Ambasada e SHBA-së','INL · Departamenti i Shtetit','Rockefeller Brothers Fund','KCSF','USAID','ATRC','YIHR','Balkan Trust for Democracy','DANIDA','Swiss Cooperation Office'];
+  // Donor logos (assets/img/donors/), copied from the old site's home page. DANIDA and the Swiss office have none there yet.
+  const DONOR_LOGOS = { 'Ambasada e SHBA-së':'us-embassy.png', 'INL · Departamenti i Shtetit':'inl.png', 'Rockefeller Brothers Fund':'rbf.png', 'KCSF':'kcsf.png', 'USAID':'usaid.png', 'ATRC':'atrc.png', 'YIHR':'yihr.png', 'Balkan Trust for Democracy':'btd.png' };
 
-  return { NEWS, CATS, PUBS, PTYPES, PFILTERS, PROGS, DONORS };
+// Projects (Projektet dhe ndikimi). Facts from inpo-ks.org; unknown values in brackets.
+const PROJECTS = [
+  { id:'dsp', status:'aktiv', prog:'qeverisje', title:'Grant nga programi Promovimi i Shoqërisë Demokratike (DSP)',
+    period:'[Periudha e zbatimit]', donor:'Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA), menaxhuar nga KCSF', partners:'[Partnerët]',
+    goals:['[Objektivi i parë i projektit]','[Objektivi i dytë i projektit]'], results:[] },
+  { id:'integriteti', status:'perfunduar', prog:'qeverisje', title:'Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë',
+    period:'[Periudha e zbatimit]', donor:'Rockefeller Brothers Fund', partners:'Instituti i Kosovës për Drejtësi (IKD), Lëvizja FOL',
+    goals:['[Objektivat e projektit]'], results:[['1','raport i publikuar në shkurt 2025']], pub:'integriteti' },
+  { id:'anulimet', status:'perfunduar', prog:'qeverisje', title:'Anulimi i prokurimit: domosdoshmëri apo keqmenaxhim?',
+    period:'2023', donor:'Byroja Ndërkombëtare për Çështje të Narkotikëve dhe Zbatimit të Ligjit (INL)', partners:'[Partnerët]',
+    goals:['Analiza e tenderëve të anuluar në Kosovë'], results:[['1','raport për tenderët e anuluar, tetor 2023']] },
+  { id:'komunat-2019', status:'perfunduar', prog:'qeverisje', title:'Monitorimi i prokurimit në komunat e Kosovës',
+    period:'2019', donor:'[Donatori]', partners:'Instituti i Kosovës për Drejtësi (IKD)',
+    goals:['Monitorimi i aktiviteteve të prokurimit në komunat e Kosovës'], results:[['160','aktivitete prokurimi të monitoruara']] }
+];
+// Results and impact. Example figures from INPO's brief, to be confirmed: [in brackets].
+const IMPACT = [['[100]','reagime dhe qëndrime publike'],['[30]','raporte dhe hulumtime'],['[60]','rekomandime për institucionet'],['YEARS','vjet që nga themelimi në 2005']];
+// Concrete examples of impact: news items where an institution acted after INPO.
+const CASES = ['mkrs-procesverbal'];
+
+// Team and board, as listed on inpo-ks.org/rreth-nesh ("Anëtarët").
+  // Photos from INPO's events (assets/img/photos/, from inpo-ks.org). Captions from the news posts they illustrated.
+  const HERO_PHOTO = ['hero-raporti-integriteti.jpg', 'Prezantimi i raportit “Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë”, shkurt 2025'];
+  const FIELD = {
+    kicker:'Kush jemi', title:'Në terren, pranë institucioneve dhe qytetarëve.',
+    text:'INPO është organizatë joqeveritare dhe jofitimprurëse, e themeluar në Ferizaj në vitin 2005, me zyra në Ferizaj dhe Prishtinë. Takojmë zyrtarët, monitorojmë tenderët dhe gjetjet i sjellim para institucioneve dhe qytetarëve.',
+    photos:[
+      ['java-kunder-korrupsionit.jpg','Java kundër korrupsionit, dhjetor 2023'],
+      ['takim-prizren.jpg','Takim me nënkryetarin e Komunës së Prizrenit, tetor 2023'],
+      ['takim-gjakove.jpg','Takim me nënkryetarin e Komunës së Gjakovës, tetor 2023'],
+      ['tryeze-diskutimi.jpg','Tryezë diskutimi me IKD-në dhe Lëvizjen FOL, shkurt 2024'],
+      ['raporti-mosplanifikimi.jpg','Prezantimi i raportit “(Mos)Planifikimi i Prokurimit”, nëntor 2023']
+    ]
+  };
+  // Team: name, role, email, photo (assets/img/team/, from inpo-ks.org).
+  const TEAM = [['Albulena Nrecaj','Drejtore Ekzekutive','albulena.nrecaj@inpo-ks.org','albulena-nrecaj.jpg'],['Merita Bunjaku Sylaj','Menaxhere e Financave dhe Administratës','merita@inpo-ks.org','merita-bunjaku-sylaj.jpg'],['Elza Tullari Celina','Monitoruese','elza@inpo-ks.org','elza-tullari-celina.jpg'],['Arbër Kabashi','Monitorues','arber@inpo-ks.org','arber-kabashi.jpg']];
+const BOARD = [['Miranda Gagica','Kryesuese e Kuvendit të Anëtarëve'],['Albulena Nrecaj','Anëtare'],['Arbër Kadriu','Anëtar'],['Emine Behluli','Anëtare'],['Lirika Demiri','Anëtare'],['Valentina Abazi','Anëtare'],['Donika Lamaxhema','Anëtare'],['Kushtrim Palushi','Anëtar'],['Samir Reka','Anëtar']];
+
+// Transparency documents, by category and year. Titles from inpo-ks.org ("Raporte për INPO").
+const DCATS = [['vjetore','Raportet vjetore'],['financiare','Raportet financiare'],['auditimi','Raportet e auditimit'],['qeverisja','Dokumentet e qeverisjes organizative'],['politikat','Politikat dhe procedurat e brendshme'],['strategjite','Strategjitë dhe dokumentet organizative']];
+const DOCS = [
+  { cat:'auditimi', year:'2019', title:'Raporti i auditimit për INPO, 2019' },
+  { cat:'auditimi', year:'2018', title:'Raporti i auditimit: INPO, 2018' },
+  { cat:'auditimi', year:'2017', title:'Raporti i auditimit: INPO, 2017' },
+  { cat:'auditimi', year:'2016', title:'Raporti i auditimit: INPO, 2016' },
+  { cat:'auditimi', year:'2015', title:'Raporti i auditimit: INPO, 2015' },
+  { cat:'vjetore', year:'2013', title:'Iniciativa për Progres: raporti i punës 2013' }
+];
+
+// Data (Të dhëna dhe statistika). SAMPLE values (sample:true), made up to show the interactive
+// charts until INPO adds its own procurement statistics. Shown with a "Të dhëna ilustruese" notice.
+const DATASETS = [
+  { id:'vlera-e-kontratave', sample:true, chart:'line', unit:'milionë €', title:'Vlera e kontratave publike sipas vitit',
+    lead:'Vlera e kontratave të nënshkruara nga komunat dhe institucionet qendrore, në milionë euro.',
+    cols:['Viti','Komunat','Institucionet qendrore'], rows:[['2019',212,398],['2020',168,341],['2021',236,455],['2022',251,472],['2023',274,506],['2024',289,531]] },
+  { id:'kontratat-e-negociuara', sample:true, chart:'bar', unit:'kontrata', title:'Kontratat e negociuara pa publikim të njoftimit, sipas tremujorit',
+    lead:'Numri i kontratave të nënshkruara përmes procedurës së negociuar pa publikim të njoftimit për kontratë, në nivel vendi.',
+    cols:['Tremujori','Komunat','Institucionet qendrore'], rows:[['T1 2024',42,31],['T2 2024',55,38],['T3 2024',48,44],['T4 2024',61,40]] },
+  { id:'tenderet-e-anuluar', sample:true, chart:'line', unit:'tenderë', title:'Tenderët e anuluar sipas vitit',
+    lead:'Numri i aktiviteteve të prokurimit të anuluara, sipas vitit.',
+    cols:['Viti','Tenderë të anuluar'], rows:[['2019',820],['2020',760],['2021',905],['2022',870],['2023',940],['2024',885]] },
+  { id:'ankesat-ne-prokurim', sample:true, chart:'bar', unit:'ankesa', title:'Ankesat në procedurat e prokurimit',
+    lead:'Ankesat e operatorëve ekonomikë kundër vendimeve të autoriteteve kontraktuese, dhe sa prej tyre u aprovuan.',
+    cols:['Viti','Ankesa të parashtruara','Ankesa të aprovuara'], rows:[['2020',812,298],['2021',905,341],['2022',876,322],['2023',941,356],['2024',998,371]] },
+  { id:'ofertat-sipas-llojit', sample:true, chart:'bar', unit:'oferta', title:'Mesatarja e ofertave për tender, sipas llojit të kontratës',
+    lead:'Sa oferta merr mesatarisht një tender. Më pak oferta do të thotë më pak konkurrencë.',
+    cols:['Lloji i kontratës','Oferta mesatare për tender'], rows:[['Punë',3.4],['Furnizime',2.6],['Shërbime',2.9],['Konsulencë',2.1]] },
+  { id:'procedurat-sipas-llojit', sample:true, chart:'table', unit:'procedura', title:'Procedurat e prokurimit sipas llojit, 2024',
+    lead:'Numri i procedurave të prokurimit sipas llojit të procedurës dhe pjesa e secilës në total.',
+    cols:['Procedura','Numri','Pjesa (%)'], rows:[['E hapur',6120,71.4],['Kuotim çmimi',1010,11.8],['E negociuar pa publikim',940,11.0],['Vlerë e vogël',500,5.8]] }
+];
+
+// About: text, values and history from inpo-ks.org.
+const ABOUT = [
+  'Iniciativa për Progres (INPO) është organizatë joqeveritare dhe jofitimprurëse e themeluar në vitin 2005 me qëllim që të përparojë pjesëmarrjen e qytetarëve në proceset shoqërore, përmes së cilës avokohet për çështje sociale, politike dhe ekonomike, për forcimin e transparencës dhe llogaridhënies së institucioneve publike, për rritjen e kërkesave të qytetarëve dhe për luftimin e korrupsionit, duke synuar promovimin e vlerave të një shoqërie të hapur dhe demokratike. Misioni dhe vizioni i organizatës përmbushen përmes dy programeve të specializuara: Qeverisja e mirë dhe Edukimi demokratik.',
+  'INPO që nga themelimi ka shtyrë përpara agjendat për më shumë transparencë në shpenzimet financiare publike, për përfshirjen më të mirë dhe më të gjerë të qytetarëve në proceset e vendimmarrjes publike dhe për llogaridhënien e zyrtarëve publikë. Organizata është vlerësuar për profesionalizmin dhe qasjen e paanshme dhe ka arritur rezultate të shumta konkrete që nga themelimi.'
+];
+const MISSION = 'Të promovojmë demokratizimin e qeverisjes lokale përmes aktivizmit qytetar dhe të avancojmë vlerat e një shoqërie të hapur.';
+const VISION = 'Institucione lokale që qeverisen me vlera demokratike, ku qytetari është bashkëvendimmarrës.';
+const VALUES = [
+  ['Aktivizmi','INPO nxit aktivizmin qytetar përmes aktivistëve të saj, për një bashkëpunim sa më gjithëpërfshirës qytetar në zbatimin e misionit të organizatës.'],
+  ['Profesionalizmi','INPO nxit gjithnjë profesionalizmin; aktivitetet dhe idetë e organizatës shtyhen nga profesionalizmi i brendshëm dhe i jashtëm.'],
+  ['Integriteti etik dhe moral','Aktivistët e INPO-s janë individë me integritet etik dhe moral, për ta përmbushur sa më denjësisht misionin dhe vizionin e organizatës.'],
+  ['Paanshmëria','INPO vepron mbi bazën e hulumtimeve, analizave dhe gjykimeve objektive, me paanshmëri politike dhe duke mbrojtur interesin e përgjithshëm.'],
+  ['Respekti','INPO përmbush dhe nxit respektin ndërqytetar dhe ndërinstitucional.'],
+  ['Shumëllojshmëria','INPO promovon shumëllojshmërinë e komuniteteve dhe komunikimin mes tyre, me qëllim eliminimin e diskriminimit.']
+];
+const HISTORY = [
+  ['2005','Themelimi në Ferizaj','INPO nis me aktivitete që ndihmojnë integrimin e qytetarëve në proceset sociale dhe vendimmarrëse.'],
+  ['2010','Fushata “Zgjohuni”','Orë me zile për këshilltarët komunalë të Ferizajt, si kujtesë se janë të zgjedhurit e popullit.'],
+  ['2019','Monitorim në të gjitha komunat','Me Institutin e Kosovës për Drejtësi, 160 aktivitete prokurimi të monitoruara në komunat e Kosovës.'],
+  ['2023','Raporti për tenderët e anuluar','Publikuar me mbështetjen e Byrosë Ndërkombëtare për Çështje të Narkotikëve dhe Zbatimit të Ligjit (INL).']
+];
+const AREAS = [['Qeverisja e mirë','#/programet/qeverisje'],['Transparenca','#/publikimet?fusha=transparenca'],['Llogaridhënia','#/publikimet?fusha=llogaridhenia'],['Sundimi i ligjit','#/publikimet?fusha=ligji'],['Edukimi demokratik','#/programet/edukim']];
+const SOCIALS = [['Facebook','https://www.facebook.com/OrganizataINPO/'],['X','https://x.com/organizatainpo'],['YouTube','https://www.youtube.com/channel/UC5FqAZlDj2B05tV4HSiLWOg']];
+
+// Main navigation: their structure. [label, hash, children].
+const NAV = [
+  ['Kryefaqja','#/'],
+  ['Rreth nesh','#/rreth-nesh',[['Historia e organizatës','#/rreth-nesh?seksioni=historia'],['Misioni, vizioni dhe vlerat','#/rreth-nesh?seksioni=misioni'],['Ekipi dhe bordi','#/rreth-nesh?seksioni=ekipi'],['Strategjitë dhe dokumentet organizative','#/rreth-nesh?seksioni=dokumentet']]],
+  ['Programet','#/programet/qeverisje',[['Qeverisje e mirë','#/programet/qeverisje'],['Edukim demokratik','#/programet/edukim']]],
+  ['Hulumtime dhe publikime','#/publikimet',PFILTERS.slice(1).map(([k,l])=>[l,'#/publikimet?lloji='+k]).concat([['Të dhëna dhe statistika','#/te-dhenat']])],
+  ['Lajme dhe qëndrime','#/lajme',Object.keys(CATS).map(k=>[CATS[k],'#/lajme?kategoria='+k])],
+  ['Projektet dhe ndikimi','#/projektet',[['Projektet aktive','#/projektet?statusi=aktive'],['Projektet e përfunduara','#/projektet?statusi=perfunduara'],['Partnerët dhe donatorët','#/projektet?seksioni=partneret'],['Rezultatet dhe ndikimi institucional','#/projektet?seksioni=ndikimi']]],
+  ['Transparenca','#/transparenca',DCATS.slice(0,5).map(([k,l])=>[l,'#/transparenca?seksioni='+k])],
+  ['Kontakti','#/kontakti']
+];
+
+  return { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, HERO_PHOTO, FIELD, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV, ABOUT, MISSION, VISION, VALUES, HISTORY, AREAS, SOCIALS };
 })();

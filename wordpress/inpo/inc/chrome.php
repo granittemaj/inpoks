@@ -1,7 +1,7 @@
 <?php
 /**
- * Site chrome: header (logo, nav with dropdown, language, theme toggle, search, mobile menu)
- * and footer. Markup matches the prototype's index.html.
+ * Site chrome: header (logo, the sections with dropdowns, language, theme, search), mobile menu,
+ * and footer. Markup matches the prototype's index.html and buildChrome() in app.js.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -66,8 +66,11 @@ function inpo_theme_section_url() {
 		if ( is_singular( 'post' ) || is_category() || is_tag() || is_date() || is_author() ) {
 			$news = (int) get_option( 'page_for_posts' );
 			$url  = $news ? get_permalink( $news ) : '';
-		} elseif ( post_type_exists( 'publikimet' ) && ( is_singular( 'publikimet' ) || is_post_type_archive( 'publikimet' ) ) ) {
+		} elseif ( post_type_exists( 'publikimet' ) && ( is_singular( array( 'publikimet', 'inpo_dataset' ) ) || is_post_type_archive( array( 'publikimet', 'inpo_dataset' ) ) ) ) {
+			// Data sits under "Hulumtime dhe publikime".
 			$url = get_post_type_archive_link( 'publikimet' );
+		} elseif ( post_type_exists( 'inpo_project' ) && is_singular( 'inpo_project' ) ) {
+			$url = get_post_type_archive_link( 'inpo_project' );
 		}
 	}
 	return $url;
@@ -88,6 +91,7 @@ function inpo_theme_menu() {
 				'title'    => $item->title,
 				'url'      => $item->url,
 				'desc'     => $item->description,
+				'short'    => $item->attr_title,
 				'target'   => $item->target,
 				'parent'   => (int) $item->menu_item_parent,
 				'children' => array(),
@@ -107,29 +111,38 @@ function inpo_theme_menu() {
 	}
 
 	$node = function ( $title, $url, $desc = '', $children = array() ) {
-		return array( 'title' => $title, 'url' => $url, 'desc' => $desc, 'target' => '', 'children' => $children );
+		return array( 'title' => $title, 'url' => $url, 'desc' => $desc, 'short' => '', 'target' => '', 'children' => $children );
+	};
+	$page = function ( $slug ) {
+		$p = get_page_by_path( $slug );
+		return $p ? get_permalink( $p ) : '';
 	};
 	$tree[] = $node( 'Kryefaqja', home_url( '/' ) );
-	if ( get_option( 'page_for_posts' ) ) {
-		$tree[] = $node( 'Lajme', get_permalink( get_option( 'page_for_posts' ) ) );
+	if ( $page( 'rreth-nesh' ) ) {
+		$tree[] = $node( 'Rreth nesh', $page( 'rreth-nesh' ) );
 	}
 	if ( taxonomy_exists( 'inpo_program' ) ) {
 		$terms = get_terms( array( 'taxonomy' => 'inpo_program', 'hide_empty' => false ) );
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			$kids = array();
 			foreach ( $terms as $t ) {
-				$kids[] = $node( $t->name, get_term_link( $t ), wp_trim_words( $t->description, 6, '' ) );
+				$kids[] = $node( $t->name, get_term_link( $t ) );
 			}
 			$tree[] = $node( 'Programet', $kids[0]['url'], '', $kids );
 		}
 	}
-	if ( post_type_exists( 'publikimet' ) ) {
-		$tree[] = $node( 'Publikimet', get_post_type_archive_link( 'publikimet' ) );
+	if ( post_type_exists( 'publikimet' ) && get_post_type_archive_link( 'publikimet' ) ) {
+		$tree[] = $node( 'Hulumtime dhe publikime', get_post_type_archive_link( 'publikimet' ) );
 	}
-	foreach ( array( 'rreth-nesh' => 'Rreth nesh', 'kontakti' => 'Kontakti' ) as $slug => $title ) {
-		$page = get_page_by_path( $slug );
-		if ( $page ) {
-			$tree[] = $node( $title, get_permalink( $page ) );
+	if ( get_option( 'page_for_posts' ) ) {
+		$tree[] = $node( 'Lajme dhe qëndrime', get_permalink( get_option( 'page_for_posts' ) ) );
+	}
+	if ( post_type_exists( 'inpo_project' ) && get_post_type_archive_link( 'inpo_project' ) ) {
+		$tree[] = $node( 'Projektet dhe ndikimi', get_post_type_archive_link( 'inpo_project' ) );
+	}
+	foreach ( array( 'transparenca' => 'Transparenca', 'kontakti' => 'Kontakti' ) as $slug => $title ) {
+		if ( $page( $slug ) ) {
+			$tree[] = $node( $title, $page( $slug ) );
 		}
 	}
 	return $tree;
@@ -184,44 +197,86 @@ function inpo_theme_logo( $label = true ) {
 	$aria = $label ? ' aria-label="' . esc_attr( $name . ( $desc ? ', ' . $desc : '' ) . ', kryefaqja' ) . '"' : '';
 	$logo = get_theme_mod( 'custom_logo' );
 	if ( $logo ) {
-		$img = wp_get_attachment_image( $logo, 'medium', false, array( 'alt' => '', 'style' => 'height:44px;width:auto' ) );
+		$img = wp_get_attachment_image( $logo, 'medium', false, array( 'alt' => $label ? '' : $name ) );
 		return '<a class="logo" href="' . esc_url( home_url( '/' ) ) . '"' . $aria . '>' . $img . '</a>';
+	}
+	// INPO's logo, bundled with the theme. A Site Logo set in the editor replaces it.
+	if ( file_exists( get_theme_file_path( 'assets/img/logo.png' ) ) && apply_filters( 'inpo_theme_bundled_logo', true ) ) {
+		return '<a class="logo" href="' . esc_url( home_url( '/' ) ) . '"' . $aria . '><img src="' . esc_url( get_theme_file_uri( 'assets/img/logo.png' ) ) . '?v=' . esc_attr( INPO_THEME_VERSION ) . '" alt="' . ( $label ? '' : esc_attr( $name . ( $desc ? ', ' . $desc : '' ) ) ) . '" width="122" height="50"></a>';
 	}
 	return '<a class="logo" href="' . esc_url( home_url( '/' ) ) . '"' . $aria . '><b>' . esc_html( $name ) . '</b>' . ( $desc ? '<span>' . esc_html( $desc ) . '</span>' : '' ) . '</a>';
 }
 
+/**
+ * Is this exact URL (path and query) the current request? For sub-items such as /publikimet/?lloji=x.
+ */
+function inpo_theme_is_exact( $url ) {
+	if ( false !== strpos( $url, '#' ) ) {
+		return false;
+	}
+	$want = wp_parse_url( $url );
+	$req  = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) : array();
+	$path = function ( $p ) {
+		return trailingslashit( isset( $p['path'] ) ? $p['path'] : '/' );
+	};
+	return $path( $want ) === $path( $req ) && ( isset( $want['query'] ) ? $want['query'] : '' ) === ( isset( $req['query'] ) ? $req['query'] : '' );
+}
+
 function inpo_theme_link( $node, $attrs = '' ) {
 	$target = $node['target'] ? ' target="' . esc_attr( $node['target'] ) . '" rel="noopener"' : '';
-	$cur    = inpo_theme_is_current( $node['url'] ) ? ' aria-current="page"' : '';
+	// Sub-items with a query or an anchor are current only on that exact view.
+	$exact  = false !== strpos( $node['url'], '?' ) || false !== strpos( $node['url'], '#' );
+	$cur    = ( $exact ? inpo_theme_is_exact( $node['url'] ) : inpo_theme_is_current( $node['url'] ) ) ? ' aria-current="page"' : '';
 	return '<a href="' . esc_url( $node['url'] ) . '"' . $attrs . $target . $cur . '>';
+}
+
+/**
+ * Label in the desktop bar: the menu item's "Title Attribute" when set, else a short form of
+ * the brief's long section names (the full names stay in the dropdowns, mobile menu and pages).
+ */
+function inpo_theme_short_label( $node ) {
+	if ( ! empty( $node['short'] ) ) {
+		return $node['short'];
+	}
+	$short = array(
+		'Hulumtime dhe publikime' => 'Publikime',
+		'Lajme dhe qëndrime'      => 'Lajme',
+		'Projektet dhe ndikimi'   => 'Projektet',
+	);
+	return isset( $short[ $node['title'] ] ) ? $short[ $node['title'] ] : $node['title'];
 }
 
 function inpo_theme_render_header() {
 	$menu           = inpo_theme_menu();
-	$has_newsletter = apply_filters( 'inpo_has_newsletter', false );
 	$nav            = '';
 	$mobile         = '';
+	$home = untrailingslashit( home_url( '/' ) );
 	foreach ( $menu as $i => $item ) {
+		// The logo is the link home: "Kryefaqja" stays in the mobile menu only.
+		if ( ! $item['children'] && untrailingslashit( $item['url'] ) === $home ) {
+			$mobile .= inpo_theme_link( $item ) . esc_html( $item['title'] ) . '</a>';
+			continue;
+		}
 		if ( $item['children'] ) {
-			$current = false;
-			$links   = '';
+			// A section with its own page (not just its first item) gets an overview link first.
+			$overview = untrailingslashit( strtok( $item['url'], '#' ) ) !== untrailingslashit( strtok( $item['children'][0]['url'], '#' ) );
+			$current  = inpo_theme_is_current( $item['url'] ) && $overview;
+			$links    = $overview ? '<a class="dd-all" href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['title'] ) . '<small>Përmbledhje</small></a>' : '';
+			$sub      = $overview ? '<a href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['title'] ) . ': përmbledhje</a>' : '';
 			foreach ( $item['children'] as $child ) {
 				$current = $current || inpo_theme_is_current( $child['url'] );
-				$links  .= inpo_theme_link( $child ) . '<b>' . esc_html( $child['title'] ) . '</b>' . ( $child['desc'] ? '<small>' . esc_html( $child['desc'] ) . '</small>' : '' ) . '</a>';
+				$links  .= inpo_theme_link( $child ) . ( $child['desc'] ? '<b>' . esc_html( $child['title'] ) . '</b><small>' . esc_html( $child['desc'] ) . '</small>' : esc_html( $child['title'] ) ) . '</a>';
+				$sub    .= inpo_theme_link( $child ) . esc_html( $child['title'] ) . '</a>';
 			}
-			$id   = 'dd-menu-' . $i;
-			$nav .= '<div class="dd' . ( $current ? ' current' : '' ) . '"><button type="button" aria-expanded="false" aria-controls="' . $id . '">' . esc_html( $item['title'] ) . ' ' . inpo_theme_icon( 'chevron' ) . '</button><div class="dd-menu" id="' . $id . '">' . $links . '</div></div>';
-
-			$mobile .= '<a href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['title'] ) . '</a>';
-			foreach ( $item['children'] as $child ) {
-				$mobile .= inpo_theme_link( $child, ' class="sub"' ) . esc_html( $child['title'] ) . '</a>';
-			}
+			$id      = 'dd-menu-' . $i;
+			$nav    .= '<div class="dd' . ( $current ? ' current' : '' ) . '"><button type="button" aria-expanded="false" aria-controls="' . $id . '">' . esc_html( inpo_theme_short_label( $item ) ) . ' ' . inpo_theme_icon( 'chevron' ) . '</button><div class="dd-menu" id="' . $id . '">' . $links . '</div></div>';
+			$mobile .= '<details class="menu-group"' . ( $current ? ' open' : '' ) . '><summary>' . esc_html( $item['title'] ) . ' ' . inpo_theme_icon( 'chevron' ) . '</summary><div class="menu-sub">' . $sub . '</div></details>';
 		} else {
-			$nav    .= inpo_theme_link( $item ) . esc_html( $item['title'] ) . '</a>';
+			$nav    .= inpo_theme_link( $item ) . esc_html( inpo_theme_short_label( $item ) ) . '</a>';
 			$mobile .= inpo_theme_link( $item ) . esc_html( $item['title'] ) . '</a>';
 		}
+
 	}
-	$subscribe = $has_newsletter ? '<button class="btn btn-ink btn-sm" type="button" data-scroll="newsletter">Abonohu</button>' : '';
 	$langs     = inpo_theme_languages();
 
 	$html  = '<a class="skip" href="#main">Kalo te përmbajtja</a>';
@@ -230,20 +285,21 @@ function inpo_theme_render_header() {
 		. '<div class="actions">' . $langs
 		. '<button class="icon-btn" type="button" id="theme" aria-label="Ndrysho temën e ngjyrave">' . inpo_theme_icon( 'moon' ) . '</button>'
 		. '<button class="icon-btn" type="button" id="open-search" aria-label="Kërko në faqe" aria-haspopup="dialog">' . inpo_theme_icon( 'search' ) . '</button>'
-		. $subscribe
 		. '<button class="icon-btn menu-btn" type="button" id="open-menu" aria-label="Hap menunë" aria-expanded="false" aria-haspopup="dialog">' . inpo_theme_icon( 'menu' ) . '</button>'
 		. '</div></div></header>';
 
 	$html .= '<dialog id="menu" aria-label="Menuja"><div class="menu-panel"><div class="menu-top">' . inpo_theme_logo( false )
 		. '<button class="icon-btn" type="button" data-close aria-label="Mbyll menunë">' . inpo_theme_icon( 'close' ) . '</button></div>'
 		. '<nav class="menu-links" aria-label="Menuja mobile">' . $mobile . '</nav>'
-		. '<div class="menu-foot">' . ( $has_newsletter ? '<button class="btn btn-accent" type="button" data-scroll="newsletter">Abonohu</button>' : '' ) . $langs . '</div></div></dialog>';
+		. '<div class="menu-foot">' . $langs . '</div></div></dialog>';
 
 	$html .= '<dialog id="search" aria-label="Kërko"><div class="search-panel"><form class="search-field" role="search" method="get" action="' . esc_url( home_url( '/' ) ) . '">'
 		. str_replace( 'width="18" height="18"', 'width="22" height="22"', inpo_theme_icon( 'search' ) )
 		. '<label for="q-global" class="sr">Kërko lajme dhe publikime</label><input id="q-global" name="s" type="search" placeholder="Kërko lajme dhe publikime" autocomplete="off"><kbd>Esc</kbd></form>'
 		. '<div class="search-res" id="search-res" role="region" aria-live="polite" aria-label="Rezultatet"></div></div></dialog>';
 
+	// Back to top: appears after scrolling down a screen (theme.js).
+	$html .= '<button class="to-top" type="button" id="to-top" data-top aria-label="Kthehu lart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>';
 	$html .= '<div class="toast" id="toast" role="status" aria-live="polite"></div>';
 	return $html;
 }
@@ -265,6 +321,5 @@ function inpo_theme_render_footer() {
 		. $office( $o['office1'], $o['address1'], 'foot-c1' )
 		. $office( $o['office2'], $o['address2'], 'foot-c2' )
 		. '<div class="foot-c3"><h3>Kontakt</h3><a href="mailto:' . esc_attr( $o['email'] ) . '">' . esc_html( $o['email'] ) . '</a><a href="' . esc_attr( $tel ) . '">' . esc_html( $o['phone'] ) . '</a><a href="' . esc_url( $o['audit_url'] ) . '">Raportet e auditimit</a></div>'
-		. '</div><div class="foot-bottom"><small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '. Të gjitha të drejtat e rezervuara.</small>'
-		. '<button class="foot-top" type="button" data-top>Kthehu lart <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button></div></div></footer>';
+		. '</div><div class="foot-bottom"><small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '. Të gjitha të drejtat e rezervuara.</small></div></div></footer>';
 }

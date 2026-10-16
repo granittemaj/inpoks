@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "inpo/bento",
-	"title": "Cases we follow (bento)",
+	"title": "Key findings (bento)",
 	"category": "inpo",
 	"icon": "grid-view",
-	"description": "Featured story and two figures from monitored cases.",
+	"description": "Key findings from monitoring: a featured story and two figures.",
 	"textdomain": "inpo-core",
 	"attributes": {
 		"label": {
@@ -87,6 +87,18 @@
 		"stat2Text": {
 			"type": "string",
 			"default": "Kërkojmë anulimin e tenderit për kritere diskriminuese."
+		},
+		"heading": {
+			"type": "string",
+			"default": "Gjetjet kryesore nga monitorimet"
+		},
+		"linkText": {
+			"type": "string",
+			"default": "Të gjitha reagimet"
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"supports": {

@@ -5,12 +5,28 @@
 	"title": "Team",
 	"category": "inpo",
 	"icon": "groups",
-	"description": "Staff with photo, role and email (INPO > Team).",
+	"description": "Team and board with photo, role and email (INPO > Team).",
 	"textdomain": "inpo-core",
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Stafi"
+			"default": ""
+		},
+		"teamLabel": {
+			"type": "string",
+			"default": "Ekipi"
+		},
+		"boardLabel": {
+			"type": "string",
+			"default": "Bordi"
+		},
+		"wrapped": {
+			"type": "boolean",
+			"default": true
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"supports": {

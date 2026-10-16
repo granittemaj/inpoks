@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/impact-cases",
+	"title": "Impact examples",
+	"category": "inpo",
+	"icon": "awards",
+	"description": "Concrete examples of impact: news marked \"impact example\" and project results.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"kicker": {
+			"type": "string",
+			"default": "Shembuj konkretë"
+		},
+		"heading": {
+			"type": "string",
+			"default": "Kur institucionet veprojnë pas INPO-s"
+		},
+		"text": {
+			"type": "string",
+			"default": "Raste ku një institucion ndryshoi vendim, publikoi dokumente ose rishikoi një tender pas monitorimit dhe reagimit tonë."
+		},
+		"count": {
+			"type": "number",
+			"default": 6
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

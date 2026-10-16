@@ -14,11 +14,11 @@
 		},
 		"kicker": {
 			"type": "string",
-			"default": "Publikimet"
+			"default": "Hulumtime dhe publikime"
 		},
 		"heading": {
 			"type": "string",
-			"default": "Të dhëna, jo opinione."
+			"default": "Hulumtimet dhe publikimet më të fundit"
 		},
 		"count": {
 			"type": "number",

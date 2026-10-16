@@ -1,4 +1,4 @@
-/* INPO blocks on the front end: newsletter, contact form, publication library.
+/* INPO blocks on the front end: newsletter, contact form, news and publication filters, document year filter.
    Every form already works without JS (normal POST/GET); this only makes it instant. */
 (function () {
   'use strict';
@@ -120,54 +120,117 @@
     });
   });
 
-  /* Publication library: filter without reloading, keep the URL shareable */
-  var lib = $('[data-inpo-library]');
-  if (lib && window.fetch && window.DOMParser) {
-    var results = $('#pub-results'), count = $('#pub-count'), typeInput = $('input[type=hidden][name=lloji]', lib);
+  /* Category chips stay on one row and scroll sideways: fade the side that has more to show. */
+  $$('.filters .chips').forEach(function (el) {
+    function set() {
+      var max = el.scrollWidth - el.clientWidth;
+      el.classList.toggle('fade-l', el.scrollLeft > 2);
+      el.classList.toggle('fade-r', max > 2 && el.scrollLeft < max - 2);
+    }
+    el.addEventListener('scroll', set, { passive: true });
+    window.addEventListener('resize', set);
+    set();
+    var on = $('[aria-pressed="true"]', el);
+    if (on && on.offsetLeft + on.offsetWidth > el.clientWidth) el.scrollLeft = on.offsetLeft - 24;
+  });
+
+  /* Filters (news, publications): update the results without reloading, keep the URL shareable.
+     The form works without JS; here every change fetches the same URL and swaps the results,
+     the count, the active-filter tags and the chip counts. */
+  $$('[data-inpo-filter]').forEach(function (form) {
+    if (!window.fetch || !window.DOMParser) return;
+    var kind = form.getAttribute('data-inpo-filter');
+    var results = $('#' + kind + '-results'), count = $('#' + kind + '-count'), active = $('#' + kind + '-active');
+    var facet = $('input[type=hidden]', form), facetName = facet.name;
     var timer, ctrl;
     function url() {
       var params = new URLSearchParams();
-      var q = lib.elements.q.value.trim(), t = typeInput.value;
+      var q = form.elements.q.value.trim();
       if (q) params.set('q', q);
-      if (t) params.set('lloji', t);
-      ['programi', 'viti'].forEach(function (name) { var el = lib.elements[name]; if (el && el.value) params.set(name, el.value); });
-      var s = params.toString();
-      return lib.getAttribute('action').split('?')[0] + (s ? '?' + s : '');
+      if (facet.value) params.set(facetName, facet.value);
+      $$('select', form).forEach(function (s) { if (s.value) params.set(s.name, s.value); });
+      var qs = params.toString();
+      return form.getAttribute('action').split('?')[0] + (qs ? '?' + qs : '');
     }
-    function load(href, push) {
+    function pills() {
+      $$('.sel-pill', form).forEach(function (p) {
+        var s = $('select', p);
+        p.classList.toggle('is-set', !!s.value);
+        $('.sel-v', p).textContent = s.options[s.selectedIndex].text;
+      });
+    }
+    // Copies state from a fetched page into this one, leaving focus where it is.
+    function adopt(doc) {
+      var f = $('[data-inpo-filter="' + kind + '"]', doc);
+      if (!f) return false;
+      results.innerHTML = $('#' + kind + '-results', doc).innerHTML;
+      active.innerHTML = $('#' + kind + '-active', doc).innerHTML;
+      count.textContent = $('#' + kind + '-count', doc).textContent;
+      facet.value = $('input[type=hidden]', f).value;
+      $$('.chip', f).forEach(function (c) {
+        var mine = $$('.chip', form).filter(function (m) { return m.value === c.value; })[0];
+        if (mine) { mine.setAttribute('aria-pressed', c.getAttribute('aria-pressed')); $('.chip-n', mine).textContent = $('.chip-n', c).textContent; }
+      });
+      $$('select', f).forEach(function (s) { var mine = form.elements[s.name]; if (mine) mine.value = s.value; });
+      var q = f.elements.q.value;
+      if (document.activeElement !== form.elements.q) form.elements.q.value = q;
+      pills();
+      return true;
+    }
+    function load(href, focusAfter) {
       if (ctrl) ctrl.abort();
       ctrl = window.AbortController ? new AbortController() : null;
       results.setAttribute('aria-busy', 'true');
-      fetch(href, { signal: ctrl ? ctrl.signal : undefined, headers: { Accept: 'text/html' } })
+      fetch(href, { signal: ctrl ? ctrl.signal : undefined, headers: { Accept: 'text/html' }, credentials: 'same-origin' })
         .then(function (r) { return r.text(); })
         .then(function (html) {
-          var doc = new DOMParser().parseFromString(html, 'text/html');
-          var next = $('#pub-results', doc), nextCount = $('#pub-count', doc);
-          if (!next) { location.href = href; return; }
-          results.innerHTML = next.innerHTML;
-          if (nextCount) count.textContent = nextCount.textContent;
+          if (!adopt(new DOMParser().parseFromString(html, 'text/html'))) { location.href = href; return; }
           results.removeAttribute('aria-busy');
-          if (push) history.replaceState(null, '', href);
+          history.replaceState(null, '', href);
+          if (focusAfter) focusAfter();
         })
         .catch(function (err) { if (!err || err.name !== 'AbortError') location.href = href; });
     }
-    function sync() {
-      $$('[name=lloji][aria-pressed]', lib).forEach(function (b) { b.setAttribute('aria-pressed', String(b.value === typeInput.value)); });
-    }
-    lib.addEventListener('submit', function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
       var sub = e.submitter;
-      if (sub && sub.name === 'lloji') { typeInput.value = sub.value; sync(); }
-      load(url(), true);
+      if (sub && sub.name === facetName) {
+        facet.value = sub.value;
+        $$('.chip', form).forEach(function (c) { c.setAttribute('aria-pressed', String(c === sub)); });
+      }
+      load(url());
     });
-    lib.elements.q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { load(url(), true); }, 220); });
-    $$('select', lib).forEach(function (sel) { sel.addEventListener('change', function () { load(url(), true); }); });
-    results.addEventListener('click', function (e) {
-      var a = e.target.closest('.pager a');
-      if (!a) return;
+    form.elements.q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { load(url()); }, 250); });
+    form.addEventListener('change', function (e) { if (e.target.tagName === 'SELECT') { pills(); load(url()); } });
+    // Tags, "remove all", empty-state buttons and the pager are plain links: follow them in place.
+    function follow(e) {
+      var a = e.target.closest('.tag, .res-clear, .empty a, .pager a');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
-      load(a.href, true);
-      lib.scrollIntoView({ block: 'start' });
+      var paging = !!a.closest('.pager');
+      if (paging) form.scrollIntoView({ block: 'start' });
+      load(a.href, paging ? null : function () { ($('.tag', active) || form.elements.q).focus(); });
+    }
+    active.addEventListener('click', follow);
+    results.addEventListener('click', follow);
+  });
+  /* Transparency documents: the year filter hides rows in place (the form works without JS too). */
+  $$('[data-inpo-docs]').forEach(function (form) {
+    var sel = $('select', form);
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    sel.addEventListener('change', function () {
+      var y = sel.value, pill = sel.closest('.sel-pill');
+      pill.classList.toggle('is-set', !!y);
+      $('.sel-v', pill).textContent = sel.options[sel.selectedIndex].text;
+      $$('.docs-group').forEach(function (g) {
+        var rows = $$('.doc-row', g), shown = 0;
+        rows.forEach(function (r) { var on = !y || r.getAttribute('data-year') === y; r.hidden = !on; shown += on ? 1 : 0; });
+        $('.chip-n', g).textContent = shown;
+        $('.doc-empty', g).hidden = shown > 0;
+      });
+      var url = new URL(location.href);
+      if (y) url.searchParams.set('viti', y); else url.searchParams.delete('viti');
+      history.replaceState(null, '', url.toString());
     });
-  }
+  });
 })();

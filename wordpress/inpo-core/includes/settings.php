@@ -27,6 +27,8 @@ function inpo_core_default_settings() {
 		'facebook'   => 'https://www.facebook.com/OrganizataINPO/',
 		'x'          => 'https://x.com/organizatainpo',
 		'youtube'    => 'https://www.youtube.com/channel/UC5FqAZlDj2B05tV4HSiLWOg',
+		'instagram'  => '',
+		'linkedin'   => '',
 		'audit_url'  => '',
 		'fineprint'  => 'Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).',
 		'recipient'  => '',
@@ -45,7 +47,8 @@ function inpo_core_settings( $key = null ) {
 		$saved = get_option( INPO_CORE_OPTION, array() );
 		$cache = array_merge( inpo_core_default_settings(), is_array( $saved ) ? array_filter( $saved, 'strlen' ) : array() );
 		if ( '' === $cache['audit_url'] ) {
-			$cache['audit_url'] = inpo_core_page_url( 'rreth-nesh' );
+			// The audit reports section of the Transparency page, once it exists.
+			$cache['audit_url'] = get_page_by_path( 'transparenca' ) ? inpo_core_page_url( 'transparenca' ) . '#raportet-e-auditimit' : inpo_core_page_url( 'rreth-nesh' );
 		}
 		if ( '' === $cache['recipient'] ) {
 			$cache['recipient'] = get_option( 'admin_email' );
@@ -67,7 +70,3 @@ add_filter(
 	}
 );
 
-/**
- * Tells the theme the newsletter block exists, so it can show "Abonohu".
- */
-add_filter( 'inpo_has_newsletter', '__return_true' );

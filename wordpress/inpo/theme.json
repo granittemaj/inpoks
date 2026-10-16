@@ -197,11 +197,6 @@
 			"name": "footer",
 			"title": "Footer",
 			"area": "footer"
-		},
-		{
-			"name": "newsletter",
-			"title": "Newsletter",
-			"area": "uncategorized"
 		}
 	]
 }

@@ -13,6 +13,13 @@ const INPO_CORE_PUB_TYPE = 'tipi_i_publikimit';
 const INPO_CORE_PROGRAM = 'inpo_program';
 const INPO_CORE_DONOR = 'inpo_donor';
 const INPO_CORE_MEMBER = 'inpo_member';
+// Added for INPO's brief (Oct 2026): projects, transparency documents, data, thematic fields, institutions.
+const INPO_CORE_PROJECT = 'inpo_project';
+const INPO_CORE_DOC = 'inpo_doc';
+const INPO_CORE_DOC_CAT = 'inpo_doc_cat';
+const INPO_CORE_DATASET = 'inpo_dataset';
+const INPO_CORE_THEME = 'inpo_theme';
+const INPO_CORE_INST = 'inpo_institution';
 
 /**
  * Is the INPO theme active (or being live-previewed)? Until it is, the plugin only stores data
@@ -121,14 +128,20 @@ function inpo_core_post_category( $post ) {
 	$default = (int) get_option( 'default_category' );
 	$chips   = inpo_core_chip_category_ids();
 	$first   = null;
+	$best    = null;
 	foreach ( $cats as $cat ) {
 		if ( $cat->term_id === $default ) {
 			continue;
 		}
-		if ( $chips && in_array( $cat->term_id, $chips, true ) ) {
-			return $cat;
+		// Of several filter categories, the most specific (fewest posts) labels the post:
+		// a public reaction is "Reagim publik" even when it is also listed under Aktivitete.
+		if ( $chips && in_array( $cat->term_id, $chips, true ) && ( ! $best || $cat->count < $best->count ) ) {
+			$best = $cat;
 		}
 		$first = $first ? $first : $cat;
+	}
+	if ( $best ) {
+		return $best;
 	}
 	// With filter categories chosen, other (legacy) categories are not shown as labels.
 	return $chips ? null : $first;
@@ -154,7 +167,12 @@ function inpo_core_chip_category_ids() {
  */
 function inpo_core_post_category_name( $post ) {
 	$cat = inpo_core_post_category( $post );
-	return $cat ? $cat->name : 'Lajm';
+	if ( ! $cat ) {
+		return 'Lajm';
+	}
+	// Card label: the singular form when set (Reagim publik), else the category name.
+	$one = get_term_meta( $cat->term_id, 'inpo_singular', true );
+	return $one ? $one : $cat->name;
 }
 
 /**
@@ -315,30 +333,6 @@ function inpo_core_pub_pdf( $post ) {
 }
 
 /**
- * Does any publication carry a programme? (Hides an empty filter.)
- */
-function inpo_core_pubs_have_programs() {
-	return (bool) get_posts(
-		array(
-			'post_type'      => INPO_CORE_PUB,
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'tax_query'      => array( array( 'taxonomy' => INPO_CORE_PROGRAM, 'operator' => 'EXISTS' ) ),
-		)
-	);
-}
-
-/**
- * Years with published publications, newest first.
- *
- * @return string[]
- */
-function inpo_core_pub_years() {
-	global $wpdb;
-	return $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT YEAR(post_date) FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish' ORDER BY 1 DESC", INPO_CORE_PUB ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-}
-
-/**
  * "2,4 MB" style sizes, Albanian number format.
  */
 function inpo_core_file_size( $bytes ) {
@@ -387,6 +381,23 @@ function inpo_core_pub_preview( $post ) {
  * @param int     $index Position in the list (rotates the style when none is set).
  * @return string
  */
+/**
+ * The table an infographic's cover is drawn from: the chart with the most rows (not a table-only one).
+ */
+function inpo_core_cover_table( $post ) {
+	$csv = (string) get_post_meta( $post->ID, 'inpo_csv', true );
+	if ( '' === trim( $csv ) || ! function_exists( 'inpo_core_csv_tables' ) ) {
+		return null;
+	}
+	$best = null;
+	foreach ( inpo_core_csv_tables( $csv ) as $t ) {
+		if ( 'table' !== $t['chart'] && ( ! $best || count( $t['rows'] ) > count( $best['rows'] ) ) ) {
+			$best = $t;
+		}
+	}
+	return $best;
+}
+
 function inpo_core_cover( $post, $index = 0 ) {
 	$variants = array( 'rings', 'bars', 'dots', 'word' );
 	$variant  = get_post_meta( $post->ID, 'inpo_cover', true );
@@ -395,7 +406,21 @@ function inpo_core_cover( $post, $index = 0 ) {
 	}
 	$preview = inpo_core_pub_preview( $post );
 	$art     = '';
-	if ( $preview ) {
+	$data    = inpo_core_cover_table( $post );
+	if ( $data ) {
+		// An infographic with data: its chart with the most bars, drawn small on the cover.
+		$variant = 'bars';
+		$vals    = array();
+		foreach ( array_slice( $data['rows'], 0, 8 ) as $r ) {
+			$vals[] = isset( $r[1] ) && is_numeric( $r[1] ) ? (float) $r[1] : 0;
+		}
+		$max = max( 1, max( $vals ) );
+		$art = '<div class="bars data">';
+		foreach ( $vals as $v ) {
+			$art .= '<i style="height:' . max( 6, (int) round( $v / $max * 100 ) ) . '%"' . ( $v === $max ? ' class="on"' : '' ) . '></i>';
+		}
+		$art .= '</div>';
+	} elseif ( $preview ) {
 		$variant = 'page';
 		$art     = '<img class="cover-img" src="' . esc_url( $preview['url'] ) . '" alt="" loading="lazy" decoding="async"' . ( $preview['width'] ? ' width="' . $preview['width'] . '" height="' . $preview['height'] . '"' : '' ) . '>';
 	} elseif ( 'rings' === $variant ) {
@@ -456,6 +481,10 @@ function inpo_core_news_row( $post ) {
 	if ( INPO_CORE_PUB === $post->post_type ) {
 		$type  = inpo_core_pub_type( $post );
 		$meta  = '<time>' . esc_html( inpo_core_pub_year( $post ) ) . '</time><span>' . esc_html( inpo_core_type_label( $type ) ) . '</span>';
+	} elseif ( INPO_CORE_PROJECT === $post->post_type ) {
+		$meta = '<time>' . esc_html( get_post_meta( $post->ID, 'inpo_period', true ) ) . '</time><span>Projekt</span>';
+	} elseif ( INPO_CORE_DATASET === $post->post_type ) {
+		$meta = '<time>' . esc_html( get_the_date( 'Y', $post ) ) . '</time><span>Të dhëna</span>';
 	} elseif ( 'page' === $post->post_type ) {
 		$meta = '<time>Faqe</time><span>' . esc_html( get_bloginfo( 'name' ) ) . '</span>';
 	} else {
@@ -555,4 +584,177 @@ function inpo_core_find_post( $id, $slug = '', $post_type = 'post' ) {
 		}
 	}
 	return null;
+}
+
+/* ---------- Thematic fields, institutions ---------- */
+
+/**
+ * Terms of a taxonomy that are in use, ordered by name: slug => name.
+ */
+function inpo_core_terms_in_use( $taxonomy ) {
+	$terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => true, 'orderby' => 'name' ) );
+	$out   = array();
+	foreach ( is_wp_error( $terms ) ? array() : $terms as $t ) {
+		$out[ $t->slug ] = $t->name;
+	}
+	return $out;
+}
+
+/**
+ * Publication types hidden from the library (transparency reports and job calls live elsewhere).
+ *
+ * @return int[] Term IDs.
+ */
+function inpo_core_hidden_type_ids() {
+	static $ids = null;
+	if ( null === $ids ) {
+		$ids = array_map( 'intval', get_terms( array( 'taxonomy' => INPO_CORE_PUB_TYPE, 'hide_empty' => false, 'fields' => 'ids', 'meta_key' => 'inpo_hidden', 'meta_value' => '1' ) ) );
+	}
+	return $ids;
+}
+
+/* ---------- Projects ---------- */
+
+function inpo_core_projects_url( $args = array() ) {
+	$url = get_post_type_archive_link( INPO_CORE_PROJECT );
+	$url = $url ? $url : home_url( '/projektet/' );
+	return $args ? add_query_arg( array_map( 'rawurlencode', $args ), $url ) : $url;
+}
+
+function inpo_core_project_active( $post ) {
+	return 'perfunduar' !== get_post_meta( $post->ID, 'inpo_status', true );
+}
+
+/**
+ * Lines stored as an array meta (objectives, results), without empties.
+ *
+ * @return string[]
+ */
+function inpo_core_lines( $id, $key, $term = false ) {
+	$v = $term ? get_term_meta( $id, $key, true ) : get_post_meta( $id, $key, true );
+	if ( is_string( $v ) ) {
+		$v = preg_split( '/\R/', $v );
+	}
+	return array_values( array_filter( array_map( 'trim', (array) $v ), 'strlen' ) );
+}
+
+/**
+ * Figures from lines "number | label" (e.g. "160 | aktivitete prokurimi të monitoruara").
+ *
+ * @return array[] [ number, label ]
+ */
+function inpo_core_figures( $lines ) {
+	$out = array();
+	foreach ( (array) $lines as $line ) {
+		$parts = array_map( 'trim', explode( '|', $line, 2 ) );
+		if ( 2 === count( $parts ) && '' !== $parts[0] ) {
+			$out[] = $parts;
+		}
+	}
+	return $out;
+}
+
+/**
+ * Figures as a definition list (number big, label small), on any background.
+ */
+function inpo_core_impact_grid( $figures, $class = '' ) {
+	$html = '';
+	foreach ( $figures as $f ) {
+		$html .= '<div><dt>' . esc_html( $f[1] ) . '</dt><dd>' . esc_html( $f[0] ) . '</dd></div>';
+	}
+	return $html ? '<dl class="impact-grid' . ( $class ? ' ' . esc_attr( $class ) : '' ) . '">' . $html . '</dl>' : '';
+}
+
+function inpo_core_project_card( $post ) {
+	$active   = inpo_core_project_active( $post );
+	$period   = get_post_meta( $post->ID, 'inpo_period', true );
+	$donor    = get_post_meta( $post->ID, 'inpo_donor_text', true );
+	$partners = get_post_meta( $post->ID, 'inpo_partners', true );
+	$meta     = '';
+	// Cards leave out values still in [brackets]; the project page lists every field.
+	$period = inpo_core_is_placeholder( $period ) ? '' : $period;
+	if ( $donor && ! inpo_core_is_placeholder( $donor ) ) {
+		$meta .= '<div><dt>Donatori</dt><dd>' . esc_html( $donor ) . '</dd></div>';
+	}
+	if ( $partners && ! inpo_core_is_placeholder( $partners ) ) {
+		$meta .= '<div><dt>Partnerët</dt><dd>' . esc_html( $partners ) . '</dd></div>';
+	}
+	return '<a class="proj" href="' . esc_url( get_permalink( $post ) ) . '"><div class="proj-top"><span class="pill' . ( $active ? ' on' : '' ) . '">' . ( $active ? 'Aktiv' : 'I përfunduar' ) . '</span>'
+		. ( $period ? '<span class="proj-period">' . esc_html( $period ) . '</span>' : '' ) . '</div>'
+		. '<h3>' . inpo_core_title( $post ) . '</h3>' . ( $meta ? '<dl class="proj-meta">' . $meta . '</dl>' : '' )
+		. '<span class="link-u">Shiko projektin ' . inpo_core_icon( 'arrow' ) . '</span></a>';
+}
+
+/* ---------- Results and impact ---------- */
+
+/**
+ * Value of an impact figure. Sources count real content, so the numbers stay current.
+ *
+ * @param string $source manual, reagime, publikime, monitorime, projekte, vite.
+ * @param string $manual Number typed by an editor.
+ */
+function inpo_core_impact_value( $source, $manual ) {
+	switch ( $source ) {
+		case 'reagime':
+			$cat = get_term_by( 'slug', 'reagime-dhe-qendrime-publike', 'category' );
+			return $cat ? (string) $cat->count : '';
+		case 'publikime':
+			$q = new WP_Query( array( 'post_type' => INPO_CORE_PUB, 'post_status' => 'publish', 'posts_per_page' => 1, 'fields' => 'ids', 'tax_query' => inpo_core_hidden_type_ids() ? array( array( 'taxonomy' => INPO_CORE_PUB_TYPE, 'terms' => inpo_core_hidden_type_ids(), 'operator' => 'NOT IN' ) ) : array() ) );
+			return (string) $q->found_posts;
+		case 'monitorime':
+			$t = get_term_by( 'slug', 'raporte', INPO_CORE_PUB_TYPE );
+			return $t ? (string) $t->count : '';
+		case 'projekte':
+			$c = wp_count_posts( INPO_CORE_PROJECT );
+			return isset( $c->publish ) ? (string) $c->publish : '';
+		case 'vite':
+			return (string) ( (int) wp_date( 'Y' ) - 2005 );
+	}
+	return trim( (string) $manual );
+}
+
+/* ---------- Transparency documents ---------- */
+
+/**
+ * File of a document: its own PDF field, else the PDF of the publication it was copied from.
+ *
+ * @return array|null { url, size }
+ */
+function inpo_core_doc_file( $post ) {
+	$url = get_post_meta( $post->ID, 'inpo_pdf', true );
+	if ( $url ) {
+		$id = attachment_url_to_postid( $url );
+		return array( 'url' => $url, 'size' => $id ? (int) @filesize( get_attached_file( $id ) ) : 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+	}
+	$source = (int) get_post_meta( $post->ID, 'inpo_source', true );
+	$source = $source ? get_post( $source ) : null;
+	if ( $source ) {
+		$pdf = inpo_core_pub_pdf( $source );
+		return $pdf ? array( 'url' => $pdf['url'], 'size' => $pdf['size'] ) : null;
+	}
+	return null;
+}
+
+/**
+ * True for a value that is still a placeholder, written in [square brackets].
+ */
+function inpo_core_is_placeholder( $value ) {
+	$value = trim( wp_strip_all_tags( (string) $value ) );
+	return '' !== $value && '[' === $value[0];
+}
+
+/**
+ * Columns for a grid of $n tiles (5, 4 or 3) that leave the fewest empty cells in the last row.
+ */
+function inpo_core_grid_cols( $n ) {
+	$best = 5;
+	$gap  = PHP_INT_MAX;
+	foreach ( array( 5, 4, 3 ) as $cols ) {
+		$empty = ( $cols - $n % $cols ) % $cols;
+		if ( $n >= $cols && $empty < $gap ) {
+			$best = $cols;
+			$gap  = $empty;
+		}
+	}
+	return $n < 3 ? max( 1, $n ) : $best;
 }

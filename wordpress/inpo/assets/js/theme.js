@@ -141,7 +141,11 @@
   /* Header border on scroll */
   var hdr = $('#hdr');
   if (hdr) {
-    var onScroll = function () { hdr.classList.toggle('scrolled', window.scrollY > 8); };
+    var toTop = $('#to-top');
+    var onScroll = function () {
+      hdr.classList.toggle('scrolled', window.scrollY > 8);
+      if (toTop) toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.8);
+    };
     addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
@@ -168,7 +172,7 @@
     document.body.classList.add('loaded');
   }
 
-  /* No-JS form results land on #kontakt / #newsletter: move focus to the message */
+  /* No-JS form results land on #kontakt: move focus to the message */
   var sent = $('.sent') || $('.nl-done');
   if (sent && /inpo_(contact|nl)=/.test(location.search)) { sent.setAttribute('tabindex', '-1'); sent.focus({ preventScroll: true }); }
 })();

@@ -3,7 +3,7 @@
  * Plugin Name:       INPO Core
  * Plugin URI:        https://inpo-ks.org
  * Description:       Content model, blocks, forms and settings for the INPO website. Pairs with the INPO theme.
- * Version:           1.2.0
+ * Version:           1.7.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            Iniciativa për Progres
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'INPO_CORE_VERSION', '1.2.0' );
+define( 'INPO_CORE_VERSION', '1.7.0' );
 define( 'INPO_CORE_FILE', __FILE__ );
 define( 'INPO_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'INPO_CORE_URL', plugin_dir_url( __FILE__ ) );
@@ -26,14 +26,17 @@ define( 'INPO_CORE_URL', plugin_dir_url( __FILE__ ) );
 require_once INPO_CORE_DIR . 'includes/settings.php';
 require_once INPO_CORE_DIR . 'includes/helpers.php';
 require_once INPO_CORE_DIR . 'includes/content-model.php';
+require_once INPO_CORE_DIR . 'includes/filters.php';
 require_once INPO_CORE_DIR . 'includes/forms.php';
 require_once INPO_CORE_DIR . 'includes/rest.php';
 require_once INPO_CORE_DIR . 'includes/blocks.php';
 require_once INPO_CORE_DIR . 'includes/render.php';
+require_once INPO_CORE_DIR . 'includes/listing-pages.php';
 
 if ( is_admin() ) {
 	require_once INPO_CORE_DIR . 'includes/admin.php';
 }
+require_once INPO_CORE_DIR . 'includes/setup-brief.php';
 require_once INPO_CORE_DIR . 'includes/setup.php';
 
 register_activation_hook( __FILE__, 'inpo_core_activate' );

@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "inpo/dataset-list",
+	"title": "Data list",
+	"category": "inpo",
+	"icon": "chart-bar",
+	"description": "All datasets as cards. Uses the data archive.",
+	"textdomain": "inpo-core",
+	"attributes": {
+		"notice": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": true,
+		"customClassName": true
+	},
+	"editorScript": "inpo-core-editor"
+}

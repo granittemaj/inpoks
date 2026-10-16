@@ -5,13 +5,9 @@
 	"title": "Hero",
 	"category": "inpo",
 	"icon": "megaphone",
-	"description": "Large home page headline with two buttons.",
+	"description": "Large home page headline with two buttons, a photo and the fields of action.",
 	"textdomain": "inpo-core",
 	"attributes": {
-		"badge": {
-			"type": "string",
-			"default": "Organizatë joqeveritare në Ferizaj dhe Prishtinë, që nga 2005"
-		},
 		"line1": {
 			"type": "string",
 			"default": "Llogaridhënie,"
@@ -39,6 +35,26 @@
 		"cta2Url": {
 			"type": "string",
 			"default": ""
+		},
+		"areasLabel": {
+			"type": "string",
+			"default": "Fushat e veprimit"
+		},
+		"areas": {
+			"type": "string",
+			"default": ""
+		},
+		"image": {
+			"type": "string",
+			"default": ""
+		},
+		"imageCaption": {
+			"type": "string",
+			"default": "Prezantimi i raportit “Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë”, shkurt 2025"
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"supports": {
