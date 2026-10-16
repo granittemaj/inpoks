@@ -344,7 +344,9 @@ function inpo_core_render_publication_detail( $a, $block ) {
 		. $fact( 'Partnerë', esc_html( $partners ) )
 		. '</dl>';
 
-	$html = '<section class="wrap grid12 pd">' . $cover
+	// An infographic made of images opens on its images (the section below), not on a copy of the first one.
+	$slides = inpo_core_slide_ids( $post );
+	$html   = '<section class="wrap grid12 pd' . ( $slides ? ' no-cover' : '' ) . '">' . ( $slides ? '' : $cover )
 		. '<div class="pd-info">' . $crumbs . '<h1 data-focus>' . inpo_core_title( $post ) . '</h1>' . $facts
 		. ( $lead ? '<p class="lead">' . esc_html( $lead ) . '</p>' : $hint )
 		. '<div class="hero-ctas">' . $download . '<button class="btn btn-line" type="button" data-copy>Kopjo linkun</button></div>'

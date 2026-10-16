@@ -148,16 +148,64 @@ function inpo_core_settings_page() {
 
 /* ---------- Meta boxes ---------- */
 
+/* ---------- Simple publishing screens ---------- */
+
+/**
+ * Structured content (publications, projects, documents, data, team, donors) is edited on the simple
+ * classic screen: the title, then INPO's fields in the main column, then the text. News and pages keep
+ * the block editor.
+ */
+function inpo_core_form_types() {
+	return array( INPO_CORE_PUB, INPO_CORE_PROJECT, INPO_CORE_DOC, INPO_CORE_DATASET, INPO_CORE_MEMBER, INPO_CORE_DONOR );
+}
+add_filter(
+	'use_block_editor_for_post_type',
+	function ( $use, $type ) {
+		return in_array( $type, inpo_core_form_types(), true ) ? false : $use;
+	},
+	10,
+	2
+);
+// INPO's fields right under the title, before the text editor.
+add_action(
+	'edit_form_after_title',
+	function ( $post ) {
+		do_meta_boxes( get_current_screen(), 'inpo_main', $post );
+	}
+);
+add_action(
+	'admin_head',
+	function () {
+		$screen = get_current_screen();
+		if ( ! $screen || 'post' !== $screen->base || ! in_array( $screen->post_type, inpo_core_form_types(), true ) ) {
+			return;
+		}
+		echo '<style>
+			#inpo_main-sortables{margin:16px 0 20px}
+			#inpo_main-sortables .postbox{border-radius:8px}
+			#inpo_main-sortables .postbox-header h2{font-size:15px}
+			.inpo-form-intro{font-size:14px;margin:4px 0 12px}
+			.inpo-step{border-top:1px solid #f0f0f1;padding:14px 0 6px}
+			.inpo-step h3{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:15px}
+			.inpo-step h3 span{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:999px;background:#3D3B8E;color:#fff;font-size:13px}
+			.inpo-step h3 em{font-weight:400;color:#646970;font-size:13px}
+			.inpo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 24px}
+			.inpo-more summary{cursor:pointer;font-weight:600;padding:4px 0}
+			#inpo-pick-pdf,#inpo-slides-pick{min-height:36px}
+		</style>';
+	}
+);
+
 add_action( 'add_meta_boxes', 'inpo_core_meta_boxes' );
 function inpo_core_meta_boxes() {
 	add_meta_box( 'inpo-post', __( 'INPO: news details', 'inpo-core' ), 'inpo_core_post_box', 'post', 'side' );
-	add_meta_box( 'inpo-pub', __( 'INPO: publication details', 'inpo-core' ), 'inpo_core_pub_box', INPO_CORE_PUB, 'side' );
+	add_meta_box( 'inpo-pub', __( 'Publication: file, images and details', 'inpo-core' ), 'inpo_core_pub_box', INPO_CORE_PUB, 'inpo_main', 'high' );
 	add_meta_box( 'inpo-page', __( 'INPO: page head', 'inpo-core' ), 'inpo_core_page_box', 'page', 'side' );
-	add_meta_box( 'inpo-donor', __( 'Donor link', 'inpo-core' ), 'inpo_core_donor_box', INPO_CORE_DONOR, 'normal' );
-	add_meta_box( 'inpo-member', __( 'Role, email and group', 'inpo-core' ), 'inpo_core_member_box', INPO_CORE_MEMBER, 'normal' );
-	add_meta_box( 'inpo-project', __( 'INPO: project details', 'inpo-core' ), 'inpo_core_project_box', INPO_CORE_PROJECT, 'normal', 'high' );
-	add_meta_box( 'inpo-doc', __( 'Document file and year', 'inpo-core' ), 'inpo_core_doc_box', INPO_CORE_DOC, 'normal', 'high' );
-	add_meta_box( 'inpo-dataset', __( 'Data and chart', 'inpo-core' ), 'inpo_core_dataset_box', INPO_CORE_DATASET, 'normal', 'high' );
+	add_meta_box( 'inpo-donor', __( 'Donor link', 'inpo-core' ), 'inpo_core_donor_box', INPO_CORE_DONOR, 'inpo_main', 'high' );
+	add_meta_box( 'inpo-member', __( 'Role, email and group', 'inpo-core' ), 'inpo_core_member_box', INPO_CORE_MEMBER, 'inpo_main', 'high' );
+	add_meta_box( 'inpo-project', __( 'INPO: project details', 'inpo-core' ), 'inpo_core_project_box', INPO_CORE_PROJECT, 'inpo_main', 'high' );
+	add_meta_box( 'inpo-doc', __( 'Document file and year', 'inpo-core' ), 'inpo_core_doc_box', INPO_CORE_DOC, 'inpo_main', 'high' );
+	add_meta_box( 'inpo-dataset', __( 'Data and chart', 'inpo-core' ), 'inpo_core_dataset_box', INPO_CORE_DATASET, 'inpo_main', 'high' );
 	add_meta_box( 'inpo-message', __( 'Sender', 'inpo-core' ), 'inpo_core_message_box', INPO_CORE_MESSAGE, 'side' );
 }
 
@@ -204,19 +252,32 @@ function inpo_core_post_box( $post ) {
 
 function inpo_core_pub_box( $post ) {
 	wp_nonce_field( 'inpo_meta', 'inpo_meta_nonce' );
-	inpo_core_field( $post, 'inpo_pdf', __( 'PDF file (URL)', 'inpo-core' ), 'url', __( 'Optional. Empty = the newest PDF attached to this publication in Media.', 'inpo-core' ) );
-	echo '<p><button type="button" class="button" id="inpo-pick-pdf">' . esc_html__( 'Choose from Media', 'inpo-core' ) . '</button></p>';
+	echo '<div class="inpo-form">';
+	echo '<p class="inpo-form-intro">' . esc_html__( 'Fill in the steps below, choose the category, programme and thematic field in the boxes on the right, then press Publish.', 'inpo-core' ) . '</p>';
+
+	echo '<section class="inpo-step"><h3><span>1</span>' . esc_html__( 'The PDF file', 'inpo-core' ) . '</h3>';
+	echo '<p class="description">' . esc_html__( 'The report as a PDF. Visitors read it online or download it. Leave empty for an infographic made of images.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_pdf', __( 'PDF file', 'inpo-core' ), 'url', __( 'Empty = the newest PDF attached to this publication in Media.', 'inpo-core' ) );
+	echo '<p><button type="button" class="button button-primary" id="inpo-pick-pdf">' . esc_html__( 'Choose PDF from Media', 'inpo-core' ) . '</button></p></section>';
+
+	echo '<section class="inpo-step"><h3><span>2</span>' . esc_html__( 'Infographic images', 'inpo-core' ) . ' <em>' . esc_html__( 'only for infographics', 'inpo-core' ) . '</em></h3>';
+	inpo_core_slides_field( $post, false );
+	echo '</section>';
+
+	echo '<section class="inpo-step"><h3><span>3</span>' . esc_html__( 'Details shown on the page', 'inpo-core' ) . '</h3><div class="inpo-grid">';
 	inpo_core_field( $post, 'inpo_authors', __( 'Author or research team', 'inpo-core' ), 'text', __( 'E.g. the names of the researchers, or "Ekipi hulumtues i INPO-s".', 'inpo-core' ) );
-	inpo_core_field( $post, 'inpo_year', __( 'Year', 'inpo-core' ), 'text', __( 'Empty = the publish date is shown. The publish date is the "Data e publikimit".', 'inpo-core' ) );
-	inpo_core_field( $post, 'inpo_partners', __( 'Partners', 'inpo-core' ), 'text', __( 'If filled in, shown instead of the year.', 'inpo-core' ) );
-	inpo_core_field( $post, 'inpo_donor', __( 'Supported by', 'inpo-core' ), 'text' );
-	inpo_core_field( $post, 'inpo_short', __( 'Cover word', 'inpo-core' ), 'text', __( 'E.g. OShP. Used on the "word" cover style.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_year', __( 'Year', 'inpo-core' ), 'text', __( 'Empty = the publish date is shown.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_partners', __( 'Partners', 'inpo-core' ), 'text', __( 'E.g. IKD, Lëvizja FOL.', 'inpo-core' ) );
+	inpo_core_field( $post, 'inpo_donor', __( 'Supported by', 'inpo-core' ), 'text', __( 'E.g. Rockefeller Brothers Fund.', 'inpo-core' ) );
+	echo '</div><p class="description">' . esc_html__( 'The short summary under the title is the text in the editor above (or the Excerpt).', 'inpo-core' ) . '</p></section>';
+
+	echo '<details class="inpo-step inpo-more"><summary>' . esc_html__( 'More options: the look of the cover', 'inpo-core' ) . '</summary><div class="inpo-grid">';
 	inpo_core_field(
 		$post,
 		'inpo_cover',
 		__( 'Cover style', 'inpo-core' ),
 		'select',
-		__( 'Automatic rotates the style by position in the list.', 'inpo-core' ),
+		__( 'Used when there is no PDF preview or infographic image. Automatic rotates the style.', 'inpo-core' ),
 		array(
 			''      => __( 'Automatic', 'inpo-core' ),
 			'rings' => __( 'Rings (indigo)', 'inpo-core' ),
@@ -225,12 +286,15 @@ function inpo_core_pub_box( $post ) {
 			'word'  => __( 'Word', 'inpo-core' ),
 		)
 	);
-	inpo_core_slides_field( $post );
-	echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Data (infographics)', 'inpo-core' ) . '</h4>';
-	echo '<p class="description">' . esc_html__( 'Optional. The numbers of an infographic, shown on the page as key figures and interactive charts (with a table and CSV download), and as small bars on the cover.', 'inpo-core' ) . '</p>';
+	inpo_core_field( $post, 'inpo_short', __( 'Cover word', 'inpo-core' ), 'text', __( 'E.g. OShP. Used on the "word" cover style.', 'inpo-core' ) );
+	echo '</div></details>';
+
+	echo '<details class="inpo-step inpo-more"' . ( get_post_meta( $post->ID, 'inpo_csv', true ) ? ' open' : '' ) . '><summary>' . esc_html__( 'More options: figures and interactive charts', 'inpo-core' ) . '</summary>';
+	echo '<p class="description">' . esc_html__( 'Optional. An infographic\'s numbers, shown as key figures and interactive charts (with a table and CSV download).', 'inpo-core' ) . '</p>';
 	inpo_core_field( $post, 'inpo_figures', __( 'Key figures', 'inpo-core' ), 'textarea', __( 'One per line: number | label. E.g. 192 | kontrata me procedurë të negociuar.', 'inpo-core' ), array( 'rows' => 4 ) );
-	inpo_core_field( $post, 'inpo_csv', __( 'Charts (CSV)', 'inpo-core' ), 'textarea', __( 'One chart per block, blocks separated by an empty line. First line of a block: # Title | bar, line or table | unit. Then the column names, then one row per category.', 'inpo-core' ), array( 'rows' => 12, 'mono' => true ) );
+	inpo_core_field( $post, 'inpo_csv', __( 'Charts (CSV)', 'inpo-core' ), 'textarea', __( 'One chart per block, blocks separated by an empty line. First line of a block: # Title | bar, line or table | unit. Then the column names, then one row per category.', 'inpo-core' ), array( 'rows' => 10, 'mono' => true ) );
 	inpo_core_field( $post, 'inpo_source', __( 'Source of the data', 'inpo-core' ), 'text' );
+	echo '</details></div>';
 	inpo_core_pdf_picker();
 }
 
@@ -289,17 +353,19 @@ function inpo_core_dataset_box( $post ) {
 /**
  * Infographic images: chosen from Media in the order they are shown; stored as attachment IDs.
  */
-function inpo_core_slides_field( $post ) {
+function inpo_core_slides_field( $post, $heading = true ) {
 	$ids    = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $post->ID, 'inpo_slides', true ) ) ) );
 	$thumbs = '';
 	foreach ( $ids as $id ) {
-		$thumbs .= wp_get_attachment_image( $id, 'thumbnail', false, array( 'style' => 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #dcdcde' ) );
+		$thumbs .= wp_get_attachment_image( $id, 'thumbnail', false, array( 'style' => 'width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid #dcdcde' ) );
 	}
-	echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Infographic images', 'inpo-core' ) . '</h4>';
+	if ( $heading ) {
+		echo '<h4 style="margin:24px 0 4px">' . esc_html__( 'Infographic images', 'inpo-core' ) . '</h4>';
+	}
 	echo '<p class="description">' . esc_html__( 'For an infographic made of images (01/06, 02/06...): choose them in order. The page shows them as a row to swipe with a full-screen view; the first image is the cover.', 'inpo-core' ) . '</p>';
 	echo '<input type="hidden" name="inpo_slides" id="inpo-slides" value="' . esc_attr( implode( ',', $ids ) ) . '">';
 	echo '<div id="inpo-slides-preview" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">' . $thumbs . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
-	echo '<p><button type="button" class="button" id="inpo-slides-pick">' . esc_html__( 'Choose images from Media', 'inpo-core' ) . '</button> ';
+	echo '<p><button type="button" class="button button-primary" id="inpo-slides-pick">' . esc_html__( 'Choose images from Media', 'inpo-core' ) . '</button> ';
 	echo '<button type="button" class="button-link button-link-delete" id="inpo-slides-clear"' . ( $ids ? '' : ' hidden' ) . '>' . esc_html__( 'Remove all', 'inpo-core' ) . '</button></p>';
 	?>
 	<script>
@@ -323,7 +389,7 @@ function inpo_core_slides_field( $post ) {
 				list.forEach(function (m) {
 					var img = document.createElement('img');
 					img.src = (m.sizes && m.sizes.thumbnail ? m.sizes.thumbnail.url : m.url);
-					img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #dcdcde';
+					img.style.cssText = 'width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid #dcdcde';
 					preview.appendChild(img);
 				});
 				clear.hidden = !list.length;
@@ -646,3 +712,67 @@ function inpo_core_help_page() {
 	echo '</div>';
 }
 
+
+/* ---------- Dashboard: publish on the website ---------- */
+
+/**
+ * The publication type for infographics (its slug differs between sites).
+ */
+function inpo_core_infographic_type() {
+	foreach ( (array) get_terms( array( 'taxonomy' => INPO_CORE_PUB_TYPE, 'hide_empty' => false ) ) as $t ) {
+		if ( $t instanceof WP_Term && ( 'infografika' === $t->slug || preg_match( '/infografik/iu', $t->name ) ) ) {
+			return $t;
+		}
+	}
+	return null;
+}
+
+// "Add infographic" opens a new publication with the infographic type already ticked.
+add_filter(
+	'wp_terms_checklist_args',
+	function ( $args, $post_id ) {
+		// phpcs:ignore WordPress.Security.NonceVerification
+		if ( isset( $_GET['inpo_type'] ) && 'infografika' === $_GET['inpo_type'] && isset( $args['taxonomy'] ) && INPO_CORE_PUB_TYPE === $args['taxonomy'] && ! wp_get_object_terms( $post_id, INPO_CORE_PUB_TYPE, array( 'fields' => 'ids' ) ) ) {
+			$term = inpo_core_infographic_type();
+			if ( $term ) {
+				$args['selected_cats'] = array( $term->term_id );
+			}
+		}
+		return $args;
+	},
+	10,
+	2
+);
+
+add_action(
+	'wp_dashboard_setup',
+	function () {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		wp_add_dashboard_widget( 'inpo_publish', __( 'Publish on the INPO website', 'inpo-core' ), 'inpo_core_publish_widget' );
+		// First in the left column.
+		global $wp_meta_boxes;
+		$normal = $wp_meta_boxes['dashboard']['normal']['core'];
+		$mine   = array( 'inpo_publish' => $normal['inpo_publish'] );
+		unset( $normal['inpo_publish'] );
+		$wp_meta_boxes['dashboard']['normal']['core'] = array_merge( $mine, $normal ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+	}
+);
+
+function inpo_core_publish_widget() {
+	$items = array(
+		array( admin_url( 'post-new.php' ), __( 'News or reaction', 'inpo-core' ), 'dashicons-megaphone' ),
+		array( admin_url( 'post-new.php?post_type=' . INPO_CORE_PUB ), __( 'Publication (PDF)', 'inpo-core' ), 'dashicons-media-document' ),
+		array( admin_url( 'post-new.php?post_type=' . INPO_CORE_PUB . '&inpo_type=infografika' ), __( 'Infographic (images)', 'inpo-core' ), 'dashicons-format-gallery' ),
+		array( admin_url( 'post-new.php?post_type=' . INPO_CORE_PROJECT ), __( 'Project', 'inpo-core' ), 'dashicons-portfolio' ),
+		array( admin_url( 'post-new.php?post_type=' . INPO_CORE_DOC ), __( 'Transparency document', 'inpo-core' ), 'dashicons-media-spreadsheet' ),
+		array( admin_url( 'post-new.php?post_type=' . INPO_CORE_DATASET ), __( 'Data and chart', 'inpo-core' ), 'dashicons-chart-bar' ),
+	);
+	echo '<style>.inpo-pub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:4px 0 12px}.inpo-pub-grid a{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border:1px solid #dcdcde;border-radius:8px;text-decoration:none;color:#1d2327;font-weight:600}.inpo-pub-grid a:hover,.inpo-pub-grid a:focus{border-color:#3D3B8E;color:#3D3B8E}.inpo-pub-grid .dashicons{color:#3D3B8E;font-size:24px;width:24px;height:24px}</style>';
+	echo '<p style="margin-top:0">' . esc_html__( 'What do you want to add?', 'inpo-core' ) . '</p><div class="inpo-pub-grid">';
+	foreach ( $items as $it ) {
+		echo '<a href="' . esc_url( $it[0] ) . '"><span class="dashicons ' . esc_attr( $it[2] ) . '" aria-hidden="true"></span>' . esc_html( $it[1] ) . '</a>';
+	}
+	echo '</div><p style="margin-bottom:0"><a href="' . esc_url( admin_url( 'admin.php?page=inpo-help' ) ) . '">' . esc_html__( 'Where is everything else edited? See Help.', 'inpo-core' ) . '</a></p>';
+}

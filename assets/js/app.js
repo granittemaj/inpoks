@@ -364,8 +364,8 @@ function pubDetail(id){
   const more = PUBS.filter(x=>x.id!==id && x.type===p.type).concat(PUBS.filter(x=>x.id!==id && x.type!==p.type)).slice(0,3);
   const fact = (k, v, link) => `<div><dt>${k}</dt><dd>${link?`<a href="${link}">${v}</a>`:v}</dd></div>`;
   return `
-  <section class="wrap grid12 pd">
-    ${cover(p,i)}
+  <section class="wrap grid12 pd${p.slides?' no-cover':''}">
+    ${p.slides ? '' : cover(p,i)}
     <div class="pd-info">
       <nav class="crumbs" aria-label="Gjurma"><a href="#/publikimet">Hulumtime dhe publikime</a><span aria-hidden="true">/</span><a href="#/publikimet?lloji=${p.type}">${PFILTERS.find(f=>f[0]===p.type)[1]}</a></nav>
       <h1 data-focus>${p.title}</h1>

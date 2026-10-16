@@ -60,7 +60,7 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - Still no build step: block editor UI is plain JS on `wp.*` globals (`inpo-core/assets/editor.js`).
 - Publication covers: markup in `cover()` (app.js) and `inpo_core_cover()` (helpers.php) must stay in step. The PDF reader (`inpo-core/assets/reader.js`, pdf.js vendored, lazy-loaded) is WordPress-only; the prototype keeps its placeholder toast.
 - INPO's brief (Oct 2026) is mapped in `inpo-core/includes/setup-brief.php`: news sections, publication categories, thematic fields, institutions, transparency document categories, known projects, and the keyword rules Prepare uses once on the live content. Projects (`inpo_project`, /projektet/), documents (`inpo_doc` + `inpo_doc_cat`, Transparenca page) and data (`inpo_dataset`, /te-dhenat/) are content types in `content-model.php`.
-- **Editors change everything in wp-admin, no code and no Site Editor.** Pages hold page content; the lists (publications, projects, data, news) read heading, intro and extra sections from a Page via `inpo/listing` (`includes/listing-pages.php`); INPO > Help lists where each thing is edited. When adding a feature, give it a wp-admin field (block sidebar, meta box, term field or INPO > Settings) and a row in the Help screen. Secure Custom Fields is not needed.
+- **Editors change everything in wp-admin, no code and no Site Editor.** Pages hold page content; the lists (publications, projects, data, news) read heading, intro and extra sections from a Page via `inpo/listing` (`includes/listing-pages.php`); INPO > Help lists where each thing is edited. Structured content types (publications, projects, documents, data, team, donors) use the classic screen with INPO's box under the title (`inpo_main` meta box context, `inpo_core_form_types()`); the Dashboard has a "Publish on the INPO website" panel. When adding a feature, give it a wp-admin field (block sidebar, meta box, term field or INPO > Settings) and a row in the Help screen. Secure Custom Fields is not needed.
 - Run `npm run wp` to test in a real WordPress. Check every PHP file with `php -l`.
 
 ## Design system rules (approved direction: "Quiet Indigo")
@@ -73,7 +73,7 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - **Photos** use real INPO event photos only, never stock. Rounded like cards (`--r-xl` in the hero, `--r-md`/`--r-lg` in the field grid), captions as text, no gradients over images.
 - **Signature motif:** thin concentric rings (`rings()` helper) on indigo surfaces. Use it sparingly, only on accent panels.
 - **Motion:** exactly one orchestrated moment, the home load sequence (headline reveal, ring draw, count-up). Do not add scroll-triggered fade-ins or per-section animations. User-triggered transitions are fine. Always respect `prefers-reduced-motion`.
-- **Spacing:** sections use `.sec` (72 to 120px top padding). Content width is `.wrap` (max 1440, fluid side padding).
+- **Spacing:** sections use `.sec` (56 to 96px top padding). Content width is `.wrap` (max 1440, fluid side padding).
 
 ## Accessibility checklist (keep passing)
 
