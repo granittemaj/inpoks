@@ -355,6 +355,8 @@ main{display:block;min-height:60vh}
 .socials a:hover{background:var(--bg-soft)}
 .foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;margin-top:56px;padding:24px 0 calc(env(safe-area-inset-bottom,0px) + 32px);border-top:1px solid var(--line)}
 .foot-bottom small{font-size:13px;line-height:1.5;color:var(--muted)}
+.foot-credit a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.foot-credit a:hover{color:var(--accent-ink)}
 /* Back to top: a round button, bottom right, shown once the page has scrolled a screen */
 .to-top{position:fixed;right:max(20px,env(safe-area-inset-right,0px) + 16px);bottom:max(20px,env(safe-area-inset-bottom,0px) + 16px);z-index:45;width:52px;height:52px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--lift);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .25s,transform .25s cubic-bezier(.2,.7,.2,1),visibility 0s .25s,background .15s}
 .to-top.show{opacity:1;visibility:visible;transform:none;transition:opacity .25s,transform .25s cubic-bezier(.2,.7,.2,1),visibility 0s,background .15s}
@@ -494,7 +496,7 @@ main{display:block;min-height:60vh}
 .facts dd a{color:var(--accent-ink)}
 .facts dd a:hover{text-decoration:underline;text-underline-offset:3px}
 @media (max-width:640px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:980px){.pd-info,.pd>.cover,.pd>.pd-cover,.pd.no-cover .pd-info{grid-column:1/-1;grid-row:auto}.pd>.cover,.pd>.pd-cover{position:static;width:min(100%,340px)}.pd-info{order:-1}}
+@media (max-width:980px){.pd-info,.pd>.cover,.pd>.pd-cover,.pd.no-cover .pd-info{grid-column:1/-1;grid-row:auto}.pd>.cover,.pd>.pd-cover{position:relative;top:auto;width:min(100%,340px)}.pd-info{order:-1}}
 
 /* Program page */
 .prog-hero{margin-top:48px;border-radius:var(--r-xl);background:var(--accent);color:var(--on-accent);padding:clamp(28px,5vw,64px);position:relative;overflow:hidden;min-height:360px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}

@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.9.1 =
+* Version bump with the INPO theme 1.9.1.
 
 = 1.9.0 =
 * Easier publishing: publications, projects, documents, data, team and donors open on a simple form (classic screen) with INPO's fields right under the title, in numbered steps (PDF, infographic images, details; cover and charts under "More options"). Dashboard panel "Publish on the INPO website" with one click per kind of content; "Infographic (images)" opens with the type already ticked.

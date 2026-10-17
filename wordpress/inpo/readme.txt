@@ -2,7 +2,7 @@
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Version: 1.9.0
+Version: 1.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,10 @@ INPO theme, (C) Iniciativa për Progres. GPLv2 or later.
 Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
+
+= 1.9.1 =
+* Phones: the publication cover keeps its drawing inside the card.
+* Footer: "Developed by papingu" on the right of the copyright line.
 
 = 1.9.0 =
 * Publication page: title, facts and actions first, a smaller sticky cover on the right (after the text on phones); infographics made of images open on their images. Sections a little closer together.
