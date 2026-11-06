@@ -671,9 +671,26 @@ function inpo_core_render_team( $a ) {
 		return inpo_core_placeholder( __( 'Add people under INPO > Team.', 'inpo-core' ) );
 	}
 	$groups = array( 'ekipi' => '', 'bordi' => '' );
+	// The old site listed the assembly with the staff: anyone whose role is only a board role ("Anëtar",
+	// "Kryesuese e Kuvendit...") goes to the board list (once), not into the team grid.
+	$board = array();
+	foreach ( $people as $p ) {
+		if ( 'bordi' === get_post_meta( $p->ID, 'inpo_group', true ) ) {
+			$board[] = mb_strtolower( wp_strip_all_tags( get_the_title( $p ) ) );
+		}
+	}
 	foreach ( $people as $p ) {
 		$name  = wp_strip_all_tags( get_the_title( $p ) );
 		$role  = get_post_meta( $p->ID, 'inpo_role', true );
+		$board_role = (bool) preg_match( '/^an[eë]tar(e)?$|kuvend|kryesues/iu', trim( (string) $role ) );
+		if ( 'bordi' !== get_post_meta( $p->ID, 'inpo_group', true ) && $board_role ) {
+			if ( in_array( mb_strtolower( $name ), $board, true ) ) {
+				continue;
+			}
+			$board[]          = mb_strtolower( $name );
+			$groups['bordi'] .= '<li' . ( preg_match( '/^Kryesues/u', (string) $role ) ? ' class="chair"' : '' ) . '><span class="board-n">' . esc_html( $name ) . '</span><span class="board-r">' . esc_html( $role ) . '</span></li>';
+			continue;
+		}
 		$email = get_post_meta( $p->ID, 'inpo_email', true );
 		if ( has_post_thumbnail( $p ) ) {
 			$photo = get_the_post_thumbnail( $p, 'medium_large', array( 'alt' => $name, 'loading' => 'lazy', 'sizes' => '(max-width: 560px) 100vw, (max-width: 1100px) 50vw, 25vw' ) );

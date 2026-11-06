@@ -144,31 +144,25 @@
     var toTop = $('#to-top');
     var onScroll = function () {
       hdr.classList.toggle('scrolled', window.scrollY > 8);
+      root.classList.toggle('is-scrolled', window.scrollY > 8);
       if (toTop) toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.8);
     };
     addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
 
-  /* Rolling digits: each digit spins through 0 to 9 and stops on its value (the figures in the hero). */
-  function odometer(el, delay) {
-    var text = el.getAttribute('data-text') || el.textContent.trim();
-    el.setAttribute('data-text', text);
-    el.setAttribute('aria-label', text);
-    var html = '', i = 0;
-    text.split('').forEach(function (ch) {
-      if (/[0-9]/.test(ch)) {
-        var col = '';
-        for (var k = 0; k < 20; k++) col += '<span>' + (k % 10) + '</span>';
-        html += '<span class="odo" aria-hidden="true"><span class="odo-col" style="--to:' + (10 + Number(ch)) + ';--i:' + (i++) + '">' + col + '</span></span>';
-      } else {
-        html += '<span aria-hidden="true">' + esc(ch) + '</span>';
-      }
-    });
-    el.innerHTML = html;
-    el.classList.remove('odo-run');
-    void el.offsetWidth;
-    setTimeout(function () { el.classList.add('odo-run'); }, delay);
+  /* Figures count up from 0 to their value: 0, 1, 2 ... 50. */
+  function countUp(el, delay) {
+    var text = el.textContent.trim(), to = parseInt(text.replace(/[^0-9]/g, ''), 10);
+    if (isNaN(to) || to < 1) return;
+    var dur = Math.min(2200, 900 + to * 12), start = performance.now() + delay;
+    el.textContent = '0';
+    var tick = function (now) {
+      var t = Math.min(1, Math.max(0, (now - start) / dur)), k = 1 - Math.pow(1 - t, 3);
+      el.textContent = String(Math.round(to * k));
+      if (t < 1) requestAnimationFrame(tick); else el.textContent = text;
+    };
+    requestAnimationFrame(tick);
   }
 
   /* Lists (news, publications, projects, archives, search): infinite scroll. The numbered pager stays in
@@ -223,14 +217,11 @@
   window.inpoInfinite = infinite;
   infinite();
 
-  /* Home load sequence: headline reveal, ring draw, rolling figures */
+  /* Home load sequence: headline reveal, ring draw, figures counting up */
   if ($('.hero') || $('.bento')) {
     requestAnimationFrame(function () { requestAnimationFrame(function () { document.body.classList.add('loaded'); }); });
     if (!reduce) {
-      $$('[data-count]').forEach(function (el) { odometer(el, 450); });
-      $$('.hero-figs a').forEach(function (a) {
-        a.addEventListener('mouseenter', function () { var el = $('[data-count]', a); if (el) odometer(el, 0); });
-      });
+      $$('[data-count]').forEach(function (el) { countUp(el, 450); });
     }
   } else {
     document.body.classList.add('loaded');
@@ -246,6 +237,31 @@
     });
     heroEl.addEventListener('pointerleave', function () { heroEl.style.setProperty('--mx', 0); heroEl.style.setProperty('--my', 0); });
   }
+
+  /* "Në këtë faqe": the menu sticks under the header (CSS); here it marks the section being read. */
+  $$('.wrap > .subnav').forEach(function (nav) {
+    if (!('IntersectionObserver' in window)) return;
+    var row = $('.subnav-l', nav);
+    var pairs = $$('a', nav).map(function (a) {
+      var id = decodeURIComponent((a.getAttribute('href') || '').split('#')[1] || '');
+      return [a, id ? document.getElementById(id) : null];
+    }).filter(function (p) { return p[1]; });
+    if (!pairs.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        pairs.forEach(function (p) {
+          if (p[1] === e.target) {
+            p[0].setAttribute('aria-current', 'true');
+            if (row && row.scrollWidth > row.clientWidth) row.scrollTo({ left: p[0].offsetLeft - 20, behavior: reduce ? 'auto' : 'smooth' });
+          } else {
+            p[0].removeAttribute('aria-current');
+          }
+        });
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    pairs.forEach(function (p) { io.observe(p[1]); });
+  });
 
   /* No-JS form results land on #kontakt: move focus to the message */
   var sent = $('.sent') || $('.nl-done');

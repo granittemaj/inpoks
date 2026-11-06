@@ -534,7 +534,7 @@ function datasetPage(id){
 function contactPage(q){
   const topics = [['tender','Informatë për tender'],['publikime','Publikimet'],['media','Media'],['bashkepunim','Bashkëpunim']];
   const t = topics.some(x=>x[0]===q.tema) ? q.tema : 'tender';
-  return pageHead('Kontakti','Le të flasim.','Keni informata për një tender, pyetje për raportet tona ose një ide për bashkëpunim? Na shkruani.') + `
+  return pageHead('Kontakti','Kontakt','Keni informata për një tender, pyetje për raportet tona ose një ide për bashkëpunim? Na shkruani.') + `
   <section class="wrap grid12 contact">
     <form class="form-card" id="c-form" novalidate>
       <div class="two">
@@ -621,6 +621,7 @@ function render(){
   closeDD();
   if (menu.open) menu.close();
   if (after) after();
+  subnavSpy();
   // ?seksioni=x jumps to a section of the page (the nav's sub-items) and focuses its heading.
   const target = q.seksioni && document.getElementById(q.seksioni);
   if (target) {
@@ -635,16 +636,24 @@ function render(){
 
 /* ---------- Hero intro + count-up ---------- */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-// Rolling digits: each digit spins through 0 to 9 and stops on its value (as in the WordPress theme).
-function odometer(el, delay){
-  const text = el.dataset.text || el.textContent.trim();
-  el.dataset.text = text; el.setAttribute('aria-label', text);
-  let i = 0;
-  el.innerHTML = text.split('').map(ch => /[0-9]/.test(ch)
-    ? `<span class="odo" aria-hidden="true"><span class="odo-col" style="--to:${10+Number(ch)};--i:${i++}">${Array.from({length:20},(_,k)=>`<span>${k%10}</span>`).join('')}</span></span>`
-    : `<span aria-hidden="true">${ch}</span>`).join('');
-  el.classList.remove('odo-run'); void el.offsetWidth;
-  setTimeout(() => el.classList.add('odo-run'), delay);
+// Figures count up from 0 to their value (as in the WordPress theme).
+function countUp(el, delay){
+  const text = el.textContent.trim(), to = parseInt(text.replace(/[^0-9]/g,''), 10);
+  if (isNaN(to) || to < 1) return;
+  const dur = Math.min(2200, 900 + to*12), start = performance.now() + delay;
+  el.textContent = '0';
+  const tick = now => { const t = Math.min(1, Math.max(0, (now-start)/dur)), k = 1 - Math.pow(1-t, 3); el.textContent = String(Math.round(to*k)); if (t < 1) requestAnimationFrame(tick); else el.textContent = text; };
+  requestAnimationFrame(tick);
+}
+// "Në këtë faqe": the menu sticks under the header (CSS); this marks the section being read.
+let spyIO;
+function subnavSpy(){
+  if (spyIO) spyIO.disconnect();
+  const nav = $('.wrap > .subnav', app); if (!nav || !('IntersectionObserver' in window)) return;
+  const row = $('.subnav-l', nav);
+  const pairs = $$('a', nav).map(a => { const m = (a.getAttribute('href')||'').match(/seksioni=([^&]+)/); return [a, m ? document.getElementById(m[1]) : null]; }).filter(p => p[1]);
+  spyIO = new IntersectionObserver(entries => entries.forEach(e => { if (!e.isIntersecting) return; pairs.forEach(([a,t]) => { if (t === e.target) { a.setAttribute('aria-current','true'); if (row.scrollWidth > row.clientWidth) row.scrollTo({left:a.offsetLeft-20, behavior: reduce?'auto':'smooth'}); } else a.removeAttribute('aria-current'); }); }), { rootMargin:'-30% 0px -60% 0px' });
+  pairs.forEach(([,t]) => spyIO.observe(t));
 }
 function heroIntro(){
   const hero = $('.hero', app);
@@ -655,8 +664,7 @@ function heroIntro(){
   document.body.classList.remove('loaded');
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('loaded')));
   if (reduce) return;
-  $$('[data-count]', app).forEach(el => odometer(el, 450));
-  $$('.hero-figs a', app).forEach(a => a.addEventListener('mouseenter', () => { const el = $('[data-count]', a); if (el) odometer(el, 0); }));
+  $$('[data-count]', app).forEach(el => countUp(el, 450));
 }
 
 /* ---------- UI: dropdowns, dialogs, search, theme, forms ---------- */
@@ -721,7 +729,7 @@ document.addEventListener('click', e => {
 /* Header border on scroll */
 const hdr = $('#hdr');
 const toTop = $('#to-top');
-const onScroll = () => { hdr.classList.toggle('scrolled', scrollY>8); toTop.classList.toggle('show', scrollY > innerHeight * .8); };
+const onScroll = () => { hdr.classList.toggle('scrolled', scrollY>8); document.documentElement.classList.toggle('is-scrolled', scrollY>8); toTop.classList.toggle('show', scrollY > innerHeight * .8); };
 addEventListener('scroll', onScroll, {passive:true}); onScroll();
 $('#yr').textContent = new Date().getFullYear();
 

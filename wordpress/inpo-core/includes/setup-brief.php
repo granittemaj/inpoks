@@ -810,6 +810,11 @@ function inpo_core_tidy_content() {
 	if ( inpo_core_site_mode() ) {
 		inpo_core_setup_listing_pages();
 	}
+	// 1.18.0: the contact page is called "Kontakt" (was "Le të flasim.", only when not renamed since).
+	$contact = get_page_by_path( 'kontakti' );
+	if ( $contact && 'Le të flasim.' === $contact->post_title ) {
+		wp_update_post( array( 'ID' => $contact->ID, 'post_title' => 'Kontakt' ) );
+	}
 	// 1.13 and 1.14: an unedited home page takes the current order (indigo hero with the figures, news cards, research, programmes, who we are, partners).
 	$home = get_post( (int) get_option( 'page_on_front' ) );
 	if ( $home && inpo_core_site_mode() && inpo_core_theme_active() && inpo_core_layout_outdated( $home, 'home' ) && false !== strpos( $home->post_content, '<!-- wp:inpo/news-list' ) ) {

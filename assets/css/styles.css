@@ -181,17 +181,13 @@ main{display:block;min-height:60vh}
 .hero-figs a:hover .fig-n svg,.hero-figs a:focus-visible .fig-n svg{opacity:1;transform:none}
 .hero-figs a:hover .fig-l,.hero-figs a:focus-visible .fig-l{color:#FFFFFF}
 .hero-figs a:focus-visible{outline:2px solid #FFFFFF;outline-offset:6px}
-/* Hero motion (user-driven or ambient, all off with reduced motion): the rings drift with the cursor, a pulse leaves their centre, the figures roll. */
+/* Hero motion (user-driven or ambient, all off with reduced motion): the rings drift with the cursor, a pulse leaves their centre. */
 @media (prefers-reduced-motion:no-preference){
   .hero>.rings,.hero>.hero-ping{transform:translate3d(calc(var(--mx,0) * 22px),calc(var(--my,0) * 22px),0);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
   .hero-ping circle{animation:hero-ping 7.5s cubic-bezier(.2,.7,.2,1) infinite}
   .hero-ping circle:nth-child(2){animation-delay:2.5s}
   .hero-ping circle:nth-child(3){animation-delay:5s}
 }
-.odo{display:inline-block;height:1.25em;margin-block:-.125em;overflow:hidden;vertical-align:top}
-.odo-col{display:flex;flex-direction:column}
-.odo-col>span{display:block;height:1.25em;line-height:1.25}
-.odo-run .odo-col{transform:translateY(calc(var(--to) * -1.25em));transition:transform calc(1.6s + var(--i) * .25s) cubic-bezier(.16,1,.3,1)}
 @keyframes hero-ping{0%{transform:scale(.12);stroke-opacity:.5}75%{stroke-opacity:0}100%{transform:scale(1);stroke-opacity:0}}
 @media (max-width:640px){
   .hero{border-radius:var(--r-lg)}
@@ -848,3 +844,39 @@ h2.kicker,h3.kicker{margin:0}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Header: smaller once the page scrolls (like INPO's sister sites). --hdr-h follows, so sticky parts and anchors line up. */
+.hdr,.logo img{transition:height .3s cubic-bezier(.2,.7,.2,1)}
+.nav{transition:padding .3s cubic-bezier(.2,.7,.2,1)}
+.nav>a,.nav .dd>button{transition:background .15s,min-height .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1)}
+.icon-btn{transition:width .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1),background .15s}
+.site-header.scrolled .hdr{height:64px}
+.site-header.scrolled .logo img{height:38px}
+.site-header.scrolled .nav{padding:3px}
+.site-header.scrolled .nav>a,.site-header.scrolled .nav .dd>button{min-height:38px;padding-block:6px}
+.site-header.scrolled .icon-btn{width:40px;height:40px}
+.site-header.scrolled .hdr .lang a{min-height:40px}
+:root.is-scrolled{--hdr-h:64px}
+@media (max-width:640px){.site-header.scrolled .hdr{height:60px}.site-header.scrolled .logo img{height:34px}:root.is-scrolled{--hdr-h:60px}}
+
+/* "Në këtë faqe": sticks under the header, full-width background, the section being read is marked */
+.wrap:has(>.subnav){position:sticky;top:var(--hdr-h);z-index:30;margin-top:32px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);transition:top .3s cubic-bezier(.2,.7,.2,1)}
+.wrap>.subnav{margin-top:0;padding-block:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.subnav a[aria-current="true"]{background:var(--bg-soft);color:var(--accent-ink);font-weight:600}
+@media (max-width:640px){
+  .wrap>.subnav{flex-direction:row}
+  .wrap>.subnav .subnav-k{display:none}
+  .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:clamp(20px,5.5vw,80px)}
+  .wrap>.subnav .subnav-l::-webkit-scrollbar{display:none}
+  .wrap>.subnav a{padding:0 14px;white-space:nowrap}
+  .wrap>.subnav a:hover{background:var(--bg-soft)}
+}
+
+/* About: the history in two columns across the width, a compact timeline */
+@media (min-width:1024px){
+  .about-text .prose{grid-column:1/-1;columns:2;column-gap:clamp(32px,4vw,64px)}
+  .about-text .prose p{break-inside:avoid}
+}
+.timeline li,.timeline>.tl{padding:22px 0}
+.timeline .yr{font-size:var(--fs-card-lg);letter-spacing:-.04em}
+@media (min-width:641px){.timeline li>:first-child,.timeline>.tl>:first-child{grid-column:1/span 2}.timeline li>:last-child,.timeline>.tl>:last-child{grid-column:3/-1}}

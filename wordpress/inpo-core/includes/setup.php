@@ -735,7 +735,7 @@ function inpo_core_go_live() {
 			$contact,
 			'<!-- wp:inpo/contact /-->',
 			array(
-				'title'   => 'Le të flasim.',
+				'title'   => 'Kontakt',
 				'kicker'  => 'Kontakti',
 				'excerpt' => 'Keni informata për një tender, pyetje për raportet tona ose një ide për bashkëpunim? Na shkruani.',
 			)
@@ -1039,7 +1039,7 @@ function inpo_core_run_setup() {
 			'content' => inpo_core_about_content(),
 		),
 		'kontakti'   => array(
-			'title'   => 'Le të flasim.',
+			'title'   => 'Kontakt',
 			'kicker'  => 'Kontakti',
 			'excerpt' => 'Keni informata për një tender, pyetje për raportet tona ose një ide për bashkëpunim? Na shkruani.',
 			'content' => '<!-- wp:inpo/contact /-->',
