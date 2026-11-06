@@ -627,9 +627,9 @@ function render(){
   if (target) {
     const h = $('h2', target) || target;
     h.setAttribute('tabindex','-1');
-    target.scrollIntoView({block:'start'});
+    target.scrollIntoView({block:'start', behavior:'instant'});
     h.focus({preventScroll:true});
-  } else if (!firstRender) { window.scrollTo(0,0); const h=$('[data-focus]',app); if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});} }
+  } else if (!firstRender) { window.scrollTo({top:0, behavior:'instant'}); const h=$('[data-focus]',app); if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});} }
   if (!a) heroIntro(firstRender);
   firstRender = false;
 }
@@ -719,6 +719,12 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('sh
 
 /* Global delegation */
 document.addEventListener('click', e => {
+  // Section menu: slide to the section on the same page instead of re-rendering it.
+  const sn = e.target.closest('.subnav a[href*="seksioni="]');
+  if (sn && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+    const t = document.getElementById(sn.getAttribute('href').match(/seksioni=([^&]+)/)[1]);
+    if (t) { e.preventDefault(); history.pushState(null, '', sn.getAttribute('href')); t.scrollIntoView({block:'start', behavior: reduce?'auto':'smooth'}); const h=$('h2',t)||t; h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+  }
   const noop = e.target.closest('[data-noop]'); if (noop) { e.preventDefault(); if (noop.dataset.toast) toast(noop.dataset.toast); }
   const sc = e.target.closest('[data-scroll]'); if (sc) { if (menu.open) menu.close(); const el=$('#'+sc.dataset.scroll); el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'center'}); const field=$('input[type=email]', el); if (field) setTimeout(()=>field.focus({preventScroll:true}), reduce?0:600); }
   const cp = e.target.closest('[data-copy]'); if (cp) { const url=location.href; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(()=>toast('Linku u kopjua.')).catch(()=>toast('Kopjimi nuk u lejua. Kopjoni linkun nga shiriti i adresës.')); }

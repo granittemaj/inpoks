@@ -651,7 +651,7 @@ h2.kicker,h3.kicker{margin:0}
 /* Sections reached from the menu. The page's scroll padding already clears the header;
    a section with top padding lands on its content, not on the padding. */
 .anchor{scroll-margin-top:8px}
-.sec.anchor{scroll-margin-top:calc(8px - clamp(72px,8vw,120px))}
+.sec.anchor{scroll-margin-top:calc(8px - clamp(56px,7vw,96px))}
 .pub-head-l{display:flex;flex-direction:column;gap:14px}
 .box-h{margin:0;font-size:var(--fs-card);line-height:1.25;font-weight:600;letter-spacing:-.02em}
 .box-pad{padding:32px}
@@ -868,6 +868,10 @@ h2.kicker,h3.kicker{margin:0}
 :root.is-scrolled .wrap>.subnav{padding-block:4px}
 :root.is-scrolled .wrap>.subnav a{min-height:36px;font-size:14px}
 @media (pointer:coarse){:root.is-scrolled .wrap>.subnav{padding-block:0}:root.is-scrolled .wrap>.subnav a{min-height:44px}}
+/* Its links slide to the section, which lands below the small header and the menu (46px once scrolled) */
+html:has(.wrap>.subnav){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px + 46px + 16px)}
+@media (max-width:640px){html:has(.wrap>.subnav){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px + 46px + 16px)}}
+@media (prefers-reduced-motion:no-preference){html:has(.wrap>.subnav){scroll-behavior:smooth}}
 @media (max-width:640px){
   .wrap>.subnav{flex-direction:row}
   .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:calc(clamp(20px,5.5vw,80px) - 14px)}
