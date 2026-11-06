@@ -662,7 +662,6 @@ h2.kicker,h3.kicker{margin:0}
 .pill.on{background:var(--accent);color:var(--on-accent)}
 /* In-page links to the sections of a page */
 .subnav{display:flex;align-items:flex-start;gap:0 10px;margin-top:40px;padding-top:12px;border-top:1px solid var(--line)}
-.subnav-k{display:flex;align-items:center;min-height:44px;white-space:nowrap;font-size:14px;font-weight:600;color:var(--accent-ink)}
 .subnav-l{display:flex;flex-wrap:wrap;gap:0 4px;flex:1;min-width:0}
 .subnav a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;font-size:15px;font-weight:500;color:var(--ink-2);transition:background .15s,color .15s}
 .subnav a:hover{background:var(--bg-soft);color:var(--ink)}
@@ -860,14 +859,19 @@ h2.kicker,h3.kicker{margin:0}
 :root.is-scrolled{--hdr-h:64px}
 @media (max-width:640px){.site-header.scrolled .hdr{height:60px}.site-header.scrolled .logo img{height:34px}:root.is-scrolled{--hdr-h:60px}}
 
-/* "Në këtë faqe": sticks under the header, full-width background, the section being read is marked */
+/* Section menu: sticks under the header, gets smaller on scroll, full-width background, the section being read is marked */
 .wrap:has(>.subnav){position:sticky;top:var(--hdr-h);z-index:30;margin-top:32px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);transition:top .3s cubic-bezier(.2,.7,.2,1)}
 .wrap>.subnav{margin-top:0;padding-block:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .subnav a[aria-current="true"]{background:var(--bg-soft);color:var(--accent-ink);font-weight:600}
+.wrap>.subnav .subnav-l{margin-left:-14px}
+.wrap>.subnav a{transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
+.wrap>.subnav{transition:padding .3s cubic-bezier(.2,.7,.2,1)}
+:root.is-scrolled .wrap>.subnav{padding-block:4px}
+:root.is-scrolled .wrap>.subnav a{min-height:36px;font-size:14px}
+@media (pointer:coarse){:root.is-scrolled .wrap>.subnav{padding-block:0}:root.is-scrolled .wrap>.subnav a{min-height:44px}}
 @media (max-width:640px){
   .wrap>.subnav{flex-direction:row}
-  .wrap>.subnav .subnav-k{display:none}
-  .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:clamp(20px,5.5vw,80px)}
+  .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:calc(clamp(20px,5.5vw,80px) - 14px)}
   .wrap>.subnav .subnav-l::-webkit-scrollbar{display:none}
   .wrap>.subnav a{padding:0 14px;white-space:nowrap}
   .wrap>.subnav a:hover{background:var(--bg-soft)}

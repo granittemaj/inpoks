@@ -55,7 +55,7 @@ const gridCols = n => n < 3 ? Math.max(1,n) : [5,4,3].filter(c=>n>=c).reduce((b,
 const donorsHTML = () => `<div class="donors" style="--cols:${gridCols(DONORS.length)}">${DONORS.map(d=>`<div class="donor">${DONOR_LOGOS[d]?`<img src="assets/img/donors/${DONOR_LOGOS[d]}" alt="${d}" loading="lazy" decoding="async">`:d}</div>`).join('')}</div><p class="fineprint">Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).</p>`;
 const pageHead = (kicker, title, lead, crumbs) => `<section class="wrap grid12 page-head"><div class="ph-l">${crumbs||`<span class="kicker">${kicker}</span>`}<h1 class="h-page" data-focus>${title}</h1></div><div class="ph-r">${lead?`<p class="lead">${lead}</p>`:''}</div></section>`;
 // In-page links to the sections of a page (About, Projects, Transparency).
-const subnav = (label, items, base) => `<nav class="subnav" aria-label="${label}"><span class="subnav-k" aria-hidden="true">Në këtë faqe</span><span class="subnav-l">${items.map(([k,l])=>`<a href="#/${base}?seksioni=${k}">${l}</a>`).join('')}</span></nav>`;
+const subnav = (label, items, base) => `<nav class="subnav" aria-label="${label}"><span class="subnav-l">${items.map(([k,l])=>`<a href="#/${base}?seksioni=${k}">${l}</a>`).join('')}</span></nav>`;
 // Figures: big number, short label.
 const impactGrid = items => `<dl class="impact-grid">${items.map(([n,l])=>`<div><dt>${l}</dt><dd>${n==='YEARS'?YEARS:n}</dd></div>`).join('')}</dl>`;
 const projStatus = p => p.status==='aktiv' ? 'Aktiv' : 'I përfunduar';

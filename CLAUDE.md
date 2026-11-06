@@ -75,6 +75,7 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - **News cards** (`ncard()` / `inpo_core_news_card()`) are photo cards: featured photo with the date on it (indigo ring panel when there is none), category as a dot label, title. No excerpt. Used on the home page, the news page and under articles.
 - **Section labels** (`.kicker`) are 12px uppercase with a short indigo line before them.
 - **Mobile menu:** sections closed by default (the current one in indigo), names at 18 to 21px, sub-links indented under a hairline, contact and language in the footer.
+- **Header and section menu on scroll:** the header shrinks from 84 to 64px (`.site-header.scrolled`, `:root.is-scrolled` sets `--hdr-h`). A page's section menu (`subnav()` / `inpo_core_subnav()`, the links only, no "Në këtë faqe" label) sticks under the header, marks the section being read and gets smaller too (36px links, 44px on touch screens).
 - **Board** (Bordi) is a ruled list of names and roles, never photo tiles (`boardList()` / `.board`).
 - **Corner radii follow hierarchy:** `--r-xl` 40px for full-width panels, `--r-lg` 32px for major cards, `--r-md` 28px for covers and cards, `--r-sm`/`--r-xs` for tiles and inputs, 999px for pills and buttons.
 - **Photos** use real INPO event photos only, never stock. Rounded like cards (`--r-xl` in the hero, `--r-md`/`--r-lg` in the field grid), captions as text, no gradients over images.

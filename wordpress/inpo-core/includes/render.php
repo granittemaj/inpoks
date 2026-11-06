@@ -953,7 +953,7 @@ function inpo_core_subnav( $items, $label = 'Në këtë faqe', $aria = 'Seksione
 	foreach ( $items as $item ) {
 		$links .= '<a href="#' . esc_attr( $item[0] ) . '">' . esc_html( $item[1] ) . '</a>';
 	}
-	return $links ? '<nav class="subnav" aria-label="' . esc_attr( $aria ) . '"><span class="subnav-k" aria-hidden="true">' . esc_html( $label ) . '</span><span class="subnav-l">' . $links . '</span></nav>' : '';
+	return $links ? '<nav class="subnav" aria-label="' . esc_attr( $aria ) . '"><span class="subnav-l">' . $links . '</span></nav>' : '';
 }
 
 /**
