@@ -13,7 +13,7 @@
   var POSTS = 'post';
   // Field labels are English (wp-admin); the values typed in are public site copy (Albanian).
   var FIELDS = {
-    'inpo/hero': [['line1', 'Headline, line 1'], ['line2', 'Headline, line 2 (indigo)'], ['lead', 'Intro', 'textarea'], ['cta1Text', 'Button 1: text'], ['cta1Url', 'Button 1: link', 'text', DIRECT], ['cta2Text', 'Button 2: text'], ['cta2Url', 'Button 2: link', 'text', DIRECT], ['areasLabel', 'Fields of action: label'], ['areas', 'Fields of action', 'textarea', 'One per line: Label | link. Empty = the two programmes and three thematic fields.'], ['showImage', 'Show the photo', 'toggle'], ['image', 'Photo', 'image', 'Empty = the photo from the report launch, February 2025.', 'imageCaption'], ['imageCaption', 'Photo caption', 'textarea']],
+    'inpo/hero': [['line1', 'Headline, line 1'], ['line2', 'Headline, line 2 (indigo)'], ['lead', 'Intro', 'textarea'], ['cta1Text', 'Button 1: text'], ['cta1Url', 'Button 1: link', 'text', DIRECT], ['cta2Text', 'Button 2: text'], ['cta2Url', 'Button 2: link', 'text', DIRECT], ['showAreas', 'Show the fields of action under the photo', 'toggle'], ['areasLabel', 'Fields of action: label'], ['areas', 'Fields of action', 'textarea', 'One per line: Label | link. Empty = the two programmes and three thematic fields.'], ['showImage', 'Show the photo', 'toggle'], ['image', 'Photo', 'image', 'Empty = the photo from the report launch, February 2025.', 'imageCaption'], ['imageCaption', 'Photo caption', 'textarea']],
     'inpo/field': [['kicker', 'Kicker'], ['heading', 'Heading', 'textarea'], ['text', 'Text', 'textarea'], ['buttonText', 'Button text'], ['buttonUrl', 'Button link', 'text', 'Empty = the About page'], ['photos', 'Photos', 'gallery', 'The first is shown large. Captions come from Media (edit them below). Empty = five photos from INPO events (2023 to 2024).']],
     'inpo/bento': [
       ['heading', 'Heading (key findings)'], ['linkText', 'Link text'], ['linkUrl', 'Link', 'text', 'Empty = news filtered by "Reagime dhe qëndrime publike"'], ['label', 'Label for screen readers (when there is no heading)'],
@@ -52,7 +52,7 @@
       ['item3Source', 'Figure 3: source', 'select', IMPACT_SOURCES], ['item3Number', 'Figure 3: number (manual)'], ['item3Label', 'Figure 3: label'],
       ['item4Source', 'Figure 4: source', 'select', IMPACT_SOURCES], ['item4Number', 'Figure 4: number (manual)'], ['item4Label', 'Figure 4: label']
     ],
-    'inpo/projects': [['kicker', 'Kicker'], ['heading', 'Heading'], ['count', 'Number of projects', 'number'], ['linkText', 'Button text'], ['showDonors', 'Show donors and partners', 'toggle'], ['donorsHeading', 'Donors heading']],
+    'inpo/projects': [['kicker', 'Kicker'], ['heading', 'Heading'], ['count', 'Number of projects', 'number'], ['linkText', 'Button text'], ['showProjects', 'Show project cards (off: partners only)', 'toggle'], ['showDonors', 'Show donors and partners', 'toggle'], ['donorsHeading', 'Donors kicker or heading'], ['partnersHeading', 'Heading when only partners show']],
     'inpo/project-list': [['allLabel', '"All" filter label'], ['activeLabel', 'Active filter label'], ['doneLabel', 'Completed filter label'], ['links', 'Section links', 'textarea', 'One per line: anchor | Label']],
     'inpo/project-detail': [],
     'inpo/impact-cases': [['kicker', 'Kicker'], ['heading', 'Heading'], ['text', 'Text', 'textarea'], ['count', 'Number of news examples', 'number'], ['anchor', 'Anchor']],

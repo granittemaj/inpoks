@@ -262,7 +262,7 @@ function inpo_theme_render_header() {
 			$overview = untrailingslashit( strtok( $item['url'], '#' ) ) !== untrailingslashit( strtok( $item['children'][0]['url'], '#' ) );
 			$current  = inpo_theme_is_current( $item['url'] ) && $overview;
 			$links    = $overview ? '<a class="dd-all" href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['title'] ) . '<small>Përmbledhje</small></a>' : '';
-			$sub      = $overview ? '<a href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['title'] ) . ': përmbledhje</a>' : '';
+			$sub      = $overview ? '<a href="' . esc_url( $item['url'] ) . '">Përmbledhje</a>' : '';
 			foreach ( $item['children'] as $child ) {
 				$current = $current || inpo_theme_is_current( $child['url'] );
 				$links  .= inpo_theme_link( $child ) . ( $child['desc'] ? '<b>' . esc_html( $child['title'] ) . '</b><small>' . esc_html( $child['desc'] ) . '</small>' : esc_html( $child['title'] ) ) . '</a>';
@@ -270,7 +270,8 @@ function inpo_theme_render_header() {
 			}
 			$id      = 'dd-menu-' . $i;
 			$nav    .= '<div class="dd' . ( $current ? ' current' : '' ) . '"><button type="button" aria-expanded="false" aria-controls="' . $id . '">' . esc_html( inpo_theme_short_label( $item ) ) . ' ' . inpo_theme_icon( 'chevron' ) . '</button><div class="dd-menu" id="' . $id . '">' . $links . '</div></div>';
-			$mobile .= '<details class="menu-group"' . ( $current ? ' open' : '' ) . '><summary>' . esc_html( $item['title'] ) . ' ' . inpo_theme_icon( 'chevron' ) . '</summary><div class="menu-sub">' . $sub . '</div></details>';
+			// Closed by default, so all sections fit on one screen; the current one is marked.
+			$mobile .= '<details name="menu-group" class="menu-group' . ( $current ? ' current' : '' ) . '"><summary>' . esc_html( $item['title'] ) . ' <span class="mchev">' . inpo_theme_icon( 'chevron' ) . '</span></summary><div class="menu-sub">' . $sub . '</div></details>';
 		} else {
 			$nav    .= inpo_theme_link( $item ) . esc_html( inpo_theme_short_label( $item ) ) . '</a>';
 			$mobile .= inpo_theme_link( $item ) . esc_html( $item['title'] ) . '</a>';
@@ -278,6 +279,7 @@ function inpo_theme_render_header() {
 
 	}
 	$langs     = inpo_theme_languages();
+	$org       = inpo_theme_org();
 
 	$html  = '<a class="skip" href="#main">Kalo te përmbajtja</a>';
 	$html .= '<header class="site-header" id="hdr"><div class="wrap hdr">' . inpo_theme_logo()
@@ -291,7 +293,7 @@ function inpo_theme_render_header() {
 	$html .= '<dialog id="menu" aria-label="Menuja"><div class="menu-panel"><div class="menu-top">' . inpo_theme_logo( false )
 		. '<button class="icon-btn" type="button" data-close aria-label="Mbyll menunë">' . inpo_theme_icon( 'close' ) . '</button></div>'
 		. '<nav class="menu-links" aria-label="Menuja mobile">' . $mobile . '</nav>'
-		. '<div class="menu-foot">' . $langs . '</div></div></dialog>';
+		. '<div class="menu-foot"><div class="menu-contact"><a href="mailto:' . esc_attr( $org['email'] ) . '">' . esc_html( $org['email'] ) . '</a><a href="' . esc_attr( 'tel:' . preg_replace( '/[^0-9+]/', '', str_replace( '(0)', '', $org['phone'] ) ) ) . '">' . esc_html( $org['phone'] ) . '</a></div>' . $langs . '</div></div></dialog>';
 
 	$html .= '<dialog id="search" aria-label="Kërko"><div class="search-panel"><form class="search-field" role="search" method="get" action="' . esc_url( home_url( '/' ) ) . '">'
 		. str_replace( 'width="18" height="18"', 'width="22" height="22"', inpo_theme_icon( 'search' ) )

@@ -129,8 +129,6 @@ const CASES = ['mkrs-procesverbal'];
     text:'INPO është organizatë joqeveritare dhe jofitimprurëse, e themeluar në Ferizaj në vitin 2005, me zyra në Ferizaj dhe Prishtinë. Takojmë zyrtarët, monitorojmë tenderët dhe gjetjet i sjellim para institucioneve dhe qytetarëve.',
     photos:[
       ['java-kunder-korrupsionit.jpg','Java kundër korrupsionit, dhjetor 2023'],
-      ['takim-prizren.jpg','Takim me nënkryetarin e Komunës së Prizrenit, tetor 2023'],
-      ['takim-gjakove.jpg','Takim me nënkryetarin e Komunës së Gjakovës, tetor 2023'],
       ['tryeze-diskutimi.jpg','Tryezë diskutimi me IKD-në dhe Lëvizjen FOL, shkurt 2024'],
       ['raporti-mosplanifikimi.jpg','Prezantimi i raportit “(Mos)Planifikimi i Prokurimit”, nëntor 2023']
     ]

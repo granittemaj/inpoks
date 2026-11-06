@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.11.0
+Stable tag: 1.12.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.12.0 =
+* A shorter home page: no strip of fields under the hero, latest publications with one button instead of type chips, partners' logos instead of project cards, three photos in Kush jemi. Each can be switched back in the block's sidebar.
 
 = 1.11.0 =
 * Publication pages: the text has a share box beside it, as on articles.

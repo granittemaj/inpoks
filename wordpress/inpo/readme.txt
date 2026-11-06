@@ -20,6 +20,12 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.12.1 =
+* Mobile menu: opening a section closes the one that was open.
+
+= 1.12.0 =
+* Mobile menu redone: sections closed by default with the current one in indigo, calmer type, no scrollbar, sub-links indented, contact and language in the footer.
+
 = 1.11.2 =
 * Phones: an infographic's facts use the full width.
 

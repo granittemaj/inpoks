@@ -50,7 +50,7 @@ function inpo_core_render_hero( $a ) {
 		. '<h1 class="h-display" data-focus><span class="line"><span>' . esc_html( $a['line1'] ) . '</span></span><span class="line accent"><span>' . esc_html( $a['line2'] ) . '</span></span></h1>'
 		. '<div class="hero-side"><p class="lead">' . esc_html( $a['lead'] ) . '</p><div class="hero-ctas">' . $btns . '</div></div>'
 		. inpo_core_hero_photo( $a )
-		. inpo_core_hero_areas( $a )
+		. ( ! empty( $a['showAreas'] ) ? inpo_core_hero_areas( $a ) : '' )
 		. '</section>';
 }
 
@@ -81,8 +81,6 @@ function inpo_core_render_field( $a ) {
 		$base = INPO_CORE_URL . 'assets/photos/';
 		foreach ( array(
 			'java-kunder-korrupsionit.jpg' => 'Java kundër korrupsionit, dhjetor 2023',
-			'takim-prizren.jpg'            => 'Takim me nënkryetarin e Komunës së Prizrenit, tetor 2023',
-			'takim-gjakove.jpg'            => 'Takim me nënkryetarin e Komunës së Gjakovës, tetor 2023',
 			'tryeze-diskutimi.jpg'         => 'Tryezë diskutimi me IKD-në dhe Lëvizjen FOL, shkurt 2024',
 			'raporti-mosplanifikimi.jpg'   => 'Prezantimi i raportit “(Mos)Planifikimi i Prokurimit”, nëntor 2023',
 		) as $file => $cap ) {
@@ -255,8 +253,10 @@ function inpo_core_render_publications( $a, $block ) {
 			. '<h2 class="h2">' . esc_html( $a['heading'] ) . '</h2></div><div class="chips">' . $chips . '</div></div>';
 	} else {
 		$link = $a['linkUrl'] ? $a['linkUrl'] : inpo_core_pubs_url( ( 'program' === $a['mode'] && is_tax( INPO_CORE_PROGRAM ) ) ? array( 'programi' => get_queried_object()->slug ) : array() );
-		$head = '<div class="pub-head"><h2 class="h2">' . esc_html( $a['heading'] ) . '</h2>'
-			. ( $a['linkText'] ? '<a class="btn btn-line btn-sm" href="' . esc_url( $link ) . '">' . esc_html( $a['linkText'] ) . '</a>' : '' ) . '</div>';
+		$text = $a['linkText'] ? $a['linkText'] : 'Të gjitha publikimet';
+		$head = '<div class="pub-head"><div class="pub-head-l">'
+			. ( $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
+			. '<h2 class="h2">' . esc_html( $a['heading'] ) . '</h2></div><a class="btn btn-line btn-sm" href="' . esc_url( $link ) . '">' . esc_html( $text ) . '</a></div>';
 	}
 	$grid = 3 === (int) $a['columns'] ? 'pubs three' : 'pubs';
 	return '<section ' . inpo_core_wrapper( 'wrap sec' ) . '>' . $head . '<div class="' . $grid . '">' . $cards . '</div></section>';
@@ -1049,10 +1049,16 @@ function inpo_core_render_projects( $a ) {
 	$active = get_posts( array( 'post_type' => INPO_CORE_PROJECT, 'posts_per_page' => $count, 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'DESC' ), 'meta_query' => array( 'relation' => 'OR', array( 'key' => 'inpo_status', 'value' => 'perfunduar', 'compare' => '!=' ), array( 'key' => 'inpo_status', 'compare' => 'NOT EXISTS' ) ) ) );
 	$done   = count( $active ) < $count ? get_posts( array( 'post_type' => INPO_CORE_PROJECT, 'posts_per_page' => $count - count( $active ), 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'DESC' ), 'meta_key' => 'inpo_status', 'meta_value' => 'perfunduar' ) ) : array();
 	$cards  = '';
-	foreach ( array_merge( $active, $done ) as $p ) {
+	foreach ( ! empty( $a['showProjects'] ) ? array_merge( $active, $done ) : array() as $p ) {
 		$cards .= inpo_core_project_card( $p );
 	}
 	$donors = $a['showDonors'] ? inpo_core_donor_tiles() : '';
+	// Partners only (the home page default): one heading, the logos and a link to the projects.
+	if ( ! $cards && $donors ) {
+		return '<section ' . inpo_core_wrapper( 'wrap sec' ) . '><div class="pub-head"><div class="pub-head-l"><span class="kicker">' . esc_html( $a['donorsHeading'] ) . '</span>'
+			. '<h2 class="h2">' . esc_html( $a['partnersHeading'] ) . '</h2></div>'
+			. ( $a['linkText'] ? '<a class="btn btn-line btn-sm" href="' . esc_url( inpo_core_projects_url() ) . '">' . esc_html( $a['linkText'] ) . '</a>' : '' ) . '</div>' . $donors . '</section>';
+	}
 	if ( ! $cards && ! $donors ) {
 		return inpo_core_placeholder( __( 'Add projects under Projects and donors under INPO > Donors.', 'inpo-core' ) );
 	}

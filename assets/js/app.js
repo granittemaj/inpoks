@@ -82,7 +82,7 @@ function buildChrome(){
     return `<div class="dd" data-nav="${key}"><button type="button" aria-expanded="false" aria-controls="dd-${n}">${short} ${CHEV}</button><div class="dd-menu" id="dd-${n}">${all}${kids.map(([l,h])=>`<a href="${h}">${l}</a>`).join('')}</div></div>`;
   }).join('');
   menuLinks.innerHTML = NAV.map(([label, href, kids]) => !kids ? `<a href="${href}">${label}</a>`
-    : `<details class="menu-group"><summary>${label} ${CHEV}</summary><div class="menu-sub">${kids[0][1] === href ? '' : `<a href="${href}">${label}: përmbledhje</a>`}${kids.map(([l,h])=>`<a href="${h}">${l}</a>`).join('')}</div></details>`).join('');
+    : `<details name="menu-group" class="menu-group" data-nav="${sectionOf(href)}"><summary>${label} <span class="mchev">${CHEV}</span></summary><div class="menu-sub">${kids[0][1] === href ? '' : `<a href="${href}">Përmbledhje</a>`}${kids.map(([l,h])=>`<a href="${h}">${l}</a>`).join('')}</div></details>`).join('');
 }
 buildChrome();
 
@@ -94,8 +94,6 @@ const fieldHTML = () => `<section class="wrap sec field" aria-labelledby="h-fiel
   </div></section>`;
 function home(){
   const latestPubs = PUBS.slice(0,4);
-  // Active projects first, then the latest completed ones.
-  const projects = PROJECTS.filter(p=>p.status==='aktiv').concat(PROJECTS.filter(p=>p.status!=='aktiv')).slice(0,3);
   return `
   <section class="wrap grid12 hero">
     <h1 class="h-display" data-focus><span class="line"><span>Llogaridhënie,</span></span><span class="line accent"><span>jo premtime.</span></span></h1>
@@ -104,7 +102,6 @@ function home(){
       <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
     </div>
     <figure class="hero-photo"><img src="assets/img/photos/${D.HERO_PHOTO[0]}" alt="${D.HERO_PHOTO[1]}" width="960" height="1200" fetchpriority="high" decoding="async"><figcaption>${D.HERO_PHOTO[1]}</figcaption></figure>
-    <div class="areas"><span class="areas-k" id="areas-k">Fushat e veprimit</span><ul aria-labelledby="areas-k">${D.AREAS.map(([l,h])=>`<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>
   </section>
   <section class="wrap" aria-labelledby="h-gjetjet">
     <div class="bento-head"><h2 class="kicker" id="h-gjetjet">Gjetjet kryesore nga monitorimet</h2><a class="link-u" href="#/lajme?kategoria=reagime">Të gjitha reagimet ${ARROW}</a></div>
@@ -128,7 +125,7 @@ function home(){
   <section class="wrap sec">
     <div class="pub-head">
       <div class="pub-head-l"><span class="kicker">Hulumtime dhe publikime</span><h2 class="h2">Hulumtimet dhe publikimet më të fundit</h2></div>
-      <div class="chips">${PFILTERS.slice(0,4).map(([k,l],i)=>`<a class="chip${i===0?' on':''}" href="#/publikimet${k==='all'?'':'?lloji='+k}">${l}</a>`).join('')}</div>
+      <a class="btn btn-line btn-sm" href="#/publikimet">Të gjitha publikimet</a>
     </div>
     <div class="pubs">${latestPubs.map(pubCard).join('')}</div>
   </section>
@@ -158,9 +155,8 @@ function home(){
     <div class="news-list">${[NEWS[1],NEWS[3],NEWS[5]].map(newsRow).join('')}</div>
   </section>
   <section class="wrap sec">
-    <div class="pub-head"><div class="pub-head-l"><span class="kicker">Projektet dhe partnerët</span><h2 class="h2">Projektet tona</h2></div><a class="btn btn-line btn-sm" href="#/projektet">Të gjitha projektet</a></div>
-    <div class="projs">${projects.map(projCard).join('')}</div>
-    <h3 class="sub-h">Donatorët dhe partnerët</h3>${donorsHTML()}
+    <div class="pub-head"><div class="pub-head-l"><span class="kicker">Donatorët dhe partnerët</span><h2 class="h2">Me kë punojmë.</h2></div><a class="btn btn-line btn-sm" href="#/projektet">Të gjitha projektet</a></div>
+    ${donorsHTML()}
   </section>`;
 }
 

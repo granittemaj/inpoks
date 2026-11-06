@@ -55,6 +55,10 @@
 		"showImage": {
 			"type": "boolean",
 			"default": true
+		},
+		"showAreas": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"supports": {
