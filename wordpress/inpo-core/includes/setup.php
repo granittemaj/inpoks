@@ -753,6 +753,11 @@ function inpo_core_go_live() {
 	// Infographics posted on the old site as a Facebook box become Infografika publications.
 	$fb_paths = array();
 	$fb_done  = inpo_core_convert_facebook_infographics( $backup, $fb_paths );
+	$fb_video = inpo_core_convert_facebook_videos( $backup );
+	if ( $fb_video ) {
+		/* translators: %d: number of videos */
+		$log[] = sprintf( __( 'Facebook videos now play on the site: %d', 'inpo-core' ), $fb_video );
+	}
 	if ( $fb_done ) {
 		/* translators: %d: number of infographics */
 		$log[] = sprintf( __( 'Facebook infographics now under Publications > Infografika: %d', 'inpo-core' ), count( $fb_done ) );
@@ -822,6 +827,7 @@ function inpo_core_restore() {
 		foreach ( isset( $backup['created'] ) ? (array) $backup['created'] : array() as $id ) {
 			wp_update_post( array( 'ID' => $id, 'post_status' => 'draft' ) );
 		}
+		inpo_core_unconvert_facebook_videos( $backup );
 		$fb = inpo_core_unconvert_facebook_infographics( $backup );
 		if ( $fb ) {
 			/* translators: %d: number of posts */

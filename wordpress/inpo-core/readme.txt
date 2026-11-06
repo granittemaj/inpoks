@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.14.0
+Stable tag: 1.15.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.15.0 =
+* Videos play on the site, not on Facebook: INPO's video posted as a Facebook box (Boshllëqet e transparencës) is bundled and replaces the box at go-live (a site already live converts on the next wp-admin page; restored with the old theme). Older [video] posts use the browser's own player; YouTube embeds play full width from youtube-nocookie.com.
 
 = 1.14.0 =
 * Hero: one indigo panel with INPO's rings, the statement, the intro, two buttons and the figures (reactions, publications, years) along its bottom. The photo and the separate figures strip are gone; an unedited home page drops the strip.

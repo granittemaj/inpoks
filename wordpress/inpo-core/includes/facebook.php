@@ -298,6 +298,116 @@ function inpo_core_unconvert_facebook_infographics( $backup ) {
 	return $n;
 }
 
+/**
+ * INPO's own videos that the old site showed as a Facebook box: Facebook video number => bundled file
+ * (seed/videos/, H.264 with sound, so every browser plays it) and its poster frame.
+ */
+function inpo_core_facebook_videos() {
+	return array(
+		'2011325626215625' => array( 'file' => 'boshlleqet-reel.mp4', 'poster' => 'boshlleqet-reel.jpg', 'title' => 'Boshllëqet e transparencës në procedurat e negociuara' ),
+	);
+}
+
+/**
+ * A bundled file in the media library (added once; found again by its _inpo_seed name).
+ */
+function inpo_core_seed_attachment( $dir, $file, $parent, $title ) {
+	$found = get_posts( array( 'post_type' => 'attachment', 'post_status' => 'inherit', 'meta_key' => '_inpo_seed', 'meta_value' => $file, 'fields' => 'ids', 'posts_per_page' => 1 ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+	if ( $found ) {
+		return (int) $found[0];
+	}
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$src = INPO_CORE_DIR . $dir . $file;
+	$tmp = wp_tempnam( $file );
+	if ( ! file_exists( $src ) || ! $tmp || ! copy( $src, $tmp ) ) {
+		return 0;
+	}
+	$id = media_handle_sideload( array( 'name' => 'inpo-' . $file, 'tmp_name' => $tmp ), $parent, $title );
+	if ( is_wp_error( $id ) ) {
+		wp_delete_file( $tmp );
+		return 0;
+	}
+	update_post_meta( $id, '_inpo_seed', $file );
+	return (int) $id;
+}
+
+/**
+ * Replaces the Facebook video box in a post with the site's own player. Records the old content in $backup.
+ *
+ * @return int Posts changed.
+ */
+function inpo_core_convert_facebook_videos( &$backup ) {
+	@set_time_limit( 300 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+	$n = 0;
+	foreach ( inpo_core_facebook_videos() as $fb => $def ) {
+		$id   = inpo_core_post_with( $fb );
+		$post = $id ? get_post( $id ) : null;
+		if ( ! $post || false === strpos( $post->post_content, 'facebook.com/plugins/video.php' ) ) {
+			continue;
+		}
+		$video  = inpo_core_seed_attachment( 'seed/videos/', $def['file'], $id, $def['title'] );
+		$poster = inpo_core_seed_attachment( 'seed/videos/', $def['poster'], $id, $def['title'] );
+		if ( ! $video ) {
+			continue;
+		}
+		$url    = wp_get_attachment_url( $video );
+		$poster = $poster ? wp_get_attachment_url( $poster ) : '';
+		$block  = '<!-- wp:video {"id":' . $video . '} -->' . "\n" . '<figure class="wp-block-video"><video controls playsinline preload="metadata" src="' . esc_url( $url ) . '"' . ( $poster ? ' poster="' . esc_url( $poster ) . '"' : '' ) . '></video></figure>' . "\n" . '<!-- /wp:video -->';
+		$new    = preg_replace( '#(?:<div[^>]*>\s*)?<iframe[^>]+facebook\.com/plugins/video\.php[^>]*>\s*</iframe>(?:\s*</div>)?#i', $block, $post->post_content, 1 );
+		if ( ! $new || $new === $post->post_content ) {
+			continue;
+		}
+		$backup['videos'][ $id ] = $post->post_content;
+		wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $new ) ) );
+		if ( $poster && ! has_post_thumbnail( $id ) ) {
+			set_post_thumbnail( $id, inpo_core_seed_attachment( 'seed/videos/', $def['poster'], $id, $def['title'] ) );
+			$backup['video_thumbs'][] = $id;
+		}
+		++$n;
+	}
+	return $n;
+}
+
+/**
+ * Puts the Facebook boxes back (inpo_core_restore).
+ */
+function inpo_core_unconvert_facebook_videos( $backup ) {
+	foreach ( isset( $backup['videos'] ) ? (array) $backup['videos'] : array() as $id => $content ) {
+		wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $content ) ) );
+	}
+	foreach ( isset( $backup['video_thumbs'] ) ? (array) $backup['video_thumbs'] : array() as $id ) {
+		delete_post_thumbnail( $id );
+	}
+	return isset( $backup['videos'] ) ? count( (array) $backup['videos'] ) : 0;
+}
+
+/* ---------- Video players: the browser's own, full width ---------- */
+
+// [video] shortcodes (older posts): the browser's player instead of MediaElement's, so it matches the site.
+add_filter(
+	'wp_video_shortcode_library',
+	function ( $library ) {
+		return inpo_core_theme_active() && ! is_admin() ? 'none' : $library;
+	}
+);
+
+// YouTube: full width at 16:9, from youtube-nocookie.com (no cookies until the visitor plays).
+add_filter(
+	'embed_oembed_html',
+	function ( $html, $url ) {
+		if ( is_admin() || ! inpo_core_theme_active() || ! preg_match( '#youtu\.?be#', (string) $url ) ) {
+			return $html;
+		}
+		$html = str_replace( array( 'https://www.youtube.com/embed/', 'https://youtube.com/embed/' ), 'https://www.youtube-nocookie.com/embed/', $html );
+		$html = preg_replace( '/\s(width|height)="\d+"/', '', $html );
+		return '<div class="video-embed">' . $html . '</div>';
+	},
+	10,
+	2
+);
+
 // A site that went live with an earlier version: convert on the next wp-admin page (the images take a moment).
 add_action(
 	'admin_init',
@@ -310,7 +420,8 @@ add_action(
 		$backup = is_array( $backup ) ? $backup : array();
 		$paths  = array();
 		$done   = inpo_core_convert_facebook_infographics( $backup, $paths );
-		if ( ! $done ) {
+		$videos = inpo_core_convert_facebook_videos( $backup );
+		if ( ! $done && ! $videos ) {
 			return;
 		}
 		update_option( 'inpo_core_live_backup', $backup, false );
@@ -318,8 +429,16 @@ add_action(
 		$map          = is_array( $map ) ? $map : array( 'pages' => array(), 'paths' => array() );
 		$map['paths'] = array_merge( isset( $map['paths'] ) ? (array) $map['paths'] : array(), $paths );
 		update_option( 'inpo_core_redirects', $map, false );
-		/* translators: %s: titles */
-		set_transient( 'inpo_core_notice', array( 'upgrade', array( sprintf( __( 'Facebook infographics now under Publications > Infografika: %s', 'inpo-core' ), implode( '; ', $done ) ) ) ), HOUR_IN_SECONDS );
+		$lines = array();
+		if ( $done ) {
+			/* translators: %s: titles */
+			$lines[] = sprintf( __( 'Facebook infographics now under Publications > Infografika: %s', 'inpo-core' ), implode( '; ', $done ) );
+		}
+		if ( $videos ) {
+			/* translators: %d: number of videos */
+			$lines[] = sprintf( __( 'Facebook videos now play on the site: %d', 'inpo-core' ), $videos );
+		}
+		set_transient( 'inpo_core_notice', array( 'upgrade', $lines ), HOUR_IN_SECONDS );
 	}
 );
 

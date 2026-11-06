@@ -20,6 +20,9 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.15.0 =
+* Video players in articles: full width, rounded like photos.
+
 = 1.14.0 =
 * The indigo hero panel: rings draw and figures count up on load (respects reduced motion).
 

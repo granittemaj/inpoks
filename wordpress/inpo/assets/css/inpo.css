@@ -998,3 +998,12 @@ html.reader-open{overflow:hidden}
 .editor-styles-wrapper .bento>*{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Videos in articles: the browser's own player (or YouTube at 16:9), full width, rounded like photos */
+.prose video{display:block;width:100%;height:auto;border-radius:var(--r-md);background:#0E0E1A}
+.prose .wp-block-video,.prose .wp-video{width:100%!important;max-width:100%;margin:0 0 1.4em}
+.prose .wp-video video{width:100%!important;height:auto!important}
+.video-embed{position:relative;aspect-ratio:16/9;border-radius:var(--r-md);overflow:hidden;background:#0E0E1A;margin:0 0 1.4em}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.prose .wp-block-embed{margin:0 0 1.4em}
+.prose .wp-block-embed__wrapper .video-embed{margin:0}
