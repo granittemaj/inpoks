@@ -20,6 +20,13 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.18.0 =
+* The figures in the hero count up from 0.
+* The header gets smaller once the page scrolls.
+* Section menus stick under the header, mark the section being read, get smaller on scroll and slide to their section.
+* About: history timeline more compact; "Kush jemi" as a statement with key facts.
+* News as photo cards on programme pages and archives; transparency documents as cards.
+
 = 1.17.3 =
 * Rolling figures: each digit has room, so no neighbouring digit shows.
 

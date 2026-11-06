@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.17.0
+Stable tag: 1.18.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,13 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.18.0 =
+* The contact page is called "Kontakt" (renamed once when still "Le të flasim.").
+* About: "Kush jemi" is one short statement with key facts (founded, offices, programmes); an unedited About page takes it once. Assembly members appear in the board list.
+* Section menus show only their links (no "Në këtë faqe" label).
+* Programme pages and news archives show news as photo cards, as on the news page.
+* Transparency: documents as cards (year, icon, title, PDF buttons).
 
 = 1.17.0 =
 * Filters hand their new results to the theme's infinite scroll.
