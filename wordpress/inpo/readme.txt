@@ -20,6 +20,9 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.9.3 =
+* Version bump with INPO Core 1.9.3.
+
 = 1.9.2 =
 * Footer credit ends with a full stop: "Developed by papingu."
 

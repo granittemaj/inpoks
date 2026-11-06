@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.9.2
+Stable tag: 1.9.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.9.3 =
+* Text pasted from Facebook in "bold" or "italic" maths letters (𝐈𝐍𝐏𝐎) shows as normal letters in titles, excerpts and articles, so it uses the site font and screen readers and search engines can read it. What editors typed is kept.
 
 = 1.9.2 =
 * Version bump with the INPO theme 1.9.2.

@@ -208,8 +208,57 @@ function inpo_core_excerpt( $post ) {
 	if ( has_excerpt( $post ) ) {
 		return wp_strip_all_tags( get_the_excerpt( $post ) );
 	}
-	return wp_trim_words( wp_strip_all_tags( strip_shortcodes( $post->post_content ) ), 28, '…' );
+	return inpo_core_plain_letters( wp_trim_words( wp_strip_all_tags( strip_shortcodes( $post->post_content ) ), 28, '…' ) );
 }
+
+/**
+ * Plain letters for "styled" text pasted from Facebook (𝐈𝐍𝐏𝐎, 𝑃𝑟𝑖𝑠ℎ𝑡𝑖𝑛𝑒̈). Those characters are maths symbols:
+ * they show in a fallback serif font, and screen readers and search engines cannot read them as words.
+ * Only the display changes; what editors typed is kept as it is.
+ *
+ * @param string $text Text.
+ * @return string
+ */
+function inpo_core_plain_letters( $text ) {
+	if ( ! is_string( $text ) || ! preg_match( '/[\x{1D400}-\x{1D7FF}\x{210E}]/u', $text ) ) {
+		return $text;
+	}
+	$text = preg_replace_callback(
+		'/[\x{1D400}-\x{1D6A3}\x{1D7CE}-\x{1D7FF}\x{210E}]/u',
+		function ( $m ) {
+			$b  = array_map( 'ord', str_split( $m[0] ) );
+			$cp = 4 === count( $b )
+				? ( ( $b[0] & 7 ) << 18 ) | ( ( $b[1] & 63 ) << 12 ) | ( ( $b[2] & 63 ) << 6 ) | ( $b[3] & 63 )
+				: ( ( $b[0] & 15 ) << 12 ) | ( ( $b[1] & 63 ) << 6 ) | ( $b[2] & 63 );
+			if ( 0x210E === $cp ) {
+				return 'h'; // Italic small h lives outside the block.
+			}
+			if ( $cp >= 0x1D7CE ) {
+				return (string) ( ( $cp - 0x1D7CE ) % 10 );
+			}
+			// Thirteen alphabets of 52 letters each (A to Z, then a to z): bold, italic, script, sans-serif and so on.
+			$i = ( $cp - 0x1D400 ) % 52;
+			return chr( $i < 26 ? 65 + $i : 71 + $i );
+		},
+		$text
+	);
+	// Letters followed by a combining mark (e + ¨) become one character (ë).
+	if ( class_exists( 'Normalizer' ) ) {
+		$n = Normalizer::normalize( $text, Normalizer::FORM_C );
+		return false === $n ? $text : $n;
+	}
+	return strtr( $text, array( "e\u{0308}" => 'ë', "E\u{0308}" => 'Ë', "c\u{0327}" => 'ç', "C\u{0327}" => 'Ç' ) );
+}
+
+foreach ( array( 'the_title', 'get_the_excerpt', 'the_content', 'single_post_title' ) as $inpo_core_hook ) {
+	add_filter( $inpo_core_hook, 'inpo_core_plain_letters', 20 );
+}
+add_filter(
+	'document_title_parts',
+	function ( $parts ) {
+		return array_map( 'inpo_core_plain_letters', $parts );
+	}
+);
 
 /**
  * Publication type term (first one).
