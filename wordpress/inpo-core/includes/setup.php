@@ -746,6 +746,13 @@ function inpo_core_go_live() {
 	}
 	/* translators: %d: number of projects */
 	$log[] = sprintf( __( 'Projects published: %d', 'inpo-core' ), inpo_core_publish_seeded_projects() );
+	// Infographics posted on the old site as a Facebook box become Infografika publications.
+	$fb_paths = array();
+	$fb_done  = inpo_core_convert_facebook_infographics( $backup, $fb_paths );
+	if ( $fb_done ) {
+		/* translators: %d: number of infographics */
+		$log[] = sprintf( __( 'Facebook infographics now under Publications > Infografika: %d', 'inpo-core' ), count( $fb_done ) );
+	}
 	update_option( 'inpo_core_live_backup', $backup, false );
 
 	// Old pages whose role the new design covers: send visitors (and search engines) on.
@@ -764,6 +771,7 @@ function inpo_core_go_live() {
 	}
 	// A child of the old "Publikimet" page now sits under the publication archive URL.
 	$redirects['paths']['/publikimet/publikimet-ne-programin-e-qeverisjes-se-mire/'] = inpo_core_pubs_url();
+	$redirects['paths'] = array_merge( $redirects['paths'], $fb_paths );
 	update_option( 'inpo_core_redirects', $redirects, false );
 	/* translators: %d: number of redirects */
 	$log[] = sprintf( __( 'Redirects from old pages: %d', 'inpo-core' ), count( $redirects['pages'] ) + count( $redirects['paths'] ) );
@@ -809,6 +817,11 @@ function inpo_core_restore() {
 		}
 		foreach ( isset( $backup['created'] ) ? (array) $backup['created'] : array() as $id ) {
 			wp_update_post( array( 'ID' => $id, 'post_status' => 'draft' ) );
+		}
+		$fb = inpo_core_unconvert_facebook_infographics( $backup );
+		if ( $fb ) {
+			/* translators: %d: number of posts */
+			$log[] = sprintf( __( 'Facebook infographics back as news posts: %d', 'inpo-core' ), $fb );
 		}
 		/* translators: %d: number of pages */
 		$log[] = sprintf( __( 'Pages restored: %d', 'inpo-core' ), count( (array) $backup['pages'] ) );

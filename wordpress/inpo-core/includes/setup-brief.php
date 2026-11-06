@@ -271,31 +271,8 @@ function inpo_core_sort_publications() {
 	}
 	$count = array( 'types' => 0, 'themes' => 0, 'insts' => 0, 'programs' => 0 );
 	foreach ( inpo_core_all_ids( array( 'post_type' => INPO_CORE_PUB ) ) as $id ) {
-		$title = wp_strip_all_tags( get_the_title( $id ) );
-		foreach ( inpo_core_type_rules() as $slug => $re ) {
-			if ( preg_match( $re, $title ) ) {
-				wp_set_object_terms( $id, $slug, INPO_CORE_PUB_TYPE, true );
-				$count['types']++;
-			}
-		}
-		foreach ( inpo_core_theme_definitions() as $slug => $def ) {
-			if ( isset( $themes[ $slug ] ) && preg_match( $def[1], $title ) ) {
-				wp_set_object_terms( $id, $themes[ $slug ], INPO_CORE_THEME, true );
-				$count['themes']++;
-			}
-		}
-		foreach ( inpo_core_institution_definitions() as $slug => $def ) {
-			if ( isset( $insts[ $slug ] ) && preg_match( $def[1], $title ) ) {
-				wp_set_object_terms( $id, $insts[ $slug ], INPO_CORE_INST, true );
-				$count['insts']++;
-			}
-		}
-		if ( ! wp_get_object_terms( $id, INPO_CORE_PROGRAM, array( 'fields' => 'ids' ) ) ) {
-			$slug = inpo_core_guess_program( get_post( $id ) );
-			if ( $slug && term_exists( $slug, INPO_CORE_PROGRAM ) ) {
-				wp_set_object_terms( $id, $slug, INPO_CORE_PROGRAM );
-				$count['programs']++;
-			}
+		foreach ( inpo_core_label_by_title( $id, $themes, $insts ) as $key => $n ) {
+			$count[ $key ] += $n;
 		}
 	}
 	update_option( 'inpo_core_sorted_v2', time() );
@@ -309,6 +286,46 @@ function inpo_core_sort_publications() {
 		/* translators: %d: number */
 		sprintf( __( 'Publications linked to a programme: %d', 'inpo-core' ), $count['programs'] ),
 	);
+}
+
+/**
+ * Labels one publication from its title: type, thematic fields, institutions (keyword rules), and a programme
+ * guessed from the fields when it has none. Only adds.
+ *
+ * @param int   $id     Publication.
+ * @param int[] $themes Thematic field term IDs by slug (inpo_core_ensure_terms).
+ * @param int[] $insts  Institution term IDs by slug.
+ * @return int[] Labels added: types, themes, insts, programs.
+ */
+function inpo_core_label_by_title( $id, $themes, $insts ) {
+	$count = array( 'types' => 0, 'themes' => 0, 'insts' => 0, 'programs' => 0 );
+	$title = inpo_core_plain_letters( wp_strip_all_tags( get_the_title( $id ) ) );
+	foreach ( inpo_core_type_rules() as $slug => $re ) {
+		if ( preg_match( $re, $title ) ) {
+			wp_set_object_terms( $id, $slug, INPO_CORE_PUB_TYPE, true );
+			$count['types']++;
+		}
+	}
+	foreach ( inpo_core_theme_definitions() as $slug => $def ) {
+		if ( isset( $themes[ $slug ] ) && preg_match( $def[1], $title ) ) {
+			wp_set_object_terms( $id, $themes[ $slug ], INPO_CORE_THEME, true );
+			$count['themes']++;
+		}
+	}
+	foreach ( inpo_core_institution_definitions() as $slug => $def ) {
+		if ( isset( $insts[ $slug ] ) && preg_match( $def[1], $title ) ) {
+			wp_set_object_terms( $id, $insts[ $slug ], INPO_CORE_INST, true );
+			$count['insts']++;
+		}
+	}
+	if ( ! wp_get_object_terms( $id, INPO_CORE_PROGRAM, array( 'fields' => 'ids' ) ) ) {
+		$slug = inpo_core_guess_program( get_post( $id ) );
+		if ( $slug && term_exists( $slug, INPO_CORE_PROGRAM ) ) {
+			wp_set_object_terms( $id, $slug, INPO_CORE_PROGRAM );
+			$count['programs']++;
+		}
+	}
+	return $count;
 }
 
 /**
@@ -832,6 +849,10 @@ function inpo_core_tidy_content() {
 			$about->post_content
 		);
 		wp_update_post( wp_slash( array( 'ID' => $about->ID, 'post_content' => $content ) ) );
+	}
+	// 1.10.0: infographics posted as a Facebook box become Infografika publications (on the next wp-admin page).
+	if ( 'live' === inpo_core_site_mode() ) {
+		update_option( 'inpo_core_needs_facebook', 1 );
 	}
 	// 1.5.1: infographics carry their numbers (charts on the page); donors get their logos.
 	if ( inpo_core_site_mode() ) {

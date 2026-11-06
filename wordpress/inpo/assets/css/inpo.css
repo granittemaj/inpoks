@@ -832,6 +832,7 @@ p.kicker{margin:0}
 .prose ul,.prose ol{margin:0 0 1.2em;padding-left:1.2em;max-width:68ch}
 .prose li{margin-bottom:.4em}
 .prose a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px}
+.prose a.btn-line{color:var(--ink);text-decoration:none}
 .prose blockquote,.prose .wp-block-quote{margin:0 0 1.2em;padding:0 0 0 22px;border-left:3px solid var(--accent-ink);color:var(--ink)}
 .prose figure{margin:0 0 1.4em}
 .prose img{border-radius:var(--r-sm)}

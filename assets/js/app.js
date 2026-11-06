@@ -378,7 +378,7 @@ function pubDetail(id){
         ${p.inst ? fact('Institucioni', INSTS[p.inst], `#/publikimet?institucioni=${p.inst}`) : (p.partners ? fact('Partnerë', p.partners) : fact('Institucioni', 'Disa institucione'))}
       </dl>
       <p class="lead">Përmbledhja e shkurtër e publikimit shfaqet këtu: pyetja që trajton, gjetjet kryesore dhe rekomandimet për institucionet.</p>
-      <div class="hero-ctas"><a class="btn btn-accent" href="#" data-noop data-toast="Shkarkimi lidhet me skedarin PDF gjatë migrimit.">${DL} Shkarko PDF</a><button class="btn btn-line" type="button" data-copy>Kopjo linkun</button></div>
+      <div class="hero-ctas">${p.slides ? `<button class="btn btn-accent" type="button" data-scroll="h-slides">${ARROW} Shiko infografikën</button>` : `<a class="btn btn-accent" href="#" data-noop data-toast="Shkarkimi lidhet me skedarin PDF gjatë migrimit.">${DL} Shkarko PDF</a>`}<button class="btn btn-line" type="button" data-copy>Kopjo linkun</button></div>
       ${p.donor?`<p class="muted" style="margin:0;font-size:14px">Me mbështetjen e ${p.donor}.</p>`:''}
     </div>
   </section>
@@ -735,7 +735,7 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('sh
 /* Global delegation */
 document.addEventListener('click', e => {
   const noop = e.target.closest('[data-noop]'); if (noop) { e.preventDefault(); if (noop.dataset.toast) toast(noop.dataset.toast); }
-  const sc = e.target.closest('[data-scroll]'); if (sc) { if (menu.open) menu.close(); const el=$('#'+sc.dataset.scroll); el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'center'}); setTimeout(()=>$('#nl-email').focus({preventScroll:true}), reduce?0:600); }
+  const sc = e.target.closest('[data-scroll]'); if (sc) { if (menu.open) menu.close(); const el=$('#'+sc.dataset.scroll); el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'center'}); const field=$('input[type=email]', el); if (field) setTimeout(()=>field.focus({preventScroll:true}), reduce?0:600); }
   const cp = e.target.closest('[data-copy]'); if (cp) { const url=location.href; (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(()=>toast('Linku u kopjua.')).catch(()=>toast('Kopjimi nuk u lejua. Kopjoni linkun nga shiriti i adresës.')); }
   if (e.target.closest('[data-open-search]')) openSearch();
   if (e.target.closest('[data-top]')) { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); $('.logo').focus({ preventScroll: true }); }

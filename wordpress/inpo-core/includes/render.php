@@ -310,7 +310,9 @@ function inpo_core_render_publication_detail( $a, $block ) {
 	$download = $pdf
 		? '<button class="btn btn-accent" type="button"' . $reader . ' data-pdf-hash>' . inpo_core_icon( 'book' ) . ' Lexo online</button>'
 			. '<a class="btn btn-line" href="' . esc_url( $pdf['url'] ) . '" download>' . inpo_core_icon( 'download' ) . ' Shkarko PDF' . ( $size ? ' <span class="btn-meta">' . esc_html( $size ) . '</span>' : '' ) . '</a>'
-		: '<a class="btn btn-accent" href="#" data-noop data-toast="Skedari PDF do të shtohet së shpejti.">' . inpo_core_icon( 'download' ) . ' Shkarko PDF</a>';
+		: ( inpo_core_slide_ids( $post )
+			? '<a class="btn btn-accent" href="#h-slides" data-scroll="h-slides">' . inpo_core_icon( 'arrow' ) . ' Shiko infografikën</a>'
+			: '<a class="btn btn-accent" href="#" data-noop data-toast="Skedari PDF do të shtohet së shpejti.">' . inpo_core_icon( 'download' ) . ' Shkarko PDF</a>' );
 	// The cover opens the reader too; without a server preview, the browser draws the real first page into it.
 	$cover = inpo_core_cover( $post, 0 );
 	if ( $pdf ) {
@@ -353,10 +355,11 @@ function inpo_core_render_publication_detail( $a, $block ) {
 		. ( $donor ? '<p class="muted" style="margin:0;font-size:14px">Me mbështetjen e ' . esc_html( $donor ) . '.</p>' : '' )
 		. '</div></section>';
 
+	// An infographic shows its images first, then the text.
+	$html .= inpo_core_pub_slides( $post );
 	if ( trim( $post->post_content ) ) {
 		$html .= '<section class="wrap sec grid12"><div class="prose">' . inpo_core_the_content( $post ) . '</div></section>';
 	}
-	$html .= inpo_core_pub_slides( $post );
 	$html .= inpo_core_pub_data( $post );
 	return '<div ' . inpo_core_wrapper( '' ) . '>' . $html . '</div>';
 }

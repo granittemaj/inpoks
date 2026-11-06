@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.9.3
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,11 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.10.0 =
+* The four infographics the old site posted as a Facebook box (Trendi i anulimit, Boshllëqet e transparencës, TEMF, Planet e prokurimit) become Infografika publications at go-live: all their images as swipeable slides with a full-screen view, INPO's text from the post, the original date. Old addresses redirect; switching back to the old theme turns them back into news posts. A site already live converts on the next wp-admin page.
+* Any other Facebook box in an article shows as a "Shiko në Facebook" button: no Facebook scripts on the site.
+* An infographic page shows its images first, then the text, and its main button scrolls to the images instead of offering a PDF it does not have.
 
 = 1.9.3 =
 * Text pasted from Facebook in "bold" or "italic" maths letters (𝐈𝐍𝐏𝐎) shows as normal letters in titles, excerpts and articles, so it uses the site font and screen readers and search engines can read it. What editors typed is kept.
