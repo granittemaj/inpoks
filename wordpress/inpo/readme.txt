@@ -20,6 +20,19 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.17.3 =
+* Rolling figures: each digit has room, so no neighbouring digit shows.
+
+= 1.17.2 =
+* Infinite scroll loads one page at a time as the visitor scrolls (no runaway loading when the browser keeps the footer in view).
+
+= 1.17.1 =
+* Infinite scroll keeps loading while the end of the list is still in view; the numbered pager hides once it takes over.
+
+= 1.17.0 =
+* Infinite scroll on news, publications, projects, archives and search (the pager stays for search engines and without JS; a "Shfaq më shumë" button as well).
+* Hero figures roll like an odometer on load and again on hover. No underline under "jo premtime.".
+
 = 1.16.0 =
 * Livelier hero: a slow pulse from INPO's rings, the rings drift with the mouse, an underline draws under the accent line, figures lift on hover. All off with reduced motion.
 

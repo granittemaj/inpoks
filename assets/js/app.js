@@ -635,6 +635,17 @@ function render(){
 
 /* ---------- Hero intro + count-up ---------- */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Rolling digits: each digit spins through 0 to 9 and stops on its value (as in the WordPress theme).
+function odometer(el, delay){
+  const text = el.dataset.text || el.textContent.trim();
+  el.dataset.text = text; el.setAttribute('aria-label', text);
+  let i = 0;
+  el.innerHTML = text.split('').map(ch => /[0-9]/.test(ch)
+    ? `<span class="odo" aria-hidden="true"><span class="odo-col" style="--to:${10+Number(ch)};--i:${i++}">${Array.from({length:20},(_,k)=>`<span>${k%10}</span>`).join('')}</span></span>`
+    : `<span aria-hidden="true">${ch}</span>`).join('');
+  el.classList.remove('odo-run'); void el.offsetWidth;
+  setTimeout(() => el.classList.add('odo-run'), delay);
+}
 function heroIntro(){
   const hero = $('.hero', app);
   if (hero && !reduce && matchMedia('(pointer: fine)').matches) {
@@ -643,15 +654,9 @@ function heroIntro(){
   }
   document.body.classList.remove('loaded');
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('loaded')));
-  $$('[data-count]', app).forEach(el => {
-    if (reduce) return;
-    const to=parseFloat(el.dataset.count), dec=+(el.dataset.dec||0), pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
-    const fmt = v => pre + v.toFixed(dec).replace('.',',') + suf;
-    const start = performance.now()+550, dur=1400;
-    el.textContent = fmt(0);
-    const tick = now => { const t=Math.min(1,Math.max(0,(now-start)/dur)); const e=1-Math.pow(1-t,4); el.textContent=fmt(to*e); if(t<1) requestAnimationFrame(tick); };
-    requestAnimationFrame(tick);
-  });
+  if (reduce) return;
+  $$('[data-count]', app).forEach(el => odometer(el, 450));
+  $$('.hero-figs a', app).forEach(a => a.addEventListener('mouseenter', () => { const el = $('[data-count]', a); if (el) odometer(el, 0); }));
 }
 
 /* ---------- UI: dropdowns, dialogs, search, theme, forms ---------- */

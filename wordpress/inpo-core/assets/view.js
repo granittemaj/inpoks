@@ -186,6 +186,7 @@
         .then(function (html) {
           if (!adopt(new DOMParser().parseFromString(html, 'text/html'))) { location.href = href; return; }
           results.removeAttribute('aria-busy');
+          if (window.inpoInfinite) window.inpoInfinite(results);
           history.replaceState(null, '', href);
           if (focusAfter) focusAfter();
         })
