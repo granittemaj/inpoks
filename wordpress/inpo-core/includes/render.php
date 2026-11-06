@@ -1209,7 +1209,7 @@ function inpo_core_doc_cats() {
 	return $terms;
 }
 
-function inpo_core_doc_row( $doc, $cat_name ) {
+function inpo_core_doc_card( $doc, $cat_name ) {
 	$year = get_post_meta( $doc->ID, 'inpo_year', true );
 	$file = inpo_core_doc_file( $doc );
 	$act  = '';
@@ -1224,7 +1224,7 @@ function inpo_core_doc_row( $doc, $cat_name ) {
 		// Copied from a publication without a PDF: link to the publication's page.
 		$act = '<a class="btn btn-line btn-sm" href="' . esc_url( get_permalink( $source ) ) . '">Shiko ' . inpo_core_icon( 'arrow' ) . '</a>';
 	}
-	return '<div class="doc-row" data-year="' . esc_attr( $year ) . '"><span class="doc-yr">' . esc_html( $year ) . '</span><span class="doc-title">' . inpo_core_title( $doc ) . '</span><span class="doc-act">' . $act . '</span></div>';
+	return '<article class="doc-card" data-year="' . esc_attr( $year ) . '"><span class="doc-top"><span class="doc-yr">' . esc_html( $year ) . '</span><span class="doc-ic">' . inpo_core_icon( 'dokument' ) . '</span></span><h3 class="doc-title">' . inpo_core_title( $doc ) . '</h3><span class="doc-act">' . $act . '</span></article>';
 }
 
 /**
@@ -1271,11 +1271,11 @@ function inpo_core_render_documents( $a ) {
 				return strcmp( $y[0], $x[0] );
 			} );
 			foreach ( $list as $item ) {
-				$rows .= inpo_core_doc_row( $item[1], $c->name );
+				$rows .= inpo_core_doc_card( $item[1], $c->name );
 			}
 		}
 		$page = get_page_by_path( 'transparenca' );
-		return $wrap( ( $rows ? '<div class="doc-rows">' . $rows . '</div>' : '<p class="muted doc-empty">Dokumentet publikohen së shpejti.</p>' )
+		return $wrap( ( $rows ? '<div class="doc-grid">' . $rows . '</div>' : '<p class="muted doc-empty">Dokumentet publikohen së shpejti.</p>' )
 			. ( $page ? '<p class="docs-more"><a class="link-u" href="' . esc_url( get_permalink( $page ) ) . '">Të gjitha dokumentet në Transparenca ' . inpo_core_icon( 'arrow' ) . '</a></p>' : '' ) );
 	}
 
@@ -1292,7 +1292,7 @@ function inpo_core_render_documents( $a ) {
 		foreach ( $list as $item ) {
 			$on     = ! $year || (int) $item[0] === $year;
 			$shown += $on ? 1 : 0;
-			$rows  .= str_replace( '<div class="doc-row"', '<div class="doc-row"' . ( $on ? '' : ' hidden' ), inpo_core_doc_row( $item[1], $c->name ) );
+			$rows  .= str_replace( '<article class="doc-card"', '<article class="doc-card"' . ( $on ? '' : ' hidden' ), inpo_core_doc_card( $item[1], $c->name ) );
 		}
 		// Categories without documents go on one "coming soon" line (their anchors stay, for menu links).
 		if ( ! $list ) {
@@ -1302,7 +1302,7 @@ function inpo_core_render_documents( $a ) {
 		$links[] = array( $c->slug, $c->name );
 		$empty   = 'Asnjë dokument për këtë vit.';
 		$groups .= '<section class="docs-group anchor" id="' . esc_attr( $c->slug ) . '" aria-labelledby="h-' . esc_attr( $c->slug ) . '"><h2 class="docs-h" id="h-' . esc_attr( $c->slug ) . '">' . esc_html( $c->name ) . '<span class="chip-n">' . (int) $shown . '</span></h2>'
-			. ( $rows ? '<div class="doc-rows">' . $rows . '</div>' : '' ) . '<p class="muted doc-empty"' . ( $shown ? ' hidden' : '' ) . '>' . esc_html( $empty ) . '</p></section>';
+			. ( $rows ? '<div class="doc-grid">' . $rows . '</div>' : '' ) . '<p class="muted doc-empty"' . ( $shown ? ' hidden' : '' ) . '>' . esc_html( $empty ) . '</p></section>';
 	}
 	$filter = '';
 	if ( $a['yearFilter'] && $years ) {

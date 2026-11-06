@@ -13,6 +13,7 @@ const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
 const DL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>';
+const DOCI = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></svg>';
 const CHEV = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 const SEARCH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 const X = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -62,7 +63,8 @@ const projStatus = p => p.status==='aktiv' ? 'Aktiv' : 'I përfunduar';
 // Cards leave out values still in [brackets]; the project page lists every field.
 const known = v => v && !/^\[/.test(v);
 const projCard = p => `<a class="proj" href="#/projektet/${p.id}"><div class="proj-top"><span class="pill${p.status==='aktiv'?' on':''}">${projStatus(p)}</span>${known(p.period)?`<span class="proj-period">${p.period}</span>`:''}</div><h3>${p.title}</h3><dl class="proj-meta">${known(p.donor)?`<div><dt>Donatori</dt><dd>${p.donor}</dd></div>`:''}${known(p.partners)?`<div><dt>Partnerët</dt><dd>${p.partners}</dd></div>`:''}</dl><span class="link-u">Shiko projektin ${ARROW}</span></a>`;
-const docRow = d => `<div class="doc-row" data-year="${d.year}"><span class="doc-yr">${d.year}</span><span class="doc-title">${d.title}</span><span class="doc-act"><a class="btn btn-line btn-sm" href="#" data-noop data-toast="Skedari PDF lidhet gjatë migrimit të përmbajtjes.">${DL} PDF</a></span></div>`;
+// A document as a card: the year large, the title, the PDF button at the bottom.
+const docCard = d => `<article class="doc-card" data-year="${d.year}"><span class="doc-top"><span class="doc-yr">${d.year}</span><span class="doc-ic">${DOCI}</span></span><h3 class="doc-title">${d.title}</h3><span class="doc-act"><a class="btn btn-line btn-sm" href="#" data-noop data-toast="Skedari PDF lidhet gjatë migrimit të përmbajtjes.">${DL} PDF</a></span></article>`;
 // The board: names and roles in a ruled list (no photos).
 const boardList = list => `<ul class="board">${list.map(([name, role])=>`<li${/^Kryesues/.test(role)?' class="chair"':''}><span class="board-n">${name}</span><span class="board-r">${role}</span></li>`).join('')}</ul>`;
 const member = ([name, role, email, photo]) => `<div class="member"><div class="member-photo">${photo?`<img src="assets/img/team/${photo}" alt="" width="640" height="800" loading="lazy" decoding="async">`:`<span class="member-initials" aria-hidden="true">${/^\[/.test(name)?'':name.split(/\s+/).slice(0,2).map(w=>w[0]).join('')}</span>`}</div><h4>${name}</h4><p>${role}</p>${email?`<a class="link-u" href="mailto:${email}">${email}</a>`:''}</div>`;
@@ -493,7 +495,7 @@ function transparencyPage(){
       ${subnav('Kategoritë e dokumenteve', full, 'transparenca')}
       ${selPill('docs-year','viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),'')}
     </div>
-    ${full.map(([k,l])=>{ const rows = DOCS.filter(d=>d.cat===k); return `<section class="docs-group anchor" id="${k}" aria-labelledby="h-${k}"><h2 class="docs-h" id="h-${k}">${l}<span class="chip-n">${rows.length}</span></h2><div class="doc-rows">${rows.map(docRow).join('')}</div><p class="muted doc-empty" hidden>Asnjë dokument për këtë vit.</p></section>`; }).join('')}
+    ${full.map(([k,l])=>{ const rows = DOCS.filter(d=>d.cat===k); return `<section class="docs-group anchor" id="${k}" aria-labelledby="h-${k}"><h2 class="docs-h" id="h-${k}">${l}<span class="chip-n">${rows.length}</span></h2><div class="doc-grid">${rows.map(docCard).join('')}</div><p class="muted doc-empty" hidden>Asnjë dokument për këtë vit.</p></section>`; }).join('')}
     ${soon.length?`<p class="docs-soon"><b>Së shpejti</b> ${soon.map(([k,l])=>`<span class="anchor" id="${k}">${l}</span>`).join('<span aria-hidden="true"> · </span>')}</p>`:''}
   </section>`;
 }
@@ -504,7 +506,7 @@ function bindTransparency(){
     $('.sel-v', sel.parentNode).textContent = sel.options[sel.selectedIndex].text;
     sel.parentNode.classList.toggle('is-set', !!y);
     $$('.docs-group').forEach(g => {
-      const rows = $$('.doc-row', g); let shown = 0;
+      const rows = $$('.doc-card', g); let shown = 0;
       rows.forEach(r => { const on = !y || r.dataset.year===y; r.hidden = !on; shown += on ? 1 : 0; });
       $('.chip-n', g).textContent = shown;
       $('.doc-empty', g).hidden = shown > 0;

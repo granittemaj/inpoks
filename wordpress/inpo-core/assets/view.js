@@ -224,7 +224,7 @@
       pill.classList.toggle('is-set', !!y);
       $('.sel-v', pill).textContent = sel.options[sel.selectedIndex].text;
       $$('.docs-group').forEach(function (g) {
-        var rows = $$('.doc-row', g), shown = 0;
+        var rows = $$('.doc-card', g), shown = 0;
         rows.forEach(function (r) { var on = !y || r.getAttribute('data-year') === y; r.hidden = !on; shown += on ? 1 : 0; });
         $('.chip-n', g).textContent = shown;
         $('.doc-empty', g).hidden = shown > 0;
