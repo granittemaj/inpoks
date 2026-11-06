@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.13.1
+Stable tag: 1.14.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.14.0 =
+* Hero: one indigo panel with INPO's rings, the statement, the intro, two buttons and the figures (reactions, publications, years) along its bottom. The photo and the separate figures strip are gone; an unedited home page drops the strip.
 
 = 1.13.1 =
 * News cards find a photo when a post has no featured image: the first image in its text, an attached image, or the image of the publication it links to.

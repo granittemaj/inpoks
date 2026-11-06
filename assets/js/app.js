@@ -92,18 +92,18 @@ const fieldHTML = () => `<section class="wrap sec field" aria-labelledby="h-fiel
     <div class="field-intro"><span class="kicker">${D.FIELD.kicker}</span><h2 class="h2" id="h-field">${D.FIELD.title}</h2><p class="lead">${D.FIELD.text}</p><a class="btn btn-line" href="#/rreth-nesh">Më shumë për INPO</a></div>
     <div class="field-photos">${D.FIELD.photos.map(([f,c],i)=>`<figure class="fp${i===0?' big':''}"><img src="assets/img/photos/${f}" alt="${c}" width="${i===0?1280:800}" height="${i===0?800:600}" loading="lazy" decoding="async"><figcaption>${c}</figcaption></figure>`).join('')}</div>
   </div></section>`;
+// The hero's figures: known values only (unknown ones stay in [brackets] in data.js).
+const heroFigs = () => { const f = IMPACT.map(([n,l])=>[n==='YEARS'?YEARS:n,l]).filter(([n])=>known(n)); return f.length ? `<dl class="hero-figs">${f.map(([n,l])=>`<div><dt>${l}</dt><dd data-count="${n}">${n}</dd></div>`).join('')}</dl>` : ''; };
 function home(){
   const latestPubs = PUBS.slice(0,4);
   return `
-  <section class="wrap grid12 hero">
+  <section class="wrap"><div class="hero">${rings(900,5)}
+    <span class="kicker">Iniciativa për Progres</span>
     <h1 class="h-display" data-focus><span class="line"><span>Llogaridhënie,</span></span><span class="line accent"><span>jo premtime.</span></span></h1>
-    <div class="hero-side">
-      <p class="lead">Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj.</p>
-      <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
-    </div>
-    <figure class="hero-photo"><img src="assets/img/photos/${D.HERO_PHOTO[0]}" alt="${D.HERO_PHOTO[1]}" width="1600" height="1067" fetchpriority="high" decoding="async"><figcaption>${D.HERO_PHOTO[1]}</figcaption></figure>
-  </section>
-  <section class="wrap sec"><div class="impact strip"><h2 class="sr">Ndikimi i punës sonë, në numra.</h2>${impactGrid(IMPACT)}</div></section>
+    <p class="lead">Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj.</p>
+    <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
+    ${heroFigs()}
+  </div></section>
   <section class="wrap sec">
     <div class="pub-head"><div class="pub-head-l"><span class="kicker">Lajme dhe qëndrime</span><h2 class="h2">Lajmet dhe reagimet më të fundit</h2></div><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div>
     <div class="ncards">${NEWS.slice(0,4).map(n=>ncard(n)).join('')}</div>
@@ -638,7 +638,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function heroIntro(){
   document.body.classList.remove('loaded');
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('loaded')));
-  $$('.bento [data-count]', app).forEach(el => {
+  $$('[data-count]', app).forEach(el => {
     if (reduce) return;
     const to=parseFloat(el.dataset.count), dec=+(el.dataset.dec||0), pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
     const fmt = v => pre + v.toFixed(dec).replace('.',',') + suf;

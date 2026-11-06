@@ -36,29 +36,13 @@
 			"type": "string",
 			"default": ""
 		},
-		"areasLabel": {
+		"kicker": {
 			"type": "string",
-			"default": "Fushat e veprimit"
+			"default": "Iniciativa për Progres"
 		},
-		"areas": {
-			"type": "string",
-			"default": ""
-		},
-		"image": {
-			"type": "string",
-			"default": ""
-		},
-		"imageCaption": {
-			"type": "string",
-			"default": "Prezantimi i raportit “Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë”, shkurt 2025"
-		},
-		"showImage": {
+		"showFigures": {
 			"type": "boolean",
 			"default": true
-		},
-		"showAreas": {
-			"type": "boolean",
-			"default": false
 		}
 	},
 	"supports": {

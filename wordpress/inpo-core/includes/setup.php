@@ -355,7 +355,7 @@ function inpo_core_pattern_content( $name, $fallback ) {
 }
 
 function inpo_core_home_content() {
-	return inpo_core_pattern_content( 'inpo/page-home', "<!-- wp:inpo/hero /-->\n\n<!-- wp:inpo/impact /-->\n\n<!-- wp:inpo/news-list /-->\n\n<!-- wp:inpo/publications /-->\n\n<!-- wp:inpo/programs /-->\n\n<!-- wp:inpo/field /-->\n\n<!-- wp:inpo/projects /-->" );
+	return inpo_core_pattern_content( 'inpo/page-home', "<!-- wp:inpo/hero /-->\n\n<!-- wp:inpo/news-list /-->\n\n<!-- wp:inpo/publications /-->\n\n<!-- wp:inpo/programs /-->\n\n<!-- wp:inpo/field /-->\n\n<!-- wp:inpo/projects /-->" );
 }
 
 function inpo_core_about_content() {
@@ -369,9 +369,11 @@ function inpo_core_about_content() {
 function inpo_core_layout_outdated( $page, $kind ) {
 	$c = $page->post_content;
 	if ( 'home' === $kind ) {
-		// 1.x (programmes, no impact) or 1.6 to 1.12 (exactly the default blocks with the bento), never edited since.
-		$v16 = '<!-- wp:inpo/hero /--><!-- wp:inpo/bento /--><!-- wp:inpo/field /--><!-- wp:inpo/publications /--><!-- wp:inpo/impact /--><!-- wp:inpo/programs /--><!-- wp:inpo/news-list /--><!-- wp:inpo/projects /-->';
-		return ( false !== strpos( $c, '<!-- wp:inpo/programs' ) && false === strpos( $c, '<!-- wp:inpo/impact' ) ) || preg_replace( '/\s+/', '', $c ) === preg_replace( '/\s+/', '', $v16 );
+		// 1.x (programmes, no impact), or exactly the default blocks of 1.6 to 1.12 or 1.13, never edited since.
+		$flat = preg_replace( '/\s+/', '', $c );
+		$v16  = '<!-- wp:inpo/hero /--><!-- wp:inpo/bento /--><!-- wp:inpo/field /--><!-- wp:inpo/publications /--><!-- wp:inpo/impact /--><!-- wp:inpo/programs /--><!-- wp:inpo/news-list /--><!-- wp:inpo/projects /-->';
+		$v113 = '<!-- wp:inpo/hero /--><!-- wp:inpo/impact /--><!-- wp:inpo/news-list /--><!-- wp:inpo/publications /--><!-- wp:inpo/programs /--><!-- wp:inpo/field /--><!-- wp:inpo/projects /-->';
+		return ( false !== strpos( $c, '<!-- wp:inpo/programs' ) && false === strpos( $c, '<!-- wp:inpo/impact' ) && false === strpos( $c, '<!-- wp:inpo/news-list' ) ) || in_array( $flat, array( preg_replace( '/\s+/', '', $v16 ), preg_replace( '/\s+/', '', $v113 ) ), true );
 	}
 	return false !== strpos( $c, '<!-- wp:inpo/transparency' ) && false === strpos( $c, 'id="historia"' );
 }

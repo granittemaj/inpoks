@@ -46,25 +46,23 @@ function inpo_core_render_hero( $a ) {
 	if ( $a['cta2Text'] ) {
 		$btns .= '<a class="btn btn-line" href="' . esc_url( $cta2 ) . '">' . esc_html( $a['cta2Text'] ) . '</a>';
 	}
-	return '<section ' . inpo_core_wrapper( 'wrap grid12 hero' ) . '>'
-		. '<h1 class="h-display" data-focus><span class="line"><span>' . esc_html( $a['line1'] ) . '</span></span><span class="line accent"><span>' . esc_html( $a['line2'] ) . '</span></span></h1>'
-		. '<div class="hero-side"><p class="lead">' . esc_html( $a['lead'] ) . '</p><div class="hero-ctas">' . $btns . '</div></div>'
-		. inpo_core_hero_photo( $a )
-		. ( ! empty( $a['showAreas'] ) ? inpo_core_hero_areas( $a ) : '' )
-		. '</section>';
-}
-
-/**
- * The hero photo: an image from Media, or the bundled photo of the report launch (February 2025).
- */
-function inpo_core_hero_photo( $a ) {
-	if ( empty( $a['showImage'] ) ) {
-		return '';
+	// The figures along the bottom of the panel: counted from the site, they count up on load.
+	$figs = '';
+	if ( ! empty( $a['showFigures'] ) ) {
+		foreach ( array( array( 'reagime', 'reagime dhe qëndrime publike' ), array( 'publikime', 'hulumtime dhe publikime' ), array( 'vite', 'vjet që nga themelimi në 2005' ) ) as $f ) {
+			$value = inpo_core_impact_value( $f[0], '' );
+			if ( '' !== $value && '0' !== $value ) {
+				$figs .= '<div><dt>' . esc_html( $f[1] ) . '</dt><dd data-count="' . esc_attr( $value ) . '">' . esc_html( number_format_i18n( (int) $value ) ) . '</dd></div>';
+			}
+		}
 	}
-	$src = $a['image'] ? $a['image'] : INPO_CORE_URL . 'assets/photos/hero-raporti-integriteti-wide.jpg';
-	$cap = trim( (string) $a['imageCaption'] );
-	return '<figure class="hero-photo"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( $cap ) . '" width="1600" height="1067" fetchpriority="high" decoding="async">'
-		. ( $cap ? '<figcaption>' . esc_html( $cap ) . '</figcaption>' : '' ) . '</figure>';
+	return '<section ' . inpo_core_wrapper( 'wrap' ) . '><div class="hero">' . inpo_core_rings( 900, 5 )
+		. ( $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
+		. '<h1 class="h-display" data-focus><span class="line"><span>' . esc_html( $a['line1'] ) . '</span></span><span class="line accent"><span>' . esc_html( $a['line2'] ) . '</span></span></h1>'
+		. ( $a['lead'] ? '<p class="lead">' . esc_html( $a['lead'] ) . '</p>' : '' )
+		. ( $btns ? '<div class="hero-ctas">' . $btns . '</div>' : '' )
+		. ( $figs ? '<dl class="hero-figs">' . $figs . '</dl>' : '' )
+		. '</div></section>';
 }
 
 /**
@@ -99,40 +97,6 @@ function inpo_core_render_field( $a ) {
 		. ( $a['text'] ? '<p class="lead">' . esc_html( $a['text'] ) . '</p>' : '' )
 		. ( $a['buttonText'] ? '<a class="btn btn-line" href="' . esc_url( $url ) . '">' . esc_html( $a['buttonText'] ) . '</a>' : '' )
 		. '</div><div class="field-photos">' . $figs . '</div></div></section>';
-}
-
-/**
- * Fields of action (INPO's brief: mission and fields of action on the home page).
- * Typed as lines "Label | link"; empty = the two programmes and three thematic fields.
- */
-function inpo_core_hero_areas( $a ) {
-	$items = array();
-	foreach ( array_filter( array_map( 'trim', preg_split( '/\R/', (string) $a['areas'] ) ) ) as $line ) {
-		$parts   = array_map( 'trim', explode( '|', $line, 2 ) );
-		$items[] = array( $parts[0], isset( $parts[1] ) ? $parts[1] : '' );
-	}
-	if ( ! $items ) {
-		$prog  = function ( $slug ) {
-			$t = get_term_by( 'slug', $slug, INPO_CORE_PROGRAM );
-			return $t ? get_term_link( $t ) : '';
-		};
-		$field = function ( $slug, $label ) {
-			return term_exists( $slug, INPO_CORE_THEME ) ? inpo_core_pubs_url( array( 'fusha' => $slug ) ) : inpo_core_pubs_url( array( 'q' => $label ) );
-		};
-		$items = array(
-			array( 'Qeverisja e mirë', $prog( 'qeverisje' ) ),
-			array( 'Transparenca', $field( 'transparenca', 'transparenc' ) ),
-			array( 'Llogaridhënia', $field( 'llogaridhenia', 'llogaridh' ) ),
-			array( 'Sundimi i ligjit', $field( 'sundimi-i-ligjit', 'ligj' ) ),
-			array( 'Edukimi demokratik', $prog( 'edukim' ) ),
-		);
-	}
-	$list = '';
-	foreach ( $items as $item ) {
-		$url   = is_wp_error( $item[1] ) ? '' : $item[1];
-		$list .= '<li>' . ( $url ? '<a href="' . esc_url( $url ) . '">' . esc_html( $item[0] ) . '</a>' : '<span>' . esc_html( $item[0] ) . '</span>' ) . '</li>';
-	}
-	return '<div class="areas"><span class="areas-k" id="areas-k">' . esc_html( $a['areasLabel'] ) . '</span><ul aria-labelledby="areas-k">' . $list . '</ul></div>';
 }
 
 function inpo_core_render_bento( $a ) {
