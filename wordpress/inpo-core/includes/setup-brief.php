@@ -815,6 +815,14 @@ function inpo_core_tidy_content() {
 	if ( $contact && 'Le të flasim.' === $contact->post_title ) {
 		wp_update_post( array( 'ID' => $contact->ID, 'post_title' => 'Kontakt' ) );
 	}
+	// 1.18.0: About: the two "Kush jemi" paragraphs become one statement with key facts (only when not edited since).
+	$about = get_page_by_path( 'rreth-nesh' );
+	if ( $about && inpo_core_theme_active() && false !== strpos( $about->post_content, 'grid12 about-text' ) && false !== strpos( $about->post_content, 'Organizata është vlerësuar shumë për profesionalizmin e saj' )
+		&& preg_match( '#<!-- wp:group \{"className":"grid12 about-text".*?(?=<!-- wp:group \{"className":"timeline")#s', $about->post_content, $old )
+		&& preg_match( '#<!-- wp:group \{"className":"grid12 about-intro".*?(?=<!-- wp:group \{"className":"timeline")#s', inpo_core_about_content(), $new ) ) {
+		wp_save_post_revision( $about->ID );
+		wp_update_post( wp_slash( array( 'ID' => $about->ID, 'post_content' => str_replace( $old[0], $new[0], $about->post_content ) ) ) );
+	}
 	// 1.13 and 1.14: an unedited home page takes the current order (indigo hero with the figures, news cards, research, programmes, who we are, partners).
 	$home = get_post( (int) get_option( 'page_on_front' ) );
 	if ( $home && inpo_core_site_mode() && inpo_core_theme_active() && inpo_core_layout_outdated( $home, 'home' ) && false !== strpos( $home->post_content, '<!-- wp:inpo/news-list' ) ) {

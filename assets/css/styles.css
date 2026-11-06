@@ -880,11 +880,17 @@ html:has(.wrap>.subnav){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 6
   .wrap>.subnav a:hover{background:var(--bg-soft)}
 }
 
-/* About: the history in two columns across the width, a compact timeline */
-@media (min-width:1024px){
-  .about-text .prose{grid-column:1/-1;columns:2;column-gap:clamp(32px,4vw,64px)}
-  .about-text .prose p{break-inside:avoid}
-}
+/* About: who we are in one statement, key facts beside it */
+.about-intro{margin-top:40px;row-gap:32px;align-items:start}
+.about-lead{grid-column:1/span 7;margin:0;font-size:var(--fs-card-lg);line-height:1.4;letter-spacing:-.025em;font-weight:500;color:var(--ink)}
+.about-facts{grid-column:9/-1;grid-template-columns:none}
+.facts .fact-k{margin:0;font-size:13px;color:var(--muted)}
+.facts .fact-v{margin:0;font-size:16px;line-height:1.4;font-weight:600}
+.facts .fact-v a{color:var(--accent-ink)}
+.facts .fact-v a:hover{text-decoration:underline;text-underline-offset:3px}
+@media (max-width:900px){.about-lead,.about-facts{grid-column:1/-1}.about-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.about-facts{grid-template-columns:none}}
+/* About: a compact timeline */
 .timeline li,.timeline>.tl{padding:22px 0}
 .timeline .yr{font-size:var(--fs-card-lg);letter-spacing:-.04em}
 @media (min-width:641px){.timeline li>:first-child,.timeline>.tl>:first-child{grid-column:1/span 2}.timeline li>:last-child,.timeline>.tl>:last-child{grid-column:3/-1}}

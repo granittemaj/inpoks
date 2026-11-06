@@ -176,6 +176,8 @@ const ABOUT = [
   'Iniciativa për Progres (INPO) është organizatë joqeveritare dhe jofitimprurëse e themeluar në vitin 2005 me qëllim që të përparojë pjesëmarrjen e qytetarëve në proceset shoqërore, përmes së cilës avokohet për çështje sociale, politike dhe ekonomike, për forcimin e transparencës dhe llogaridhënies së institucioneve publike, për rritjen e kërkesave të qytetarëve dhe për luftimin e korrupsionit, duke synuar promovimin e vlerave të një shoqërie të hapur dhe demokratike. Misioni dhe vizioni i organizatës përmbushen përmes dy programeve të specializuara: Qeverisja e mirë dhe Edukimi demokratik.',
   'INPO që nga themelimi ka shtyrë përpara agjendat për më shumë transparencë në shpenzimet financiare publike, për përfshirjen më të mirë dhe më të gjerë të qytetarëve në proceset e vendimmarrjes publike dhe për llogaridhënien e zyrtarëve publikë. Organizata është vlerësuar për profesionalizmin dhe qasjen e paanshme dhe ka arritur rezultate të shumta konkrete që nga themelimi.'
 ];
+// About: the short statement shown on the page (from INPO's text above).
+const ABOUT_LEAD = 'Që nga viti 2005, INPO punon që qytetarët të marrin pjesë në vendimet publike dhe që institucionet të jenë transparente dhe llogaridhënëse. Luftojmë korrupsionin dhe promovojmë vlerat e një shoqërie të hapur dhe demokratike.';
 const MISSION = 'Të promovojmë demokratizimin e qeverisjes lokale përmes aktivizmit qytetar dhe të avancojmë vlerat e një shoqërie të hapur.';
 const VISION = 'Institucione lokale që qeverisen me vlera demokratike, ku qytetari është bashkëvendimmarrës.';
 const VALUES = [
@@ -207,5 +209,5 @@ const NAV = [
   ['Kontakti','#/kontakti']
 ];
 
-  return { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, HERO_PHOTO, FIELD, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV, ABOUT, MISSION, VISION, VALUES, HISTORY, AREAS, SOCIALS };
+  return { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, HERO_PHOTO, FIELD, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV, ABOUT, ABOUT_LEAD, MISSION, VISION, VALUES, HISTORY, AREAS, SOCIALS };
 })();

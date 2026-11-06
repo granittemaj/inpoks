@@ -397,7 +397,8 @@ function aboutPage(){
   <section class="wrap">${subnav('Seksionet e faqes', ABOUT_SECTIONS, 'rreth-nesh')}</section>
   <section class="wrap sec anchor" id="historia" aria-labelledby="h-historia">
     <div class="grid12 sec-head"><span class="kicker">Historia e organizatës</span><h2 class="h2" id="h-historia">Nga performancat protestuese te auditimi i tenderëve.</h2></div>
-    <div class="grid12 about-text"><span class="kicker">Kush jemi</span><div class="prose">${D.ABOUT.map(t=>`<p>${t}</p>`).join('')}</div></div>
+    <div class="grid12 about-intro"><p class="about-lead">${D.ABOUT_LEAD}</p>
+      <dl class="facts about-facts"><div><dt>Themeluar</dt><dd>2005, Ferizaj</dd></div><div><dt>Zyrat</dt><dd>Prishtinë dhe Ferizaj</dd></div><div><dt>Programet</dt><dd><a href="#/programet/qeverisje">Qeverisja e mirë</a><br><a href="#/programet/edukim">Edukimi demokratik</a></dd></div></dl></div>
     <ol class="timeline">${D.HISTORY.map(t=>`<li><span class="yr">${t[0]}</span><div><h3>${t[1]}</h3><p>${t[2]}</p></div></li>`).join('')}</ol>
   </section>
   <section class="wrap sec anchor" id="misioni" aria-labelledby="h-misioni">

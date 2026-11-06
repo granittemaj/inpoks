@@ -21,19 +21,41 @@
 <!-- /wp:heading --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"grid12 about-text","layout":{"type":"default"}} -->
-<div class="wp-block-group grid12 about-text"><!-- wp:paragraph {"className":"kicker"} -->
-<p class="kicker">Kush jemi</p>
+<!-- wp:group {"className":"grid12 about-intro","layout":{"type":"default"}} -->
+<div class="wp-block-group grid12 about-intro"><!-- wp:paragraph {"className":"about-lead"} -->
+<p class="about-lead">Që nga viti 2005, INPO punon që qytetarët të marrin pjesë në vendimet publike dhe që institucionet të jenë transparente dhe llogaridhënëse. Luftojmë korrupsionin dhe promovojmë vlerat e një shoqërie të hapur dhe demokratike.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:group {"className":"prose","layout":{"type":"default"}} -->
-<div class="wp-block-group prose"><!-- wp:paragraph -->
-<p>Iniciativa për Progres (INPO) është organizatë joqeveritare dhe jofitimprurëse e themeluar ne vitin 2005 me qëllim që të përparoj pjesëmarrjen e qytetarëve në proceset shoqërore, përmes së cilës pjesëmarrje avokohet për çështje sociale, politike, ekonomike, forcimin e parimit të transparencës dhe llogaridhënies së institucioneve publike, rritjen e kërkesave të qytetarëve si dhe luftimin e korrupsionit, duke synuar në promovimin e vlerave të një shoqërie të hapur dhe demokratike. Vizioni dhe misioni i organizatës përmbushet përmes aktiviteteve të ndryshme të punës të cilat organizohen nga dy (2) programet e specializuara të organizatës: 1. Qeverisja e Mirë dhe 2. Edukimi Demokratik.</p>
+<!-- wp:group {"className":"facts about-facts","layout":{"type":"default"}} -->
+<div class="wp-block-group facts about-facts"><!-- wp:group {"layout":{"type":"default"}} -->
+<div class="wp-block-group"><!-- wp:paragraph {"className":"fact-k"} -->
+<p class="fact-k">Themeluar</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:paragraph -->
-<p>INPO që nga themelimi ka shtyrë përpara agjendat për më shumë transparencë në shpenzimet financiare publike, përfshirjen më të mirë dhe më të gjerë të qytetarëve në proceset e vendimmarrjes publike dhe llogaridhënien e zyrtarëve publik të ndjeshëm ndaj korrupsionit dhe sjelljeve të tjera të këqija në institucionet publike. Organizata është vlerësuar shumë për profesionalizmin e saj dhe qasjen e paanshme dhe ka arritur rezultate të shumta konkrete që nga themelimi.</p>
+<!-- wp:paragraph {"className":"fact-v"} -->
+<p class="fact-v">2005, Ferizaj</p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"default"}} -->
+<div class="wp-block-group"><!-- wp:paragraph {"className":"fact-k"} -->
+<p class="fact-k">Zyrat</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"fact-v"} -->
+<p class="fact-v">Prishtinë dhe Ferizaj</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"default"}} -->
+<div class="wp-block-group"><!-- wp:paragraph {"className":"fact-k"} -->
+<p class="fact-k">Programet</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"fact-v"} -->
+<p class="fact-v"><a href="<?php echo esc_url( home_url( '/programet/qeverisje/' ) ); ?>">Qeverisja e mirë</a><br><a href="<?php echo esc_url( home_url( '/programet/edukim/' ) ); ?>">Edukimi demokratik</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
