@@ -358,7 +358,9 @@ function inpo_core_render_publication_detail( $a, $block ) {
 	// An infographic shows its images first, then the text.
 	$html .= inpo_core_pub_slides( $post );
 	if ( trim( $post->post_content ) ) {
-		$html .= '<section class="wrap sec grid12"><div class="prose">' . inpo_core_the_content( $post ) . '</div></section>';
+		// The text with a share box beside it, as on an article.
+		$html .= '<section class="wrap sec grid12 pd-body"><div class="prose">' . inpo_core_the_content( $post ) . '</div>'
+			. '<aside class="aside" aria-label="Shpërndaje">' . inpo_core_share_box( get_permalink( $post ), wp_strip_all_tags( get_the_title( $post ) ) ) . '</aside></section>';
 	}
 	$html .= inpo_core_pub_data( $post );
 	return '<div ' . inpo_core_wrapper( '' ) . '>' . $html . '</div>';
@@ -533,6 +535,17 @@ function inpo_core_article_photo( $post ) {
 		. ( $caption ? '<figcaption>' . esc_html( $caption ) . '</figcaption>' : '' ) . '</figure>';
 }
 
+/**
+ * "Shpërndaje" box for a sidebar: copy link, Facebook, X.
+ */
+function inpo_core_share_box( $url, $title ) {
+	return '<div class="box"><h2>Shpërndaje</h2><div class="share">'
+		. '<button class="btn btn-line btn-sm" type="button" data-copy>Kopjo linkun</button>'
+		. '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="' . esc_url( 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $url ) ) . '">Facebook</a>'
+		. '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="' . esc_url( 'https://x.com/intent/post?text=' . rawurlencode( $title ) . '&url=' . rawurlencode( $url ) ) . '">X</a>'
+		. '</div></div>';
+}
+
 function inpo_core_render_article( $a, $block ) {
 	$post = inpo_core_context_post( $block );
 	if ( ! $post || 'post' !== $post->post_type ) {
@@ -553,11 +566,7 @@ function inpo_core_render_article( $a, $block ) {
 		. inpo_core_the_content( $post )
 		. ( get_post_meta( $post->ID, 'inpo_todo', true ) ? '<p class="todo">Teksti i plotë i reagimit, dokumentet dhe fotografitë importohen nga faqja aktuale gjatë migrimit.</p>' : '' );
 
-	$aside = '<div class="box"><h2>Shpërndaje</h2><div class="share">'
-		. '<button class="btn btn-line btn-sm" type="button" data-copy>Kopjo linkun</button>'
-		. '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="' . esc_url( 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $url ) ) . '">Facebook</a>'
-		. '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="' . esc_url( 'https://x.com/intent/post?text=' . rawurlencode( $title ) . '&url=' . rawurlencode( $url ) ) . '">X</a>'
-		. '</div></div>';
+	$aside = inpo_core_share_box( $url, $title );
 	if ( $pub && 'publish' === $pub->post_status ) {
 		$aside .= '<a class="box" href="' . esc_url( get_permalink( $pub ) ) . '"><h2>Publikimi i plotë</h2><span style="font-weight:600;font-size:17px;line-height:1.35">' . inpo_core_title( $pub ) . '</span><span class="link-u">Shiko publikimin ' . inpo_core_icon( 'arrow' ) . '</span></a>';
 	}

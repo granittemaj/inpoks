@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.10.0
+Stable tag: 1.11.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.11.0 =
+* Publication pages: the text has a share box beside it, as on articles.
 
 = 1.10.0 =
 * The four infographics the old site posted as a Facebook box (Trendi i anulimit, Boshllëqet e transparencës, TEMF, Planet e prokurimit) become Infografika publications at go-live: all their images as swipeable slides with a full-screen view, INPO's text from the post, the original date. Old addresses redirect; switching back to the old theme turns them back into news posts. A site already live converts on the next wp-admin page.

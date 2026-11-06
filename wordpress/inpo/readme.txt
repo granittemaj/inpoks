@@ -20,6 +20,16 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.11.2 =
+* Phones: an infographic's facts use the full width.
+
+= 1.11.1 =
+* News cards keep the title under the label (no empty block when a post has no summary); shorter key-findings block on the home page; the Projects intro sits right under its label.
+
+= 1.11.0 =
+* Calmer type scale (about a quarter smaller: hero 76, page titles 52, sections 34 at 1440px) and one alignment rule: kicker over heading at the left edge in every section, About included.
+* Infographic pages use the full width: title, summary and buttons on the left, the facts in a panel on the right.
+
 = 1.10.0 =
 * Buttons inside article text keep their button style.
 
