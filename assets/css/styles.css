@@ -166,16 +166,40 @@ main{display:block;min-height:60vh}
 .hero .btn-accent:hover{background:#FFFFFF;filter:brightness(.94)}
 .hero .btn-line{color:#FFFFFF;border-color:rgba(255,255,255,.4);background:transparent}
 .hero .btn-line:hover{background:rgba(255,255,255,.12)}
-.hero-figs{align-self:stretch;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));margin:clamp(12px,3vw,40px) 0 0;border-top:1px solid rgba(255,255,255,.24)}
-.hero-figs div{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:10px;padding:24px 24px 0;border-left:1px solid rgba(255,255,255,.24)}
-.hero-figs div:first-child{border-left:0;padding-left:0}
-.hero-figs dd{margin:0;font-size:var(--fs-headline);line-height:1;font-weight:600;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#FFFFFF}
-.hero-figs dt{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;line-height:1.4;color:var(--accent-soft)}
+.hero>.hero-ping{position:absolute;right:-280px;top:-320px;color:#FFFFFF;pointer-events:none}
+.hero-ping circle{fill:none;stroke:currentColor;stroke-width:1.5;stroke-opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.12)}
+.hero .btn svg{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+.hero .btn:hover svg{transform:translate(2px,-2px)}
+.hero h1 .line.accent>span{position:relative}
+.hero h1 .line.accent>span::after{content:"";position:absolute;left:0;right:.04em;bottom:.04em;height:.055em;border-radius:999px;background:currentColor;opacity:.55;transform-origin:left}
+.hero-figs{align-self:stretch;list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));margin:clamp(12px,3vw,40px) 0 0;border-top:1px solid rgba(255,255,255,.24)}
+.hero-figs li{border-left:1px solid rgba(255,255,255,.24);padding:24px 24px 0}
+.hero-figs li:first-child{border-left:0;padding-left:0}
+.hero-figs a{display:flex;flex-direction:column;gap:10px;border-radius:var(--r-xs)}
+.fig-n{display:flex;align-items:flex-start;gap:10px;font-size:var(--fs-headline);line-height:1;font-weight:600;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.fig-n svg{flex-shrink:0;margin-top:.1em;opacity:0;transform:translate(-6px,6px);transition:opacity .25s,transform .35s cubic-bezier(.2,.7,.2,1)}
+.fig-l{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;line-height:1.4;color:var(--accent-soft);transition:color .2s}
+.hero-figs a:hover .fig-n,.hero-figs a:focus-visible .fig-n{transform:translateY(-3px)}
+.hero-figs a:hover .fig-n svg,.hero-figs a:focus-visible .fig-n svg{opacity:1;transform:none}
+.hero-figs a:hover .fig-l,.hero-figs a:focus-visible .fig-l{color:#FFFFFF}
+.hero-figs a:focus-visible{outline:2px solid #FFFFFF;outline-offset:6px}
+/* Hero motion (user-driven or ambient, all off with reduced motion): the rings drift with the cursor, a pulse leaves their centre, the accent line draws in. */
+@media (prefers-reduced-motion:no-preference){
+  .hero>.rings,.hero>.hero-ping{transform:translate3d(calc(var(--mx,0) * 22px),calc(var(--my,0) * 22px),0);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+  .hero-ping circle{animation:hero-ping 7.5s cubic-bezier(.2,.7,.2,1) infinite}
+  .hero-ping circle:nth-child(2){animation-delay:2.5s}
+  .hero-ping circle:nth-child(3){animation-delay:5s}
+  .js .hero h1 .line.accent>span::after{transform:scaleX(0)}
+  .loaded .hero h1 .line.accent>span::after{transform:none;transition:transform 1s 1.05s cubic-bezier(.16,1,.3,1)}
+}
+@keyframes hero-ping{0%{transform:scale(.12);stroke-opacity:.5}75%{stroke-opacity:0}100%{transform:scale(1);stroke-opacity:0}}
 @media (max-width:640px){
   .hero{border-radius:var(--r-lg)}
   .hero-figs{grid-template-columns:1fr}
-  .hero-figs div{border-left:0;padding:16px 0 0;flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:14px}
-  .hero-figs div+div{border-top:1px solid rgba(255,255,255,.24);margin-top:16px}
+  .hero-figs li{border-left:0;padding:16px 0 0}
+  .hero-figs li+li{border-top:1px solid rgba(255,255,255,.24);margin-top:16px}
+  .hero-figs a{flex-direction:row;align-items:baseline;gap:14px}
+  .fig-n svg{display:none}
   .hero .hero-ctas{flex-wrap:nowrap;align-self:stretch}
   .hero .hero-ctas .btn{flex:1 1 auto;padding-inline:16px;min-width:0}
 }

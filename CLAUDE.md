@@ -78,7 +78,7 @@ Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 - **Corner radii follow hierarchy:** `--r-xl` 40px for full-width panels, `--r-lg` 32px for major cards, `--r-md` 28px for covers and cards, `--r-sm`/`--r-xs` for tiles and inputs, 999px for pills and buttons.
 - **Photos** use real INPO event photos only, never stock. Rounded like cards (`--r-xl` in the hero, `--r-md`/`--r-lg` in the field grid), captions as text, no gradients over images.
 - **Signature motif:** thin concentric rings (`rings()` helper) on indigo surfaces. Use it sparingly, only on accent panels.
-- **Motion:** exactly one orchestrated moment, the home load sequence (headline reveal, the hero's rings drawing, the figures counting up). Do not add scroll-triggered fade-ins or per-section animations. User-triggered transitions are fine. Always respect `prefers-reduced-motion`.
+- **Motion:** one orchestrated moment, the home load sequence (headline reveal, the hero's rings drawing, the underline under the accent line, the figures counting up). The hero alone also has, at the client's request (Nov 2026): a slow pulse leaving the rings' centre (monitoring), the rings drifting with a mouse pointer, and figure links that lift on hover. Do not add scroll-triggered fade-ins or per-section animations. User-triggered transitions are fine. Always respect `prefers-reduced-motion` (all of the above switch off).
 - **Spacing:** sections use `.sec` (56 to 96px top padding). Content width is `.wrap` (max 1440, fluid side padding).
 
 ## Accessibility checklist (keep passing)

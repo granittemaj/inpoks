@@ -41,27 +41,34 @@ function inpo_core_render_hero( $a ) {
 	$cta2 = $a['cta2Url'] ? $a['cta2Url'] : inpo_core_page_url( 'rreth-nesh' );
 	$btns = '';
 	if ( $a['cta1Text'] ) {
-		$btns .= '<a class="btn btn-accent" href="' . esc_url( $cta1 ) . '">' . esc_html( $a['cta1Text'] ) . '</a>';
+		$btns .= '<a class="btn btn-accent" href="' . esc_url( $cta1 ) . '">' . esc_html( $a['cta1Text'] ) . ' ' . inpo_core_icon( 'arrow' ) . '</a>';
 	}
 	if ( $a['cta2Text'] ) {
 		$btns .= '<a class="btn btn-line" href="' . esc_url( $cta2 ) . '">' . esc_html( $a['cta2Text'] ) . '</a>';
 	}
-	// The figures along the bottom of the panel: counted from the site, they count up on load.
+	// The figures along the bottom of the panel: counted from the site, they count up on load and lead to what they count.
 	$figs = '';
 	if ( ! empty( $a['showFigures'] ) ) {
-		foreach ( array( array( 'reagime', 'reagime dhe qëndrime publike' ), array( 'publikime', 'hulumtime dhe publikime' ), array( 'vite', 'vjet që nga themelimi në 2005' ) ) as $f ) {
+		$items = array(
+			array( 'reagime', 'reagime dhe qëndrime publike', add_query_arg( 'kategoria', 'reagime-dhe-qendrime-publike', inpo_core_news_url() ) ),
+			array( 'publikime', 'hulumtime dhe publikime', inpo_core_pubs_url() ),
+			array( 'vite', 'vjet që nga themelimi në 2005', inpo_core_page_url( 'rreth-nesh' ) . '#historia' ),
+		);
+		foreach ( $items as $f ) {
 			$value = inpo_core_impact_value( $f[0], '' );
 			if ( '' !== $value && '0' !== $value ) {
-				$figs .= '<div><dt>' . esc_html( $f[1] ) . '</dt><dd data-count="' . esc_attr( $value ) . '">' . esc_html( number_format_i18n( (int) $value ) ) . '</dd></div>';
+				$figs .= '<li><a href="' . esc_url( $f[2] ) . '"><span class="fig-n"><span data-count="' . esc_attr( $value ) . '">' . esc_html( number_format_i18n( (int) $value ) ) . '</span>' . inpo_core_icon( 'arrow' ) . '</span><span class="fig-l">' . esc_html( $f[1] ) . '</span></a></li>';
 			}
 		}
 	}
-	return '<section ' . inpo_core_wrapper( 'wrap' ) . '><div class="hero">' . inpo_core_rings( 900, 5 )
+	// INPO's rings, and a soft pulse from their centre (monitoring); off when the visitor prefers reduced motion.
+	$ping = '<svg class="hero-ping" width="900" height="900" viewBox="0 0 900 900" aria-hidden="true"><circle cx="450" cy="450" r="440"/><circle cx="450" cy="450" r="440"/><circle cx="450" cy="450" r="440"/></svg>';
+	return '<section ' . inpo_core_wrapper( 'wrap' ) . '><div class="hero">' . inpo_core_rings( 900, 5 ) . $ping
 		. ( $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
 		. '<h1 class="h-display" data-focus><span class="line"><span>' . esc_html( $a['line1'] ) . '</span></span><span class="line accent"><span>' . esc_html( $a['line2'] ) . '</span></span></h1>'
 		. ( $a['lead'] ? '<p class="lead">' . esc_html( $a['lead'] ) . '</p>' : '' )
 		. ( $btns ? '<div class="hero-ctas">' . $btns . '</div>' : '' )
-		. ( $figs ? '<dl class="hero-figs">' . $figs . '</dl>' : '' )
+		. ( $figs ? '<ul class="hero-figs">' . $figs . '</ul>' : '' )
 		. '</div></section>';
 }
 

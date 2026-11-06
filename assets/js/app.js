@@ -93,15 +93,15 @@ const fieldHTML = () => `<section class="wrap sec field" aria-labelledby="h-fiel
     <div class="field-photos">${D.FIELD.photos.map(([f,c],i)=>`<figure class="fp${i===0?' big':''}"><img src="assets/img/photos/${f}" alt="${c}" width="${i===0?1280:800}" height="${i===0?800:600}" loading="lazy" decoding="async"><figcaption>${c}</figcaption></figure>`).join('')}</div>
   </div></section>`;
 // The hero's figures: known values only (unknown ones stay in [brackets] in data.js).
-const heroFigs = () => { const f = IMPACT.map(([n,l])=>[n==='YEARS'?YEARS:n,l]).filter(([n])=>known(n)); return f.length ? `<dl class="hero-figs">${f.map(([n,l])=>`<div><dt>${l}</dt><dd data-count="${n}">${n}</dd></div>`).join('')}</dl>` : ''; };
+const heroFigs = () => { const links = ['#/lajme?kategoria=reagime', '#/publikimet', '#/rreth-nesh?seksioni=historia']; const f = IMPACT.map(([n,l],i)=>[n==='YEARS'?YEARS:n,l,links[Math.min(i,2)]]).filter(([n])=>known(n)); return f.length ? `<ul class="hero-figs">${f.map(([n,l,h])=>`<li><a href="${h}"><span class="fig-n"><span data-count="${n}">${n}</span>${ARROW}</span><span class="fig-l">${l}</span></a></li>`).join('')}</ul>` : ''; };
 function home(){
   const latestPubs = PUBS.slice(0,4);
   return `
-  <section class="wrap"><div class="hero">${rings(900,5)}
+  <section class="wrap"><div class="hero">${rings(900,5)}<svg class="hero-ping" width="900" height="900" viewBox="0 0 900 900" aria-hidden="true"><circle cx="450" cy="450" r="440"/><circle cx="450" cy="450" r="440"/><circle cx="450" cy="450" r="440"/></svg>
     <span class="kicker">Iniciativa për Progres</span>
     <h1 class="h-display" data-focus><span class="line"><span>Llogaridhënie,</span></span><span class="line accent"><span>jo premtime.</span></span></h1>
     <p class="lead">Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj.</p>
-    <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
+    <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet ${ARROW}</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
     ${heroFigs()}
   </div></section>
   <section class="wrap sec">
@@ -636,6 +636,11 @@ function render(){
 /* ---------- Hero intro + count-up ---------- */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function heroIntro(){
+  const hero = $('.hero', app);
+  if (hero && !reduce && matchMedia('(pointer: fine)').matches) {
+    hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); hero.style.setProperty('--mx', ((e.clientX-r.left)/r.width-.5)*2); hero.style.setProperty('--my', ((e.clientY-r.top)/r.height-.5)*2); });
+    hero.addEventListener('pointerleave', () => { hero.style.setProperty('--mx', 0); hero.style.setProperty('--my', 0); });
+  }
   document.body.classList.remove('loaded');
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('loaded')));
   $$('[data-count]', app).forEach(el => {

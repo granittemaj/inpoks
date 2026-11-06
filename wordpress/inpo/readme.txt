@@ -20,6 +20,9 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.16.0 =
+* Livelier hero: a slow pulse from INPO's rings, the rings drift with the mouse, an underline draws under the accent line, figures lift on hover. All off with reduced motion.
+
 = 1.15.0 =
 * Video players in articles: full width, rounded like photos.
 

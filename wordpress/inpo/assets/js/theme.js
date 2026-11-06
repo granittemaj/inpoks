@@ -172,6 +172,17 @@
     document.body.classList.add('loaded');
   }
 
+  /* Hero: INPO's rings drift with the pointer (mouse only, not with reduced motion) */
+  var heroEl = $('.hero');
+  if (heroEl && !reduce && window.matchMedia('(pointer: fine)').matches) {
+    heroEl.addEventListener('pointermove', function (e) {
+      var r = heroEl.getBoundingClientRect();
+      heroEl.style.setProperty('--mx', (((e.clientX - r.left) / r.width) - 0.5) * 2);
+      heroEl.style.setProperty('--my', (((e.clientY - r.top) / r.height) - 0.5) * 2);
+    });
+    heroEl.addEventListener('pointerleave', function () { heroEl.style.setProperty('--mx', 0); heroEl.style.setProperty('--my', 0); });
+  }
+
   /* No-JS form results land on #kontakt: move focus to the message */
   var sent = $('.sent') || $('.nl-done');
   if (sent && /inpo_(contact|nl)=/.test(location.search)) { sent.setAttribute('tabindex', '-1'); sent.focus({ preventScroll: true }); }
