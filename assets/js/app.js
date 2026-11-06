@@ -386,7 +386,7 @@ function progPage(id){
   <section class="wrap sec">
     <div class="impact light"><div class="impact-head"><span class="kicker">Rezultatet</span><h2 class="h2">Rezultatet e programit</h2></div>${impactGrid(results)}</div>
   </section>
-  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Lajme dhe reagime nga programi</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div>${NEWS.slice(0,3).map(newsRow).join('')}</div></section>`:''}
+  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Lajme dhe reagime nga programi</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div class="ncards">${NEWS.slice(0,4).map(n=>ncard(n)).join('')}</div></section>`:''}
   <section class="wrap sec"><a class="prog prog-next" href="#/programet/${other}"><div><span class="muted" style="font-size:14px">Programi tjetër</span><h3 style="margin:6px 0 0">${PROGS[other].name}</h3></div><span class="arrow-circle">${ARROW}</span></a></section>`;
 }
 

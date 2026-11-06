@@ -443,6 +443,14 @@ function inpo_core_render_news_list( $a, $block ) {
 			. ( 'intro' === $a['layout'] && $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
 			. '<h2 class="h2">' . esc_html( $a['heading'] ) . '</h2></div>' . ( $a['linkText'] ? $link : '' ) . '</div><div class="ncards">' . $cards . '</div></section>';
 	}
+	$only_news = ! is_search() && $posts && ! array_filter( (array) $posts, function ( $p ) { return 'post' !== get_post_type( $p ); } );
+	if ( $only_news ) {
+		$cards = '';
+		foreach ( (array) $posts as $post ) {
+			$cards .= inpo_core_news_card( $post, 'h2' );
+		}
+		return '<section ' . inpo_core_wrapper( 'wrap list-plain' ) . '><div class="news-grid">' . $cards . '</div>' . $pager . '</section>';
+	}
 	return '<section ' . inpo_core_wrapper( 'wrap list-plain' ) . '><div>' . $rows . '</div>' . $pager . '</section>';
 }
 
@@ -608,7 +616,7 @@ function inpo_core_render_program_page( $a ) {
 	}
 
 	// Results: counted from what is linked to the programme, plus figures typed in (number | label).
-	$news_q  = new WP_Query( array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => 3, 'tax_query' => $by_program ) );
+	$news_q  = new WP_Query( array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => 4, 'tax_query' => $by_program ) );
 	$projs_q = new WP_Query( array( 'post_type' => INPO_CORE_PROJECT, 'post_status' => 'publish', 'posts_per_page' => 3, 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'DESC' ), 'tax_query' => $by_program ) );
 	$figures = array();
 	foreach ( array( array( $pubs->found_posts, 'hulumtime dhe publikime' ), array( $projs_q->found_posts, 'projekte' ), array( $news_q->found_posts, 'lajme, reagime dhe aktivitete' ) ) as $f ) {
@@ -633,15 +641,16 @@ function inpo_core_render_program_page( $a ) {
 	$news = $news_q->posts;
 	$own  = (bool) $news;
 	if ( ! $own && get_term_meta( $term->term_id, 'inpo_show_news', true ) ) {
-		$news = get_posts( array( 'posts_per_page' => 3 ) );
+		$news = get_posts( array( 'posts_per_page' => 4 ) );
 	}
 	if ( $news ) {
+		// The same photo cards as on the news page.
 		$rows = '';
 		foreach ( $news as $p ) {
-			$rows .= inpo_core_news_row( $p );
+			$rows .= inpo_core_news_card( $p );
 		}
 		$more  = $own ? add_query_arg( 'programi', $term->slug, inpo_core_news_url() ) : inpo_core_news_url();
-		$html .= '<section class="wrap sec"><div class="pub-head"><h2 class="h2">' . ( $own ? 'Lajme dhe reagime nga programi' : 'Reagimet e fundit' ) . '</h2><a class="btn btn-line btn-sm" href="' . esc_url( $more ) . '">Të gjitha lajmet</a></div><div>' . $rows . '</div></section>';
+		$html .= '<section class="wrap sec"><div class="pub-head"><h2 class="h2">' . ( $own ? 'Lajme dhe reagime nga programi' : 'Reagimet e fundit' ) . '</h2><a class="btn btn-line btn-sm" href="' . esc_url( $more ) . '">Të gjitha lajmet</a></div><div class="ncards">' . $rows . '</div></section>';
 	}
 
 	if ( count( $all ) > 1 ) {
