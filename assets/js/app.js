@@ -101,40 +101,19 @@ function home(){
       <p class="lead">Monitorojmë prokurimin publik dhe vendimet e institucioneve në Kosovë, publikojmë çfarë gjejmë dhe kërkojmë që paraja publike të shpenzohet me ligj.</p>
       <div class="hero-ctas"><a class="btn btn-accent" href="#/publikimet">Shfleto publikimet</a><a class="btn btn-line" href="#/rreth-nesh">Rreth INPO-s</a></div>
     </div>
-    <figure class="hero-photo"><img src="assets/img/photos/${D.HERO_PHOTO[0]}" alt="${D.HERO_PHOTO[1]}" width="960" height="1200" fetchpriority="high" decoding="async"><figcaption>${D.HERO_PHOTO[1]}</figcaption></figure>
+    <figure class="hero-photo"><img src="assets/img/photos/${D.HERO_PHOTO[0]}" alt="${D.HERO_PHOTO[1]}" width="1600" height="1067" fetchpriority="high" decoding="async"><figcaption>${D.HERO_PHOTO[1]}</figcaption></figure>
   </section>
-  <section class="wrap" aria-labelledby="h-gjetjet">
-    <div class="bento-head"><h2 class="kicker" id="h-gjetjet">Gjetjet kryesore nga monitorimet</h2><a class="link-u" href="#/lajme?kategoria=reagime">Të gjitha reagimet ${ARROW}</a></div>
-    <div class="bento">
-      <a class="feat" href="#/lajme/pastrimi">
-        ${rings(620,4)}
-        <div class="feat-top"><span class="pill">Reagim publik</span><time datetime="2025-06-18">18.06.2025</time></div>
-        <div class="feat-bottom"><span class="feat-title">${NEWS[0].short}</span><span class="go">${ARROW}</span></div>
-      </a>
-      <a class="stat light" href="#/lajme/mkrs-125">
-        <div class="stat-top"><span>Prokurimi i hapur, MKRS</span><time datetime="2025-05-12">12.05.2025</time></div>
-        <div class="stat-body"><span class="num" data-count="125">125</span><p>ditë pa vendim për tenderin 56 milionësh të stadiumeve. Pa transparencë, pa përgjegjësi.</p></div>
-      </a>
-      <a class="stat dark" href="#/lajme/vushtrri">
-        <div class="stat-top"><span>Reagim publik, Vushtrri</span><time datetime="2025-04-28">28.04.2025</time></div>
-        <div class="stat-body"><span class="num" data-count="4.98" data-prefix="€" data-suffix="M" data-dec="2">€4,98M</span><p>Kërkojmë anulimin e tenderit për kritere diskriminuese.</p></div>
-      </a>
-    </div>
+  <section class="wrap sec"><div class="impact strip"><h2 class="sr">Ndikimi i punës sonë, në numra.</h2>${impactGrid(IMPACT)}</div></section>
+  <section class="wrap sec">
+    <div class="pub-head"><div class="pub-head-l"><span class="kicker">Lajme dhe qëndrime</span><h2 class="h2">Lajmet dhe reagimet më të fundit</h2></div><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div>
+    <div class="ncards">${NEWS.slice(0,4).map(n=>ncard(n)).join('')}</div>
   </section>
-  ${fieldHTML()}
   <section class="wrap sec">
     <div class="pub-head">
       <div class="pub-head-l"><span class="kicker">Hulumtime dhe publikime</span><h2 class="h2">Hulumtimet dhe publikimet më të fundit</h2></div>
       <a class="btn btn-line btn-sm" href="#/publikimet">Të gjitha publikimet</a>
     </div>
     <div class="pubs">${latestPubs.map(pubCard).join('')}</div>
-  </section>
-  <section class="wrap sec">
-    <div class="impact">${rings(640,4)}
-      <div class="impact-head"><span class="kicker">Rezultatet dhe ndikimi</span><h2 class="h2">Ndikimi i punës sonë, në numra.</h2></div>
-      ${impactGrid(IMPACT)}
-      <a class="btn" href="#/projektet?seksioni=ndikimi">Shembuj të ndikimit</a>
-    </div>
   </section>
   <section class="wrap sec">
     <div class="grid12 sec-head"><span class="kicker">Programet</span><h2 class="h2">Dy programe, një qëllim: institucione që u përgjigjen qytetarëve.</h2></div>
@@ -145,15 +124,7 @@ function home(){
       </a>`).join('')}
     </div>
   </section>
-  <section class="wrap sec grid12 news-sec">
-    <div class="news-intro">
-      <span class="kicker">Lajme dhe qëndrime</span>
-      <h2 class="h2">Lajmet dhe reagimet më të fundit</h2>
-      <p class="lead">Qëndrimet tona publike për tenderët, vendimet dhe institucionet që monitorojmë.</p>
-      <a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a>
-    </div>
-    <div class="news-list">${[NEWS[1],NEWS[3],NEWS[5]].map(newsRow).join('')}</div>
-  </section>
+  ${fieldHTML()}
   <section class="wrap sec">
     <div class="pub-head"><div class="pub-head-l"><span class="kicker">Donatorët dhe partnerët</span><h2 class="h2">Me kë punojmë.</h2></div><a class="btn btn-line btn-sm" href="#/projektet">Të gjitha projektet</a></div>
     ${donorsHTML()}
@@ -168,7 +139,7 @@ const FILTERS = {
   lajme: {
     key:'news', facet:'kategoria', facets:Object.entries(CATS), items:()=>NEWS, of:n=>n.cat, year:n=>n.iso.slice(0,4), selects:[],
     text:n=>n.title+' '+n.excerpt, label:'Kërko në lajme', ph:'Kërko, p.sh. OShP, stadiume, Vushtrri',
-    count:n=>n===1?'1 artikull':n+' artikuj', none:'Asnjë lajm nuk përputhet me këtë kërkim.', grid:'news-grid', card:(n,i,big)=>ncard(n,big)
+    count:n=>n===1?'1 artikull':n+' artikuj', none:'Asnjë lajm nuk përputhet me këtë kërkim.', grid:'news-grid', card:(n)=>ncard(n,'h2')
   },
   publikimet: {
     key:'pub', facet:'lloji', facets:PFILTERS.slice(1), items:()=>PUBS, of:p=>p.type, year:yearOf,
@@ -178,7 +149,7 @@ const FILTERS = {
     count:n=>n===1?'1 publikim':n+' publikime', none:'Asnjë publikim nuk përputhet me këtë kërkim.', grid:'pubs three', card:(p)=>pubCard(p,PUBS.indexOf(p))
   }
 };
-const ncard = (n, big) => `<a class="ncard${big?' big':''}" href="#/lajme/${n.id}">${big?rings(560,4):''}<div class="ncard-meta"><span class="pill">${CAT1[n.cat]}</span><time datetime="${n.iso}">${n.date}</time></div><div><h2>${n.title}</h2><p>${n.excerpt}</p></div></a>`;
+const ncard = (n, tag='h3') => `<a class="ncard" href="#/lajme/${n.id}"><span class="ncard-media">${n.img?`<span class="ncard-img"><img src="assets/img/photos/${n.img}" alt="" loading="lazy" decoding="async"></span>`:`<span class="ncard-img ph" aria-hidden="true">${rings(360,3)}</span>`}<time datetime="${n.iso}">${n.date}</time></span><span class="ncard-body"><span class="ncard-cat">${CAT1[n.cat]}</span><${tag} class="ncard-title">${n.title}</${tag}></span></a>`;
 function selPill(id, name, label, opts, val){
   const cur = (opts.find(o=>o[0]===val)||opts[0])[1];
   return `<div class="sel-pill${val?' is-set':''}"><label class="sel-k" for="${id}">${label}</label><span class="sel-v" aria-hidden="true">${cur}</span><select id="${id}" name="${name}">${opts.map(([v,l])=>`<option value="${v}"${v===val?' selected':''}>${l}</option>`).join('')}</select></div>`;
@@ -298,7 +269,7 @@ function articlePage(id){
   const n = NEWS.find(x=>x.id===id); if(!n) return notFound();
   const words = n.body.join(' ').split(/\s+/).length + 180;
   const mins = Math.max(2, Math.round(words/200));
-  const related = NEWS.filter(x=>x.id!==id).slice(0,3);
+  const related = NEWS.filter(x=>x.id!==id).slice(0,4);
   const pub = n.pub ? PUBS.find(p=>p.id===n.pub) : null;
   return `
   <article class="wrap article">
@@ -326,7 +297,7 @@ function articlePage(id){
   </article>
   <section class="wrap sec">
     <div class="pub-head"><h2 class="h2">Lexo edhe</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div>
-    <div>${related.map(newsRow).join('')}</div>
+    <div class="ncards">${related.map(n=>ncard(n)).join('')}</div>
   </section>`;
 }
 

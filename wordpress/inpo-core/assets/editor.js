@@ -46,7 +46,7 @@
       ['kicker', 'Kicker'], ['title', 'Title'], ['lead', 'Intro', 'textarea']
     ],
     'inpo/impact': [
-      ['kicker', 'Kicker'], ['heading', 'Heading'], ['tone', 'Style', 'select', [['accent', 'Indigo panel'], ['light', 'Light panel']]], ['buttonText', 'Button text'], ['buttonUrl', 'Button link', 'text', DIRECT], ['anchor', 'Anchor (e.g. ndikimi)'],
+      ['kicker', 'Kicker'], ['heading', 'Heading'], ['tone', 'Style', 'select', [['strip', 'Quiet strip'], ['accent', 'Indigo panel'], ['light', 'Light panel']]], ['buttonText', 'Button text'], ['buttonUrl', 'Button link', 'text', DIRECT], ['anchor', 'Anchor (e.g. ndikimi)'],
       ['item1Source', 'Figure 1: source', 'select', IMPACT_SOURCES], ['item1Number', 'Figure 1: number (manual)'], ['item1Label', 'Figure 1: label'],
       ['item2Source', 'Figure 2: source', 'select', IMPACT_SOURCES], ['item2Number', 'Figure 2: number (manual)'], ['item2Label', 'Figure 2: label'],
       ['item3Source', 'Figure 3: source', 'select', IMPACT_SOURCES], ['item3Number', 'Figure 3: number (manual)'], ['item3Label', 'Figure 3: label'],

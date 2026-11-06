@@ -61,9 +61,9 @@ function inpo_core_hero_photo( $a ) {
 	if ( empty( $a['showImage'] ) ) {
 		return '';
 	}
-	$src = $a['image'] ? $a['image'] : INPO_CORE_URL . 'assets/photos/hero-raporti-integriteti.jpg';
+	$src = $a['image'] ? $a['image'] : INPO_CORE_URL . 'assets/photos/hero-raporti-integriteti-wide.jpg';
 	$cap = trim( (string) $a['imageCaption'] );
-	return '<figure class="hero-photo"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( $cap ) . '" width="960" height="1200" fetchpriority="high" decoding="async">'
+	return '<figure class="hero-photo"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( $cap ) . '" width="1600" height="1067" fetchpriority="high" decoding="async">'
 		. ( $cap ? '<figcaption>' . esc_html( $cap ) . '</figcaption>' : '' ) . '</figure>';
 }
 
@@ -462,15 +462,15 @@ function inpo_core_render_news_list( $a, $block ) {
 	}
 	$link = '<a class="btn btn-line btn-sm" href="' . esc_url( inpo_core_news_url() ) . '">' . esc_html( $a['linkText'] ) . '</a>';
 
-	if ( 'intro' === $a['layout'] ) {
-		return '<section ' . inpo_core_wrapper( 'wrap sec grid12 news-sec' ) . '><div class="news-intro">'
-			. ( $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
-			. '<h2 class="h2">' . esc_html( $a['heading'] ) . '</h2>'
-			. ( $a['lead'] ? '<p class="lead">' . esc_html( $a['lead'] ) . '</p>' : '' )
-			. ( $a['linkText'] ? $link : '' ) . '</div><div class="news-list">' . $rows . '</div></section>';
-	}
-	if ( 'section' === $a['layout'] ) {
-		return '<section ' . inpo_core_wrapper( 'wrap sec' ) . '><div class="pub-head"><h2 class="h2">' . esc_html( $a['heading'] ) . '</h2>' . ( $a['linkText'] ? $link : '' ) . '</div><div>' . $rows . '</div></section>';
+	// Home ("intro") and "Lexo edhe" ("section"): a row of photo cards under one heading.
+	if ( 'intro' === $a['layout'] || 'section' === $a['layout'] ) {
+		$cards = '';
+		foreach ( (array) $posts as $post ) {
+			$cards .= inpo_core_news_card( $post );
+		}
+		return '<section ' . inpo_core_wrapper( 'wrap sec' ) . '><div class="pub-head"><div class="pub-head-l">'
+			. ( 'intro' === $a['layout'] && $a['kicker'] ? '<span class="kicker">' . esc_html( $a['kicker'] ) . '</span>' : '' )
+			. '<h2 class="h2">' . esc_html( $a['heading'] ) . '</h2></div>' . ( $a['linkText'] ? $link : '' ) . '</div><div class="ncards">' . $cards . '</div></section>';
 	}
 	return '<section ' . inpo_core_wrapper( 'wrap list-plain' ) . '><div>' . $rows . '</div>' . $pager . '</section>';
 }
@@ -486,14 +486,9 @@ function inpo_core_render_news_grid( $a ) {
 		$query = new WP_Query( array( 'posts_per_page' => 9, 'ignore_sticky_posts' => true ) );
 	}
 	$state = inpo_core_filter_state( 'news' );
-	// The first card is large on the plain list (page 1, no search or reordering).
-	$plain = max( 1, (int) get_query_var( 'paged' ) ) === 1 && '' === $state['q'] && '' === $state['programi'] && ! $state['viti'] && '' === $state['rendit'];
 	$cards = '';
-	foreach ( $query->posts as $i => $post ) {
-		$big    = $plain && 0 === $i;
-		$cards .= '<a class="ncard' . ( $big ? ' big' : '' ) . '" href="' . esc_url( get_permalink( $post ) ) . '">' . ( $big ? inpo_core_rings( 560, 4 ) : '' )
-			. '<div class="ncard-meta"><span class="pill">' . esc_html( inpo_core_post_category_name( $post ) ) . '</span>' . inpo_core_time( $post ) . '</div>'
-			. '<div><h2>' . inpo_core_title( $post ) . '</h2><p>' . esc_html( inpo_core_excerpt( $post ) ) . '</p></div></a>';
+	foreach ( $query->posts as $post ) {
+		$cards .= inpo_core_news_card( $post, 'h2' );
 	}
 	$cards = $cards ? '<div class="news-grid">' . $cards . '</div>' : inpo_core_filter_empty( 'news' );
 	return '<section ' . inpo_core_wrapper( 'wrap' ) . '>'
@@ -1006,6 +1001,14 @@ function inpo_core_render_impact( $a ) {
 	}
 	if ( ! $figures ) {
 		return inpo_core_placeholder( __( 'Results and impact: type a number or choose a source for each figure.', 'inpo-core' ) );
+	}
+	// The default: a quiet strip of figures between hairlines.
+	if ( 'strip' === $a['tone'] ) {
+		$extra = $a['anchor'] ? array( 'id' => $a['anchor'] ) : array();
+		// The numbers speak; the heading stays for screen readers.
+		return '<section ' . inpo_core_wrapper( 'wrap sec' . ( $a['anchor'] ? ' anchor' : '' ), $extra ) . '><div class="impact strip">'
+			. ( $a['heading'] ? '<h2 class="sr">' . esc_html( $a['heading'] ) . '</h2>' : '' )
+			. inpo_core_impact_grid( $figures ) . '</div></section>';
 	}
 	$light = 'light' === $a['tone'];
 	$url   = $a['buttonUrl'] ? $a['buttonUrl'] : inpo_core_projects_url() . '#ndikimi';

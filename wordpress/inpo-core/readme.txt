@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.12.0
+Stable tag: 1.13.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,15 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.13.1 =
+* News cards find a photo when a post has no featured image: the first image in its text, an attached image, or the image of the publication it links to.
+* The home hero uses the landscape photo from the same report launch (February 2025).
+
+= 1.13.0 =
+* News as photo cards (featured photo with the date on it, category, title; no excerpt) on the home page, the news page and under articles.
+* Results and impact: a quiet strip of figures by default ("Quiet strip" in the block's Style).
+* An unedited home page takes the new order: hero, figures, news, research, programmes, who we are, partners.
 
 = 1.12.0 =
 * A shorter home page: no strip of fields under the hero, latest publications with one button instead of type chips, partners' logos instead of project cards, three photos in Kush jemi. Each can be switched back in the block's sidebar.

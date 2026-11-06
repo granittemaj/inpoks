@@ -20,6 +20,15 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.13.2 =
+* Phones: the figures strip lists each number with its label on one row.
+
+= 1.13.1 =
+* Hero photo framed on the people.
+
+= 1.13.0 =
+* Closer to INPO's sister sites: uppercase section labels with a short line, a hero with one wide photo, partners' logos in a plain row, photo cards for news.
+
 = 1.12.1 =
 * Mobile menu: opening a section closes the one that was open.
 

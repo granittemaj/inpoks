@@ -810,6 +810,12 @@ function inpo_core_tidy_content() {
 	if ( inpo_core_site_mode() ) {
 		inpo_core_setup_listing_pages();
 	}
+	// 1.13.0: an unedited home page takes the new order (figures, news cards, research, programmes, who we are, partners).
+	$home = get_post( (int) get_option( 'page_on_front' ) );
+	if ( $home && inpo_core_site_mode() && inpo_core_theme_active() && inpo_core_layout_outdated( $home, 'home' ) && false !== strpos( $home->post_content, '<!-- wp:inpo/bento' ) ) {
+		wp_save_post_revision( $home->ID );
+		wp_update_post( wp_slash( array( 'ID' => $home->ID, 'post_content' => inpo_core_home_content() ) ) );
+	}
 	// 1.6.0: the home page gets "Kush jemi" with photos from the field, after the key findings.
 	$front = get_post( (int) get_option( 'page_on_front' ) );
 	if ( $front && inpo_core_site_mode() && false === strpos( $front->post_content, '<!-- wp:inpo/field' ) && preg_match( '#<!-- wp:inpo/bento[^>]*/-->#', $front->post_content, $m ) ) {

@@ -123,7 +123,7 @@ const CASES = ['mkrs-procesverbal'];
 
 // Team and board, as listed on inpo-ks.org/rreth-nesh ("Anëtarët").
   // Photos from INPO's events (assets/img/photos/, from inpo-ks.org). Captions from the news posts they illustrated.
-  const HERO_PHOTO = ['hero-raporti-integriteti.jpg', 'Prezantimi i raportit “Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë”, shkurt 2025'];
+  const HERO_PHOTO = ['hero-raporti-integriteti-wide.jpg', 'Prezantimi i raportit “Integriteti i kandidatëve, sundimi i ligjit dhe qeverisja e mirë”, shkurt 2025'];
   const FIELD = {
     kicker:'Kush jemi', title:'Në terren, pranë institucioneve dhe qytetarëve.',
     text:'INPO është organizatë joqeveritare dhe jofitimprurëse, e themeluar në Ferizaj në vitin 2005, me zyra në Ferizaj dhe Prishtinë. Takojmë zyrtarët, monitorojmë tenderët dhe gjetjet i sjellim para institucioneve dhe qytetarëve.',

@@ -529,6 +529,42 @@ function inpo_core_pub_card( $post, $index = 0 ) {
 }
 
 /**
+ * A photo for a post: its featured image, else the first image in its text, else an image attached to it,
+ * else the image of the publication it links to. 0 when there is none.
+ */
+function inpo_core_post_image_id( $post ) {
+	$id = (int) get_post_thumbnail_id( $post );
+	if ( $id ) {
+		return $id;
+	}
+	if ( preg_match( '/wp-image-(\d+)/', (string) $post->post_content, $m ) && wp_attachment_is_image( (int) $m[1] ) ) {
+		return (int) $m[1];
+	}
+	$kids = get_children( array( 'post_parent' => $post->ID, 'post_type' => 'attachment', 'post_mime_type' => 'image', 'numberposts' => 1, 'orderby' => 'menu_order ID', 'order' => 'ASC', 'fields' => 'ids' ) );
+	if ( $kids ) {
+		return (int) reset( $kids );
+	}
+	$pub = (int) get_post_meta( $post->ID, 'inpo_publication', true );
+	return $pub ? (int) get_post_thumbnail_id( $pub ) : 0;
+}
+
+/**
+ * News card: the post's photo with the date on it, then the category and the title. No excerpt.
+ * Mirrors ncard() in the prototype's app.js.
+ *
+ * @param WP_Post $post Post.
+ * @param string  $tag  Heading tag of the title.
+ * @return string
+ */
+function inpo_core_news_card( $post, $tag = 'h3' ) {
+	$thumb = inpo_core_post_image_id( $post );
+	$img   = $thumb ? wp_get_attachment_image( $thumb, 'medium_large', false, array( 'alt' => '', 'loading' => 'lazy', 'decoding' => 'async', 'sizes' => '(max-width: 640px) 80vw, (max-width: 1100px) 46vw, 320px' ) ) : '';
+	$media = $img ? '<span class="ncard-img">' . $img . '</span>' : '<span class="ncard-img ph" aria-hidden="true">' . inpo_core_rings( 360, 3 ) . '</span>';
+	return '<a class="ncard" href="' . esc_url( get_permalink( $post ) ) . '"><span class="ncard-media">' . $media . inpo_core_time( $post ) . '</span>'
+		. '<span class="ncard-body"><span class="ncard-cat">' . esc_html( inpo_core_post_category_name( $post ) ) . '</span><' . $tag . ' class="ncard-title">' . inpo_core_title( $post ) . '</' . $tag . '></span></a>';
+}
+
+/**
  * News row (date, category, title, arrow). Also used for publications in search results.
  */
 function inpo_core_news_row( $post ) {
