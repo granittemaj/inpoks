@@ -20,6 +20,12 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.18.1 =
+* No more blinking near the top of the page: the header shrinks after 48px and grows back under 4px.
+* Filter rows stick under the header in one row (search first) and get smaller on scroll; no page scrolls sideways any more.
+* Footer links to the privacy, terms and cookie pages; a cookie notice shown once.
+* Phones: partner logos three to a row, smaller back-to-top button, no drawn cover on publication pages, no gap in the programme panel.
+
 = 1.18.0 =
 * The figures in the hero count up from 0.
 * The header gets smaller once the page scrolls.

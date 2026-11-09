@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.18.0
+Stable tag: 1.18.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,12 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.18.1 =
+* Privacy policy, terms of use and cookie policy: created once as ordinary Pages (proposed texts for INPO's legal adviser, unknowns in [brackets]); the privacy page becomes WordPress's own; the contact consent links to it. Cookie notice text in INPO > Settings > Privacy.
+* Filters: one sticky row with the search, the categories, "Filtrat" (the selects in a panel, with a count) and the order. Projects: the status chips and the section links share one sticky row.
+* Infographic cards: title at the top, the first image framed below it. Project pages: the status under the title. Programme pages: news section label.
+* Paging scrolls to the results.
 
 = 1.18.0 =
 * The contact page is called "Kontakt" (renamed once when still "Le të flasim.").
