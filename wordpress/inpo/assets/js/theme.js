@@ -143,8 +143,11 @@
   if (hdr) {
     var toTop = $('#to-top');
     var onScroll = function () {
-      hdr.classList.toggle('scrolled', window.scrollY > 8);
-      root.classList.toggle('is-scrolled', window.scrollY > 8);
+      // The smaller header moves the page up by 20px: shrink after 48px, grow back under 4px,
+      // so the change itself can never flip it back (that was a blinking loop near the top).
+      var on = root.classList.contains('is-scrolled') ? window.scrollY > 4 : window.scrollY > 48;
+      hdr.classList.toggle('scrolled', on);
+      root.classList.toggle('is-scrolled', on);
       if (toTop) toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.8);
     };
     addEventListener('scroll', onScroll, { passive: true });

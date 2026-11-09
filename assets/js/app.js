@@ -738,7 +738,8 @@ document.addEventListener('click', e => {
 /* Header border on scroll */
 const hdr = $('#hdr');
 const toTop = $('#to-top');
-const onScroll = () => { hdr.classList.toggle('scrolled', scrollY>8); document.documentElement.classList.toggle('is-scrolled', scrollY>8); toTop.classList.toggle('show', scrollY > innerHeight * .8); };
+// The smaller header moves the page up by 20px: shrink after 48px, grow back under 4px, so the change never flips itself back.
+const onScroll = () => { const r = document.documentElement, on = r.classList.contains('is-scrolled') ? scrollY > 4 : scrollY > 48; hdr.classList.toggle('scrolled', on); r.classList.toggle('is-scrolled', on); toTop.classList.toggle('show', scrollY > innerHeight * .8); };
 addEventListener('scroll', onScroll, {passive:true}); onScroll();
 $('#yr').textContent = new Date().getFullYear();
 
