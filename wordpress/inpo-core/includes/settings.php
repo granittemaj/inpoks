@@ -32,6 +32,7 @@ function inpo_core_default_settings() {
 		'audit_url'  => '',
 		'fineprint'  => 'Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).',
 		'recipient'  => '',
+		'cookie_note' => 'Kjo faqe përdor vetëm cookies dhe ruajtje lokale të domosdoshme, pa analitikë dhe pa reklama.',
 	);
 }
 

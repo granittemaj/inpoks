@@ -22,6 +22,18 @@
   }
   window.inpoToast = toast;
 
+  /* Cookie notice: shown until "Në rregull" */
+  var cookieNote = $('#cookie-note');
+  if (cookieNote) {
+    var seen = false;
+    try { seen = localStorage.getItem('inpo-cookies') === '1'; } catch (e) {}
+    if (!seen) cookieNote.hidden = false;
+    $('[data-cookie-ok]', cookieNote).addEventListener('click', function () {
+      cookieNote.hidden = true;
+      try { localStorage.setItem('inpo-cookies', '1'); } catch (e) {}
+    });
+  }
+
   /* Dropdowns */
   var dds = $$('.nav .dd');
   function closeDD(except) {

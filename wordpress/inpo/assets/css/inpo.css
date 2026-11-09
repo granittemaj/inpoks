@@ -980,6 +980,30 @@ html:has(.docs-filters){scroll-padding-top:calc(var(--wp-admin--admin-bar--heigh
 .timeline .yr{font-size:var(--fs-card-lg);letter-spacing:-.04em}
 @media (min-width:641px){.timeline li>:first-child,.timeline>.tl>:first-child{grid-column:1/span 2}.timeline li>:last-child,.timeline>.tl>:last-child{grid-column:3/-1}}
 
+/* Legal pages (privacy, terms, cookies): the text in columns 1 to 7, links to the others beside it */
+.legal{margin-top:48px;align-items:start}
+.legal-body{grid-column:1/span 7}
+.legal-body h2{margin:1.8em 0 .5em;max-width:68ch;font-size:var(--fs-card-lg);line-height:1.2;font-weight:600;letter-spacing:-.03em;color:var(--ink)}
+.legal-body ul{margin:0 0 1.2em;padding-left:1.2em;max-width:68ch}
+.legal-body li{margin-bottom:.5em}
+.legal-date{font-size:14px;color:var(--muted)}
+.legal-links{display:flex;flex-direction:column}
+.legal-links a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;border-top:1px solid var(--line);font-weight:500;transition:color .15s}
+.legal-links a:hover{color:var(--accent-ink)}
+.legal-links svg{flex:none}
+@media (max-width:980px){.legal-body{grid-column:1/-1}.legal .aside{grid-column:1/-1;position:static;margin-top:24px}}
+/* Footer: links to the legal pages */
+.foot-legal{display:flex;flex-wrap:wrap;gap:0 20px}
+.foot-legal a{display:inline-flex;align-items:center;min-height:44px;font-size:13px;color:var(--muted)}
+.foot-legal a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+/* Cookie notice: once, bottom left, until "Në rregull" */
+.cookie-note{position:fixed;left:max(20px,env(safe-area-inset-left,0px) + 16px);bottom:max(20px,env(safe-area-inset-bottom,0px) + 16px);z-index:44;display:flex;align-items:center;gap:16px;max-width:460px;padding:14px 14px 14px 20px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg);box-shadow:0 18px 40px rgba(14,14,26,.16)}
+.cookie-note[hidden]{display:none}
+.cookie-note p{margin:0;font-size:14px;line-height:1.5;color:var(--ink-2)}
+.cookie-note a{color:var(--accent-ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.cookie-note .btn{flex:none}
+@media (max-width:640px){.cookie-note{left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom,0px) + 8px);max-width:none}html:has(.cookie-note:not([hidden])) .to-top{display:none}}
+
 /* ---------- WordPress integration ---------- */
 
 /* Theme.json presets follow the tokens, so core blocks switch with dark mode too. */
@@ -1173,3 +1197,6 @@ html.reader-open{overflow:hidden}
 /* The section menu sits under the admin bar too */
 .wrap:has(>.subnav),.filters-bar{top:calc(var(--wp-admin--admin-bar--height,0px) + var(--hdr-h))}
 html:has(.wrap>.subnav) .filters-bar{top:calc(var(--wp-admin--admin-bar--height,0px) + var(--hdr-h) + 46px)}
+
+/* Legal pages: the date line stays small inside the page text */
+.page-content.page-content>.legal-date{font-size:14px;color:var(--muted)}

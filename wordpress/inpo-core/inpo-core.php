@@ -28,6 +28,7 @@ require_once INPO_CORE_DIR . 'includes/helpers.php';
 require_once INPO_CORE_DIR . 'includes/content-model.php';
 require_once INPO_CORE_DIR . 'includes/filters.php';
 require_once INPO_CORE_DIR . 'includes/forms.php';
+require_once INPO_CORE_DIR . 'includes/legal.php';
 require_once INPO_CORE_DIR . 'includes/rest.php';
 require_once INPO_CORE_DIR . 'includes/blocks.php';
 require_once INPO_CORE_DIR . 'includes/render.php';

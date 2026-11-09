@@ -19,7 +19,7 @@ const html = read('index.html')
 const routes = [
   '', 'projektet', 'projektet?statusi=aktive', 'projektet/anulimet', 'transparenca', 'te-dhenat', 'te-dhenat/tenderet-e-anuluar', 'rreth-nesh?seksioni=ekipi', 'lajme', 'lajme?kategoria=reagime', 'lajme?q=stadiume&rendit=te-vjetrat', 'lajme/pastrimi',
   'publikimet', 'publikimet?lloji=infografika', 'publikimet?lloji=politika&institucioni=oshp', 'publikimet?fusha=prokurimi', 'publikimet?q=zzz', 'publikimet/integriteti', 'publikimet/temf-2025',
-  'programet/qeverisje', 'programet/edukim', 'rreth-nesh', 'kontakti', 'faqe-qe-nuk-ekziston'
+  'programet/qeverisje', 'programet/edukim', 'rreth-nesh', 'kontakti', 'politika-e-privatesise', 'kushtet-e-perdorimit', 'politika-e-cookies', 'faqe-qe-nuk-ekziston'
 ];
 // Filtered lists: the live count must match the data.
 const counts = {

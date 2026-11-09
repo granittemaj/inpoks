@@ -57,7 +57,7 @@ When you change a CSS or JS file, bump the `?v=` date on its links in `index.htm
 - Block renderers in `inpo-core/includes/render.php` mirror the renderers in `app.js` class for class. Header and footer markup lives in `inpo/inc/chrome.php`.
 - **Infinite scroll** (`theme.js`, `infinite()`): any list with a `.pager` (news, publications, projects, archives, search) loads the next page as the visitor nears the end and appends its items; the pager stays in the HTML for search engines and without JS, and a "Shfaq më shumë" button does the same by hand. The filters call `window.inpoInfinite(results)` after swapping results. The prototype shows every item on one page.
 - News and publication filters share one engine, `inpo-core/includes/filters.php` (state from the URL, main query, chip counts, tags, noindex). Its markup matches `filtersHTML()` in `app.js`.
-- Content import: `inpo-core/seed/content.json` is generated from `data.js`. Regenerate it when `data.js` changes.
+- Content import: `inpo-core/seed/content.json` is generated from `data.js` with `npm run seed`. Run it when `data.js` changes.
 - The live inpo-ks.org is WordPress (WPML, Yoast, CPT UI). The plugin reuses its names: post type `publikimet`, taxonomy `tipi_i_publikimit`. Deploy in two steps: activate the plugin first and run INPO > Setup > Prepare (no public change while the old theme is active, `inpo_core_theme_active()` gates public behaviour), then activate the theme: go-live runs automatically, backs up what it changes and is restored if the old theme is reactivated. Permalinks are never changed on the live site.
 - wp-admin strings (plugin and theme) are English and wrapped in `__()`; public site copy stays Albanian.
 - Still no build step: block editor UI is plain JS on `wp.*` globals (`inpo-core/assets/editor.js`).
@@ -108,12 +108,19 @@ When you change a CSS or JS file, bump the `?v=` date on its links in `index.htm
   - Two programmes: Qeverisje e mirë, Edukim demokratik.
   - News items and publication titles as listed in `data.js`.
 
+## Legal pages and cookie notice
+
+- Privacy policy, terms of use and cookie policy: `LEGAL` in data.js (keys are the slugs `politika-e-privatesise`, `kushtet-e-perdorimit`, `politika-e-cookies`), routes `#/<slug>` via `legalPage()`. In WordPress `inpo-core/includes/legal.php` creates them once as ordinary Pages (go-live, fresh setup, or tidy on sites already live), sets the privacy page as WordPress's own, and the theme's footer links to the published ones (`inpo_legal_links` filter). They describe only what the site does: contact form (stored privately, emailed to INPO), a hashed IP for 10 minutes for rate limiting, theme choice and notice dismissal in local storage, no analytics or ads. Keep them true when adding anything that collects data or loads third-party content.
+- The texts are proposals for INPO's legal adviser; unknowns ([data e hyrjes në fuqi], [afati i ruajtjes], [ofruesi i hostingut]) stay in brackets.
+- Cookie notice: `COOKIE_NOTE` (prototype) / INPO > Settings > Privacy (WordPress); shown once at the bottom left until "Në rregull" (`inpo-cookies` in local storage). Only necessary storage is used, so it informs; there is nothing to accept. If tracking is ever added, it must become a real consent choice first.
+
 ## Open placeholders
 
 - Official SVG logo (the header uses a 440px PNG from inpo-ks.org; an SVG would be sharper). DANIDA and Swiss Cooperation Office logos (shown as text).
 - From INPO: the recommendations figure (impact panel), project names, periods and results, strategy and policy documents, real procurement datasets. The six datasets in data.js have made-up values (`sample:true`), shown with a "Të dhëna ilustruese" notice; never present them as INPO findings.
 - Full article bodies, publication summaries, years and PDF links.
 - EN translation (the switch is a `data-noop` stub).
+- Legal pages: review by INPO's legal adviser, the effective date, retention period and host.
 - Form backend for contact (client-side only in the prototype). There is no email signup: INPO decided against it (Oct 2026).
 - `noindex` meta in `index.html` must be removed for production.
 

@@ -810,6 +810,17 @@ function inpo_core_tidy_content() {
 	if ( inpo_core_site_mode() ) {
 		inpo_core_setup_listing_pages();
 	}
+	// 1.18.1: privacy, terms of use and cookie pages, once (restore puts them back to draft).
+	if ( inpo_core_site_mode() && inpo_core_theme_active() && ! get_option( 'inpo_core_legal_v1' ) ) {
+		$created = array();
+		inpo_core_setup_legal_pages( $created );
+		$backup = get_option( 'inpo_core_live_backup' );
+		if ( $created && is_array( $backup ) ) {
+			$backup['created'] = array_unique( array_merge( isset( $backup['created'] ) ? (array) $backup['created'] : array(), $created ) );
+			update_option( 'inpo_core_live_backup', $backup, false );
+		}
+		update_option( 'inpo_core_legal_v1', 1 );
+	}
 	// 1.18.0: the contact page is called "Kontakt" (was "Le të flasim.", only when not renamed since).
 	$contact = get_page_by_path( 'kontakti' );
 	if ( $contact && 'Le të flasim.' === $contact->post_title ) {

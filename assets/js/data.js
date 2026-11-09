@@ -194,6 +194,67 @@ const HISTORY = [
   ['2019','Monitorim në të gjitha komunat','Me Institutin e Kosovës për Drejtësi, 160 aktivitete prokurimi të monitoruara në komunat e Kosovës.'],
   ['2023','Raporti për tenderët e anuluar','Publikuar me mbështetjen e Byrosë Ndërkombëtare për Çështje të Narkotikëve dhe Zbatimit të Ligjit (INL).']
 ];
+// Legal pages: proposed texts that describe what the site actually does (contact form, theme choice
+// stored in the browser, no analytics or advertising). INPO's legal adviser reviews them before
+// publication; unknown details stay in [brackets]. Keys are the page slugs (same in WordPress).
+const LEGAL = {
+  'politika-e-privatesise': {
+    title: 'Politika e privatësisë',
+    lead: 'Si i mbledhim, i përdorim dhe i mbrojmë të dhënat tuaja kur vizitoni faqen tonë ose na shkruani.',
+    updated: '[data e hyrjes në fuqi]',
+    sections: [
+      ['Kush jemi', ['Kontrollues i të dhënave është Iniciativa për Progres (INPO), Rr. “Qamil Hoxha”, H32, nr. 09, kati IV, 10000 Prishtinë.', 'Për çdo pyetje rreth të dhënave tuaja na shkruani në info@inpo-ks.org ose na telefononi në +383 (0) 49 354 000.']],
+      ['Çfarë të dhënash mbledhim', [
+        ['Kur na shkruani përmes formularit të kontaktit: emrin, mbiemrin (nëse e shkruani), adresën e email-it, temën dhe mesazhin.',
+         'Kur na shkruani me email ose në rrjetet sociale: të dhënat që na dërgoni vetë.',
+         'Kur vizitoni faqen: serveri regjistron të dhëna teknike të zakonshme (adresa IP, shfletuesi, faqja e kërkuar, koha), për siguri dhe që faqja të funksionojë.',
+         'Për të ndaluar mesazhet e padëshiruara, formulari ruan për 10 minuta një version të koduar të adresës suaj IP, jo vetë adresën.'],
+        'Nuk përdorim mjete analitike, reklama apo gjurmues të palëve të treta.']],
+      ['Pse i përdorim', ['Vetëm për t’iu përgjigjur mesazhit tuaj dhe për ta mbajtur faqen të sigurt e funksionale. Nuk i përdorim për marketing dhe nuk ju dërgojmë buletine.']],
+      ['Baza ligjore', ['Pëlqimi juaj, që e jepni kur shënoni kutinë në formularin e kontaktit, dhe interesi ynë i ligjshëm për ta mbajtur faqen të sigurt.', 'Të dhënat i trajtojmë në përputhje me Ligjin Nr. 06/L-082 për Mbrojtjen e të Dhënave Personale.']],
+      ['Kush i sheh', ['Mesazhet i lexon vetëm stafi i INPO-s që u përgjigjet. Nuk i shesim dhe nuk ia japim askujt tjetër, përveç kur e kërkon ligji.', 'Faqja mbahet te [ofruesi i hostingut], i cili i ruan të dhënat në emrin tonë.']],
+      ['Sa kohë i ruajmë', ['Mesazhet e formularit i ruajmë për [afati i ruajtjes], pastaj i fshijmë. Mund të kërkoni t’i fshijmë më herët.']],
+      ['Të drejtat tuaja', ['Keni të drejtë të kërkoni qasje në të dhënat tuaja, korrigjimin ose fshirjen e tyre dhe kufizimin e përpunimit, si dhe ta tërhiqni pëlqimin në çdo kohë. Na shkruani në info@inpo-ks.org.', 'Nëse mendoni se të dhënat tuaja nuk janë trajtuar si duhet, mund të ankoheni te Agjencia për Informim dhe Privatësi (AIP).']],
+      ['Lidhjet dhe videot', ['Faqja ka lidhje drejt rrjeteve sociale dhe faqeve të tjera. Kur i hapni, zbatohen politikat e tyre.', 'Disa artikuj kanë video nga YouTube. Ato ngarkohen nga youtube-nocookie.com vetëm kur i luani.']],
+      ['Ndryshimet', ['Kur e ndryshojmë këtë politikë, versionin e ri e publikojmë këtu bashkë me datën.']]
+    ]
+  },
+  'kushtet-e-perdorimit': {
+    title: 'Kushtet e përdorimit',
+    lead: 'Rregullat për përdorimin e faqes dhe të publikimeve tona.',
+    updated: '[data e hyrjes në fuqi]',
+    sections: [
+      ['Pranimi i kushteve', ['Duke përdorur këtë faqe, pranoni këto kushte. Nëse nuk pajtoheni me to, ju lutemi mos e përdorni faqen.']],
+      ['Përmbajtja', ['Raportet, analizat, lajmet dhe të dhënat në këtë faqe i përgatit INPO për informim publik. Përpiqemi që të jenë të sakta dhe të përditësuara, por nuk garantojmë që janë pa gabime.', 'Nëse gjeni një gabim, na shkruani në info@inpo-ks.org dhe do ta korrigjojmë.']],
+      ['Përdorimi i publikimeve', ['Publikimet tona mund t’i lexoni, shkarkoni, citoni dhe shpërndani falas për qëllime jokomerciale, duke përmendur INPO-n si burim dhe pa e ndryshuar përmbajtjen.', 'Për çdo përdorim tjetër na kërkoni leje.']],
+      ['Emri dhe logot', ['Emri dhe logoja e INPO-s, si dhe logot e donatorëve dhe partnerëve, u përkasin pronarëve të tyre. Nuk mund të përdoren pa leje.']],
+      ['Çfarë nuk lejohet', ['Mos e përdorni faqen për të dërguar mesazhe të padëshiruara, për të cenuar sigurinë e saj ose për të shkarkuar përmbajtje në mënyrë të automatizuar që e rëndon serverin.']],
+      ['Lidhjet e jashtme', ['Faqja ka lidhje drejt faqeve të tjera. Nuk jemi përgjegjës për përmbajtjen apo politikat e tyre.']],
+      ['Përgjegjësia', ['Në masën që e lejon ligji, INPO nuk mban përgjegjësi për dëme që mund të vijnë nga përdorimi i informacionit në këtë faqe.']],
+      ['Ligji i zbatueshëm', ['Për këto kushte zbatohen ligjet e Republikës së Kosovës.']],
+      ['Ndryshimet', ['Kushtet mund t’i ndryshojmë. Versionin e ri e publikojmë këtu bashkë me datën.']]
+    ]
+  },
+  'politika-e-cookies': {
+    title: 'Politika e cookies',
+    lead: 'Kjo faqe përdor vetëm cookies dhe ruajtje lokale të domosdoshme. Pa analitikë dhe pa reklama.',
+    updated: '[data e hyrjes në fuqi]',
+    sections: [
+      ['Çfarë janë cookies', ['Cookies janë skedarë të vegjël që një faqe i ruan në shfletuesin tuaj. Ruajtja lokale (local storage) është një mjet i ngjashëm që mbetet vetëm në pajisjen tuaj.']],
+      ['Çfarë përdorim', [
+        ['inpo-theme (ruajtje lokale): mban mend nëse keni zgjedhur temën e çelët ose të errët. Mbetet derisa ta fshini.',
+         'inpo-cookies (ruajtje lokale): mban mend që e keni mbyllur njoftimin për cookies.',
+         'Cookie e gjuhës: nëse faqja ofron versionin në anglisht, mban mend gjuhën që keni zgjedhur.',
+         'Cookies të WordPress-it (wordpress_*, wp-settings-*): vendosen vetëm për stafin e INPO-s kur hyn në panelin e administrimit.'],
+        'Nuk përdorim cookies për analitikë, reklama apo profilizim.']],
+      ['Palët e treta', ['Videot nga YouTube luhen nga youtube-nocookie.com, i cili nuk vendos cookies derisa ta luani videon.', 'Lidhjet drejt Facebook, X dhe YouTube hapin faqet e tyre, ku zbatohen politikat e tyre.']],
+      ['Si t’i menaxhoni', ['Cookies dhe ruajtjen lokale mund t’i fshini ose bllokoni nga cilësimet e shfletuesit. Faqja do të funksionojë, por nuk do ta mbajë mend zgjedhjen e temës.']],
+      ['Pëlqimi', ['Për cookies të domosdoshme nuk nevojitet pëlqim. Nëse në të ardhmen shtojmë mjete të tjera, do t’ju kërkojmë pëlqimin para se t’i aktivizojmë.']]
+    ]
+  }
+};
+// The notice shown once at the bottom of the page.
+const COOKIE_NOTE = 'Kjo faqe përdor vetëm cookies dhe ruajtje lokale të domosdoshme, pa analitikë dhe pa reklama.';
 const AREAS = [['Qeverisja e mirë','#/programet/qeverisje'],['Transparenca','#/publikimet?fusha=transparenca'],['Llogaridhënia','#/publikimet?fusha=llogaridhenia'],['Sundimi i ligjit','#/publikimet?fusha=ligji'],['Edukimi demokratik','#/programet/edukim']];
 const SOCIALS = [['Facebook','https://www.facebook.com/OrganizataINPO/'],['X','https://x.com/organizatainpo'],['YouTube','https://www.youtube.com/channel/UC5FqAZlDj2B05tV4HSiLWOg']];
 
@@ -209,5 +270,5 @@ const NAV = [
   ['Kontakti','#/kontakti']
 ];
 
-  return { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, HERO_PHOTO, FIELD, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV, ABOUT, ABOUT_LEAD, MISSION, VISION, VALUES, HISTORY, AREAS, SOCIALS };
+  return { NEWS, CATS, CAT1, PUBS, PTYPES, PFILTERS, THEMES, INSTS, PROGS, DONORS, DONOR_LOGOS, HERO_PHOTO, FIELD, PROJECTS, IMPACT, CASES, TEAM, BOARD, DCATS, DOCS, DATASETS, NAV, ABOUT, ABOUT_LEAD, MISSION, VISION, VALUES, HISTORY, AREAS, SOCIALS, LEGAL, COOKIE_NOTE };
 })();

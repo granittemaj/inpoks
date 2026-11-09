@@ -550,7 +550,7 @@ function contactPage(q){
       <div class="field"><label for="c-email">Adresa e email-it</label><input id="c-email" name="email" type="email" autocomplete="email" placeholder="emri@shembull.com" required><span class="err" id="e-email"></span></div>
       <fieldset class="field"><legend>Tema</legend><div class="topics">${topics.map(([k,l])=>`<label><input type="radio" name="tema" value="${k}" ${k===t?'checked':''}>${l}</label>`).join('')}</div></fieldset>
       <div class="field"><label for="c-msg">Mesazhi</label><textarea id="c-msg" name="mesazhi" rows="6" required></textarea><span class="err" id="e-msg"></span></div>
-      <div class="field"><label class="consent"><input type="checkbox" id="c-ok">Pajtohem që të dhënat e mia të përdoren vetëm për t'iu përgjigjur këtij mesazhi.</label><span class="err" id="e-ok"></span></div>
+      <div class="field"><label class="consent"><input type="checkbox" id="c-ok">Pajtohem që të dhënat e mia të përdoren vetëm për t'iu përgjigjur këtij mesazhi, sipas <a class="link-u" href="#/politika-e-privatesise">politikës së privatësisë</a>.</label><span class="err" id="e-ok"></span></div>
       <div class="form-foot"><span class="muted" style="font-size:14px">Ose shkruani direkt: <a class="link-u" href="mailto:info@inpo-ks.org">info@inpo-ks.org</a></span><button class="btn btn-accent" type="submit">Dërgo mesazhin</button></div>
     </form>
     <div class="side">
@@ -588,6 +588,17 @@ function bindContact(){
   });
 }
 
+// Legal pages (privacy, terms, cookies): headings, paragraphs and lists from LEGAL in data.js.
+function legalPage(slug){
+  const L = D.LEGAL[slug];
+  const body = L.sections.map(([h, items]) => `<h2>${h}</h2>` + items.map(x => Array.isArray(x) ? `<ul>${x.map(li=>`<li>${li}</li>`).join('')}</ul>` : `<p>${x}</p>`).join('')).join('');
+  const others = Object.entries(D.LEGAL).filter(([k])=>k!==slug).map(([k,o])=>`<a href="#/${k}">${o.title}${ARROW}</a>`).join('');
+  return pageHead('Informacion ligjor', L.title, L.lead) + `
+  <section class="wrap grid12 legal">
+    <div class="prose legal-body"><p class="todo">Tekst i propozuar. INPO e rishikon me këshilltarin ligjor para publikimit.</p><p class="legal-date">Përditësuar më ${L.updated}</p>${body}</div>
+    <aside class="aside"><div class="box"><h2 class="box-h">Informacion ligjor</h2><div class="legal-links">${others}<a href="#/kontakti">Pyetje? Na shkruani${ARROW}</a></div></div></aside>
+  </section>`;
+}
 function notFound(){
   return pageHead('Gabim 404','Faqja nuk u gjet.','Linku mund të jetë i vjetër ose i shkruar gabim. Kthehuni në kryefaqe ose kërkoni atë që ju duhet.') + `<section class="wrap"><div class="hero-ctas" style="margin-top:40px"><a class="btn btn-accent" href="#/">Kryefaqja</a><button class="btn btn-line" type="button" data-open-search>Kërko në faqe</button></div></section>`;
 }
@@ -616,6 +627,7 @@ function render(){
   else if (a==='transparenca') { html = transparencyPage(); title='Transparenca · INPO'; after=bindTransparency; }
   else if (a==='rreth-nesh') { html = aboutPage(); title='Rreth nesh · INPO'; }
   else if (a==='kontakti') { html = contactPage(q); title='Kontakti · INPO'; after=bindContact; }
+  else if (D.LEGAL && D.LEGAL[a] && !b) { html = legalPage(a); title = D.LEGAL[a].title + ' · INPO'; section = ''; }
   else { html = notFound(); section='404'; }
   app.innerHTML = html;
   document.title = title;
@@ -718,6 +730,15 @@ $('#theme').addEventListener('click', ()=>{
   try { localStorage.setItem('inpo-theme', next); } catch(e){}
   toast(next==='dark' ? 'Tema e errët u aktivizua.' : 'Tema e çelët u aktivizua.');
 });
+
+/* Cookie notice */
+(function cookieNote(){
+  const box = $('#cookie-note'); if (!box) return;
+  $('.cookie-txt', box).textContent = D.COOKIE_NOTE;
+  let seen = false; try { seen = localStorage.getItem('inpo-cookies') === '1'; } catch (e) {}
+  if (!seen) box.hidden = false;
+  $('[data-cookie-ok]', box).addEventListener('click', () => { box.hidden = true; try { localStorage.setItem('inpo-cookies', '1'); } catch (e) {} });
+})();
 
 /* Toast */
 let tt;

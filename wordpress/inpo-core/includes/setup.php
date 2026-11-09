@@ -748,6 +748,10 @@ function inpo_core_go_live() {
 		$page_ids['transparenca'] = $transparency;
 		$log[]                    = __( 'Transparency page: documents by category and year', 'inpo-core' );
 	}
+	if ( inpo_core_setup_legal_pages( $backup['created'] ) ) {
+		$log[] = __( 'Legal pages: privacy, terms of use, cookies', 'inpo-core' );
+	}
+	update_option( 'inpo_core_legal_v1', 1 );
 	/* translators: %d: number of projects */
 	$log[] = sprintf( __( 'Projects published: %d', 'inpo-core' ), inpo_core_publish_seeded_projects() );
 	// Infographics posted on the old site as a Facebook box become Infografika publications.
@@ -1068,6 +1072,8 @@ function inpo_core_run_setup() {
 	}
 	$created = array();
 	$page_ids['transparenca'] = inpo_core_transparency_page( $created );
+	$page_ids = array_merge( $page_ids, inpo_core_setup_legal_pages( $created ) );
+	update_option( 'inpo_core_legal_v1', 1 );
 	/* translators: %s: page slugs */
 	$log[] = sprintf( __( 'Pages: %s', 'inpo-core' ), implode( ', ', array_keys( $page_ids ) ) );
 

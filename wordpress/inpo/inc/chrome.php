@@ -302,6 +302,13 @@ function inpo_theme_render_header() {
 
 	// Back to top: appears after scrolling down a screen (theme.js).
 	$html .= '<button class="to-top" type="button" id="to-top" data-top aria-label="Kthehu lart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>';
+	// Cookie notice: once, until "Në rregull" (theme.js). Only necessary storage is used, so it informs; nothing to accept.
+	$org   = inpo_theme_org();
+	$legal = (array) apply_filters( 'inpo_legal_links', array() );
+	if ( ! empty( $org['cookie_note'] ) ) {
+		$more  = isset( $legal['politika-e-cookies'] ) ? ' <a href="' . esc_url( $legal['politika-e-cookies'][1] ) . '">Politika e cookies</a>' : '';
+		$html .= '<div class="cookie-note" id="cookie-note" role="region" aria-label="Njoftim për cookies" hidden><p>' . esc_html( $org['cookie_note'] ) . $more . '</p><button class="btn btn-ink btn-sm" type="button" data-cookie-ok>Në rregull</button></div>';
+	}
 	$html .= '<div class="toast" id="toast" role="status" aria-live="polite"></div>';
 	return $html;
 }
@@ -323,5 +330,16 @@ function inpo_theme_render_footer() {
 		. $office( $o['office1'], $o['address1'], 'foot-c1' )
 		. $office( $o['office2'], $o['address2'], 'foot-c2' )
 		. '<div class="foot-c3"><h3>Kontakt</h3><a href="mailto:' . esc_attr( $o['email'] ) . '">' . esc_html( $o['email'] ) . '</a><a href="' . esc_attr( $tel ) . '">' . esc_html( $o['phone'] ) . '</a><a href="' . esc_url( $o['audit_url'] ) . '">Raportet e auditimit</a></div>'
-		. '</div><div class="foot-bottom"><small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '. Të gjitha të drejtat e rezervuara.</small><small class="foot-credit">Developed by <a href="https://www.papingu.com" target="_blank" rel="noopener">papingu</a>.</small></div></div></footer>';
+		. '</div><div class="foot-bottom"><small>© ' . esc_html( wp_date( 'Y' ) ) . ' ' . esc_html( $o['name_long'] ) . '. Të gjitha të drejtat e rezervuara.</small>' . inpo_theme_legal_nav() . '<small class="foot-credit">Developed by <a href="https://www.papingu.com" target="_blank" rel="noopener">papingu</a>.</small></div></div></footer>';
+}
+
+/**
+ * Footer links to the legal pages (privacy, terms, cookies) that INPO Core reports as published.
+ */
+function inpo_theme_legal_nav() {
+	$links = '';
+	foreach ( (array) apply_filters( 'inpo_legal_links', array() ) as $link ) {
+		$links .= '<a href="' . esc_url( $link[1] ) . '">' . esc_html( $link[0] ) . '</a>';
+	}
+	return $links ? '<nav class="foot-legal" aria-label="Informacion ligjor">' . $links . '</nav>' : '';
 }

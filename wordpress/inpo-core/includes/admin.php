@@ -76,6 +76,9 @@ function inpo_core_setting_fields() {
 			'fineprint' => array( __( 'Grant note under the donors', 'inpo-core' ), 'textarea' ),
 			'recipient' => array( __( 'Email that receives contact messages', 'inpo-core' ), 'email' ),
 		),
+		__( 'Privacy', 'inpo-core' )             => array(
+			'cookie_note' => array( __( 'Cookie notice (shown once at the bottom of the page, with a link to the cookie policy)', 'inpo-core' ), 'textarea' ),
+		),
 	);
 }
 
@@ -679,6 +682,7 @@ function inpo_core_help_page() {
 		__( 'Pages', 'inpo-core' )                => array(
 			array( __( 'Home page: headline, photo, key findings, "Kush jemi" photos, figures, sections', 'inpo-core' ), $front ? $link( get_edit_post_link( $front, 'url' ), __( 'Pages > Home', 'inpo-core' ) ) : __( 'Pages > Home', 'inpo-core' ), __( 'Click a section, then change it in the sidebar on the right (Settings). Photos: "Choose photo from Media".', 'inpo-core' ) ),
 			array( __( 'About: history, mission, vision, values, team, documents', 'inpo-core' ), $page( 'rreth-nesh', __( 'Pages > Rreth nesh', 'inpo-core' ) ), __( 'Text blocks are edited in place. The team and board come from INPO > Team.', 'inpo-core' ) ),
+			array( __( 'Privacy policy, terms of use, cookie policy', 'inpo-core' ), $page( 'politika-e-privatesise', __( 'Pages > Politika e privatësisë', 'inpo-core' ) ) . ', ' . $page( 'kushtet-e-perdorimit', __( 'Kushtet e përdorimit', 'inpo-core' ) ) . ', ' . $page( 'politika-e-cookies', __( 'Politika e cookies', 'inpo-core' ) ), __( 'Proposed texts: have them reviewed by INPO\'s legal adviser and fill in the [brackets]. The footer links to them. The cookie notice text is in INPO > Settings.', 'inpo-core' ) ),
 			array( __( 'Contact and Transparency pages', 'inpo-core' ), $page( 'kontakti', __( 'Pages > Kontakti', 'inpo-core' ) ) . ', ' . $page( 'transparenca', __( 'Pages > Transparenca', 'inpo-core' ) ), __( 'Addresses and phone come from INPO > Settings.', 'inpo-core' ) ),
 			array( __( 'Heading and intro of the lists (Publications, Projects, Data, News), and sections under them', 'inpo-core' ), $list( 'publikimet', __( 'Publications', 'inpo-core' ) ) . ', ' . $list( 'projektet', __( 'Projects', 'inpo-core' ) ) . ', ' . $list( 'te-dhenat', __( 'Data', 'inpo-core' ) ) . ', ' . $list( 'lajme', __( 'News', 'inpo-core' ) ), __( 'Pages marked "… list". Title = heading, Excerpt = intro, Kicker = small label. Blocks you add appear under the list.', 'inpo-core' ) ),
 			array( __( 'A new page', 'inpo-core' ), $link( admin_url( 'post-new.php?post_type=page' ), __( 'Pages > Add New', 'inpo-core' ) ), __( 'Use the INPO blocks (category "INPO") or the patterns, then add the page to the menu.', 'inpo-core' ) ),
