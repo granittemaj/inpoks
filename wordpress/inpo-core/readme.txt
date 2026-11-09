@@ -3,7 +3,7 @@ Contributors: inpo
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.18.1
+Stable tag: 1.18.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Pairs with the INPO theme. Provides:
 3. Check INPO > Cilësimet.
 
 == Changelog ==
+
+= 1.18.2 =
+* Released together with theme 1.18.2 (wp-admin and login in INPO's design system). No plugin changes.
 
 = 1.18.1 =
 * Privacy policy, terms of use and cookie policy: created once as ordinary Pages (proposed texts for INPO's legal adviser, unknowns in [brackets]); the privacy page becomes WordPress's own; the contact consent links to it. Cookie notice text in INPO > Settings > Privacy.

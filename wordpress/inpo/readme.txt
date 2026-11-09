@@ -20,6 +20,11 @@ Geist font, (C) Vercel, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
 
 == Changelog ==
 
+= 1.18.2 =
+* Login screen in INPO's design system: the indigo rings panel beside the form, soft fields, indigo pill button, dark mode.
+* wp-admin in INPO's design system: Geist, ink sidebar and toolbar with the current item in indigo, pill buttons, rounded fields, panels and tables, indigo welcome panel. The block editor uses INPO indigo whatever colour scheme a user picked.
+* New theme screenshot.
+
 = 1.18.1 =
 * No more blinking near the top of the page: the header shrinks after 48px and grows back under 4px.
 * Filter rows stick under the header in one row (search first) and get smaller on scroll; no page scrolls sideways any more.
