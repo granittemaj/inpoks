@@ -120,8 +120,8 @@
     });
   });
 
-  /* Category chips stay on one row and scroll sideways: fade the side that has more to show. */
-  $$('.filters .chips').forEach(function (el) {
+  /* The filter row (categories, selects) scrolls sideways when it does not fit: fade the side that has more to show. */
+  $$('.filters-strip').forEach(function (el) {
     function set() {
       var max = el.scrollWidth - el.clientWidth;
       el.classList.toggle('fade-l', el.scrollLeft > 2);

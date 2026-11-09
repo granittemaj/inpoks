@@ -1094,7 +1094,7 @@ function inpo_core_render_project_list( $a ) {
 	return '<div ' . inpo_core_wrapper( '' ) . '>'
 		. '<section class="wrap">' . inpo_core_subnav( inpo_core_pairs( $a['links'] ) ) . '</section>'
 		. '<section class="wrap anchor" id="projektet" aria-labelledby="h-projektet"><h2 class="sr" id="h-projektet">Projektet</h2>'
-		. '<div class="filters"><div class="chips" role="group" aria-label="Filtro sipas statusit">' . $chip( '', $a['allLabel'], $total ) . $chip( 'aktive', $a['activeLabel'], $total - $done ) . $chip( 'perfunduara', $a['doneLabel'], $done ) . '</div></div>'
+		. '<div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas statusit">' . $chip( '', $a['allLabel'], $total ) . $chip( 'aktive', $a['activeLabel'], $total - $done ) . $chip( 'perfunduara', $a['doneLabel'], $done ) . '</div></div></div>'
 		. '<div class="results">' . $cards . inpo_core_pager( $query ) . '</div></section></div>';
 }
 
@@ -1310,7 +1310,7 @@ function inpo_core_render_documents( $a ) {
 		$filter  = '<form class="docs-year" method="get" data-inpo-docs>' . inpo_core_filter_select( 'docs-year', 'viti', 'Viti', $options, $year ? (string) $year : '' )
 			. '<noscript><button class="btn btn-ink btn-sm" type="submit">Filtro</button></noscript></form>';
 	}
-	$top  = ( $a['showLinks'] || $filter ) ? '<div class="filters docs-filters">' . ( $a['showLinks'] && count( $links ) > 1 ? inpo_core_subnav( $links, 'Në këtë faqe', 'Kategoritë e dokumenteve' ) : '<span></span>' ) . $filter . '</div>' : '';
+	$top  = ( $a['showLinks'] || $filter ) ? '<div class="filters-bar docs-filters">' . ( $a['showLinks'] && count( $links ) > 1 ? inpo_core_subnav( $links, 'Në këtë faqe', 'Kategoritë e dokumenteve' ) : '<span></span>' ) . $filter . '</div>' : '';
 	$soon = $soon ? '<p class="docs-soon"><b>Së shpejti</b> ' . implode( '<span aria-hidden="true"> · </span>', $soon ) . '</p>' : '';
 	return $wrap( $top . ( $groups ? $groups : '<p class="muted doc-empty">Dokumentet publikohen së shpejti.</p>' ) . $soon );
 }

@@ -339,10 +339,11 @@ function inpo_core_filters_html( $kind, $found, $opts = array() ) {
 		// First submit button = the one Enter uses, so Enter in the search field keeps the chosen chip.
 		. '<button type="submit" class="sr" tabindex="-1" aria-hidden="true">Kërko</button>'
 		. '<input type="hidden" name="' . esc_attr( $k['facet'] ) . '" value="' . esc_attr( $state['facet'] ) . '">'
-		. '<div class="filters-top"><div class="search-inline">' . inpo_core_icon( 'search' ) . '<label class="sr" for="' . esc_attr( $kind ) . '-q">' . esc_html( $k['label'] ) . '</label>'
-		. '<input id="' . esc_attr( $kind ) . '-q" name="q" type="search" placeholder="' . esc_attr( $opts['placeholder'] ) . '" value="' . esc_attr( $state['q'] ) . '" autocomplete="off"></div>'
+		// One row that sticks under the header: categories, selects, search.
+		. '<div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="' . esc_attr( $k['chips'] ) . '">' . $chips . '</div>'
 		. ( '' !== $selects ? '<div class="filters-sel">' . $selects . '</div>' : '' ) . '</div>'
-		. '<div class="chips" role="group" aria-label="' . esc_attr( $k['chips'] ) . '">' . $chips . '</div>'
+		. '<div class="search-inline">' . inpo_core_icon( 'search' ) . '<label class="sr" for="' . esc_attr( $kind ) . '-q">' . esc_html( $k['label'] ) . '</label>'
+		. '<input id="' . esc_attr( $kind ) . '-q" name="q" type="search" placeholder="' . esc_attr( $opts['placeholder'] ) . '" value="' . esc_attr( $state['q'] ) . '" autocomplete="off"></div></div>'
 		. '<noscript><p class="filters-ns"><button class="btn btn-ink btn-sm" type="submit">Filtro</button></p></noscript>'
 		// The count, the active filters and the order, in one line above the results.
 		. '<div class="res-bar"><p class="res-count" id="' . esc_attr( $kind ) . '-count" role="status">' . esc_html( 1 === $found ? '1 ' . $k['one'] : $found . ' ' . $k['many'] ) . '</p>'

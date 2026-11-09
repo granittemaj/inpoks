@@ -371,6 +371,8 @@ main{display:block;min-height:60vh}
 @media (max-width:900px){.donor img{height:40px}}
 .fineprint{margin:28px 0 0;font-size:14px;line-height:1.6;color:var(--muted);max-width:980px}
 @media (max-width:900px){.donors{grid-template-columns:repeat(2,minmax(0,1fr))}.donor{height:96px;font-size:14px}}
+/* Phones: three logos to a row, less height, so partners do not fill several screens */
+@media (max-width:640px){.donors{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 12px}.donor{height:72px;padding:0 4px;font-size:13px;line-height:1.25}.donor img{height:30px;max-width:100%}}
 
 /* Newsletter */
 
@@ -394,6 +396,7 @@ main{display:block;min-height:60vh}
 .to-top{position:fixed;right:max(20px,env(safe-area-inset-right,0px) + 16px);bottom:max(20px,env(safe-area-inset-bottom,0px) + 16px);z-index:45;width:52px;height:52px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--lift);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .25s,transform .25s cubic-bezier(.2,.7,.2,1),visibility 0s .25s,background .15s}
 .to-top.show{opacity:1;visibility:visible;transform:none;transition:opacity .25s,transform .25s cubic-bezier(.2,.7,.2,1),visibility 0s,background .15s}
 .to-top:hover{background:var(--accent);color:var(--on-accent)}
+@media (max-width:640px){.to-top{width:44px;height:44px}}
 .to-top:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}
 @media (max-width:980px){.foot-about{grid-column:1/-1}.foot-c1,.foot-c2,.foot-c3{grid-column:span 4}}
 @media (max-width:640px){.foot-c1,.foot-c2,.foot-c3{grid-column:1/-1}.foot-about p{max-width:none}}
@@ -411,13 +414,30 @@ main{display:block;min-height:60vh}
 .search-inline input{flex-grow:1;border:0;outline:none;background:transparent;font-size:16px;height:100%;min-width:0;color:var(--ink)}
 .search-inline input::placeholder{color:var(--muted)}
 
-/* Filters (Lajme, Publikimet): search, selects, chips with counts, then the live count and active filters */
-.filters{margin-top:40px;display:flex;flex-direction:column;gap:12px}
-/* Search and the filter selects share one row; below ~1100px the selects move to their own row */
-.filters-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.filters-top .search-inline{flex:1 1 300px;min-width:0}
-.filters-sel{display:flex;gap:10px;flex:0 1 auto;min-width:0}
-.filters-sel .sel-v{max-width:150px}
+/* Filters (Lajme, Publikimet, Projektet, Transparenca): categories, selects and search in one row that sticks
+   under the header and gets smaller on scroll (like INPO's sister sites); then the live count, active filters and order.
+   The form takes no box of its own, so the row stays stuck along the whole list of results. */
+form.filters{display:contents}
+.filters-bar{position:sticky;top:var(--hdr-h);z-index:30;display:flex;align-items:center;gap:12px;margin-top:40px;padding-block:10px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);transition:top .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1)}
+.filters-bar::after{content:"";position:absolute;left:-100vmax;right:-100vmax;bottom:0;border-bottom:1px solid var(--line);opacity:0;transition:opacity .2s}
+:root.is-scrolled .filters-bar{padding-block:6px}
+:root.is-scrolled .filters-bar::after{opacity:1}
+/* Under a page's sticky section menu (Projektet) */
+html:has(.wrap>.subnav) .filters-bar{top:calc(var(--hdr-h) + 46px)}
+.filters-strip{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
+.filters-strip::-webkit-scrollbar{display:none}
+.filters-strip .chips{flex:none;flex-wrap:nowrap}
+.filters-sel{display:flex;gap:8px;flex:none;margin-left:4px;padding-left:12px;border-left:1px solid var(--line)}
+.filters-bar .chip,.filters-bar .sel-pill{flex-shrink:0;height:44px;white-space:nowrap;transition:height .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,border-color .15s}
+.filters-bar .sel-pill{padding:0 38px 0 16px}
+.filters-bar .sel-pill::after{right:18px}
+.filters-bar .sel-v{max-width:150px}
+.filters-bar .search-inline{flex:0 0 260px;height:44px;padding:0 16px;gap:10px;transition:flex-basis .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1)}
+.filters-bar .search-inline:focus-within,.filters-bar .search-inline:has(input:not(:placeholder-shown)){flex-basis:340px}
+:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline{height:38px}
+:root.is-scrolled .filters-bar .chip{padding:0 14px;font-size:13px}
+:root.is-scrolled .filters-bar .sel-pill{font-size:13px}
+@media (pointer:coarse){:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline{height:44px}}
 .sel-pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:52px;min-width:0;padding:0 42px 0 20px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg);font-size:14px;white-space:nowrap;transition:background .15s,border-color .15s}
 .sel-pill:hover{background:var(--bg-softer)}
 .sel-pill.is-set{border-color:var(--ink)}
@@ -443,25 +463,22 @@ main{display:block;min-height:60vh}
 .res-clear::after{content:"";position:absolute;inset:0 -8px}
 .res-clear:hover{text-decoration:underline;text-underline-offset:4px}
 .results[aria-busy="true"]{opacity:.55;transition:opacity .15s}
-/* Categories stay on one row: it scrolls sideways when it does not fit, with a fade on the hidden side */
-.filters .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
-.filters .chips::-webkit-scrollbar{display:none}
-.filters .chip{flex-shrink:0;white-space:nowrap}
-.filters .chips.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent)}
-.filters .chips.fade-l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 72px);mask-image:linear-gradient(90deg,transparent,#000 72px)}
-.filters .chips.fade-l.fade-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent);mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent)}
-@media (max-width:1099px){
-  .filters-top .search-inline{flex-basis:100%}
-  .filters-sel{flex:1 1 100%;flex-wrap:wrap}
-  .filters-sel .sel-pill{flex:1 1 auto}
-  .filters-sel .sel-v{max-width:none}
+/* The row scrolls sideways when it does not fit, with a fade on the hidden side */
+.filters-strip.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent)}
+.filters-strip.fade-l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 72px);mask-image:linear-gradient(90deg,transparent,#000 72px)}
+.filters-strip.fade-l.fade-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent);mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent)}
+/* Narrow screens: the search is a round button at the end of the row and opens over it when used */
+@media (max-width:900px){
+  .filters-bar{gap:8px;margin-top:28px}
+  .filters-bar .search-inline{position:relative;flex:0 0 44px;padding:0}
+  .filters-bar .search-inline svg{position:absolute;left:12px;top:50%;margin-top:-10px;pointer-events:none}
+  .filters-bar .search-inline input{position:absolute;inset:0;width:100%;padding:0 16px 0 42px;border-radius:999px}
+  .filters-bar .search-inline input::placeholder{color:transparent}
+  .filters-bar .search-inline:focus-within{flex-basis:100%}
+  .filters-bar .search-inline:focus-within input::placeholder{color:var(--muted)}
+  .filters-bar .search-inline:has(input:not(:placeholder-shown)):not(:focus-within){flex-basis:40%}
 }
 @media (max-width:640px){
-  /* Two selects per row: the key sits above the value */
-  .filters-sel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-  .filters-sel .sel-pill{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:0 38px 0 18px}
-  .filters-sel .sel-k{font-size:12px;line-height:1.2}
-  .filters-sel .sel-v{max-width:100%;line-height:1.25}
   .filters .chips{gap:6px}
   .filters .chip{padding:0 14px}
   .res-bar{min-height:0;padding-top:12px}
@@ -470,7 +487,7 @@ main{display:block;min-height:60vh}
 .empty .hero-ctas{justify-content:center;margin-top:8px}
 .empty b{font-size:20px;letter-spacing:-.02em}
 .results{padding-top:40px}
-.filters+.results{padding-top:24px}
+.filters+.results,.filters-bar+.results{padding-top:24px}
 
 /* News page cards */
 .news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 16px}
@@ -484,7 +501,7 @@ main{display:block;min-height:60vh}
 .ncard-img.ph .rings{right:-130px;top:-150px;color:#FFFFFF}
 .ncard-media time{position:absolute;left:12px;bottom:12px;padding:6px 12px;border-radius:999px;background:rgba(14,14,26,.72);color:#FFFFFF;font-size:12px;font-weight:600;line-height:1.2}
 .ncard-body{display:flex;flex-direction:column;gap:10px;padding:18px 20px 22px}
-.ncard-cat{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ncard-cat{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .ncard-cat::before{content:"";width:7px;height:7px;border-radius:999px;background:var(--accent);flex-shrink:0}
 .ncard-title{margin:0;font-size:var(--fs-title);line-height:1.3;font-weight:600;letter-spacing:-.02em;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .ncard:hover .ncard-title{color:var(--accent-ink)}
@@ -778,8 +795,14 @@ h2.kicker,h3.kicker{margin:0}
 .docs-soon b{margin-right:8px;font-weight:600;color:var(--ink)}
 
 /* Transparency: documents by category and year */
-.docs-filters{flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding-top:12px;border-top:1px solid var(--line)}
-.docs-filters .subnav{flex:1 1 560px;margin-top:0;padding-top:0;border-top:0}
+.docs-filters{justify-content:space-between;gap:16px}
+.docs-filters .subnav{flex:1 1 auto;min-width:0;margin:0;padding:0;border:0;overflow-x:auto;scrollbar-width:none}
+.docs-filters .subnav::-webkit-scrollbar{display:none}
+.docs-filters .subnav-l{flex-wrap:nowrap}
+.docs-filters .subnav a{white-space:nowrap;transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
+:root.is-scrolled .docs-filters .subnav a{min-height:38px;font-size:14px}
+@media (pointer:coarse){:root.is-scrolled .docs-filters .subnav a{min-height:44px}}
+@media (max-width:640px){.docs-filters .subnav{flex-direction:row}.docs-filters .subnav-l{gap:0 4px}.docs-filters .subnav a{padding:0 12px}}
 .docs-group{padding-top:56px}
 .docs-h{display:flex;align-items:center;gap:12px;margin:0 0 24px;font-size:var(--fs-section);line-height:1.15;font-weight:600;letter-spacing:-.045em}
 .docs-h .chip-n{margin:0;padding:3px 10px;border-radius:999px;background:var(--bg-soft);color:var(--ink-2);font-size:13px;letter-spacing:0}
@@ -879,6 +902,9 @@ h2.kicker,h3.kicker{margin:0}
 html:has(.wrap>.subnav){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px + 46px + 16px)}
 @media (max-width:640px){html:has(.wrap>.subnav){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px + 46px + 16px)}}
 @media (prefers-reduced-motion:no-preference){html:has(.wrap>.subnav){scroll-behavior:smooth}}
+html:has(.docs-filters){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px + 56px + 16px)}
+@media (max-width:640px){html:has(.docs-filters){scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px + 56px + 16px)}}
+@media (prefers-reduced-motion:no-preference){html:has(.docs-filters){scroll-behavior:smooth}}
 @media (max-width:640px){
   .wrap>.subnav{flex-direction:row}
   .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:calc(clamp(20px,5.5vw,80px) - 14px)}

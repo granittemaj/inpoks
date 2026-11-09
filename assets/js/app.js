@@ -174,13 +174,12 @@ function filtersHTML(kind, st){
   if (years.length > 1) sels += selPill(`${k}-year`,'viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),st.viti);
   // Categories without content stay out of the way (the chosen one always shows).
   const chips = [['','Të gjitha']].concat(c.facets).filter(([k2])=>!k2 || k2===st.f || items.some(x=>c.of(x)===k2)).map(([k2,l])=>`<button type="button" class="chip" data-facet="${k2}" aria-pressed="${k2===st.f}">${l}<span class="chip-n"></span></button>`).join('');
-  // One row: search and filters. Then the categories. Then the count, active filters and the order.
+  // One row that sticks under the header: categories, selects, search. Then the count, active filters and the order.
   return `<form class="filters" role="search" aria-label="${c.label}" data-filters="${kind}">
-      <div class="filters-top">
+      <div class="filters-bar">
+        <div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div>${sels?`<div class="filters-sel">${sels}</div>`:''}</div>
         <div class="search-inline">${SEARCH}<label for="${k}-q" class="sr">${c.label}</label><input id="${k}-q" name="q" type="search" placeholder="${c.ph}" value="${esc(st.q)}" autocomplete="off"></div>
-        ${sels?`<div class="filters-sel">${sels}</div>`:''}
       </div>
-      <div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div>
       <div class="res-bar"><p class="res-count" id="${k}-count" role="status"></p><div class="res-active" id="${k}-active"></div><div class="res-sort">${selPill(`${k}-sort`,'rendit','Rendit',SORTS,st.rendit)}</div></div>
     </form>
     <div class="results" id="${k}-results"></div>`;
@@ -259,7 +258,7 @@ function bindFilters(kind, q){
   active.addEventListener('click', e=>{ const b=e.target.closest('[data-clear]'); if (b) clear(b.dataset.clear); });
   results.addEventListener('click', e=>{ const b=e.target.closest('[data-clear]'); if (b) clear(b.dataset.clear); });
   draw();
-  scrollFade($('.chips', form));
+  scrollFade($('.filters-strip', form));
 }
 
 function newsPage(q){
@@ -439,7 +438,7 @@ function projectsPage(q){
   <section class="wrap">${subnav('Seksionet e faqes', PROJ_SECTIONS, 'projektet')}</section>
   <section class="wrap anchor" id="projektet" aria-labelledby="h-projektet">
     <h2 class="sr" id="h-projektet">Projektet</h2>
-    <div class="filters"><div class="chips" role="group" aria-label="Filtro sipas statusit">${chip('','','Të gjitha')}${chip('aktive','aktiv','Projektet aktive')}${chip('perfunduara','perfunduar','Projektet e përfunduara')}</div></div>
+    <div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas statusit">${chip('','','Të gjitha')}${chip('aktive','aktiv','Projektet aktive')}${chip('perfunduara','perfunduar','Projektet e përfunduara')}</div></div></div>
     <div class="results"><div class="projs">${list.map(projCard).join('')}</div></div>
   </section>
   <section class="wrap sec anchor" id="ndikimi" aria-labelledby="h-ndikimi">
@@ -491,7 +490,7 @@ function transparencyPage(){
   const full = DCATS.filter(([k])=>DOCS.some(d=>d.cat===k)), soon = DCATS.filter(([k])=>!DOCS.some(d=>d.cat===k));
   return pageHead('Transparenca','Transparenca','Raportet tona vjetore, financiare dhe të auditimit, si dhe dokumentet që rregullojnë punën e organizatës, sipas kategorisë dhe vitit.') + `
   <section class="wrap">
-    <div class="filters docs-filters">
+    <div class="filters-bar docs-filters">
       ${subnav('Kategoritë e dokumenteve', full, 'transparenca')}
       ${selPill('docs-year','viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),'')}
     </div>
