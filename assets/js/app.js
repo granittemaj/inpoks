@@ -57,8 +57,8 @@ const newsRow = n => `<a class="row" href="#/lajme/${n.id}"><div class="row-meta
 const gridCols = n => n < 3 ? Math.max(1,n) : [5,4,3].filter(c=>n>=c).reduce((b,c)=>((c-n%c)%c) < ((b-n%b)%b) ? c : b);
 const donorsHTML = () => `<div class="donors" style="--cols:${gridCols(DONORS.length)}">${DONORS.map(d=>`<div class="donor">${DONOR_LOGOS[d]?`<img src="assets/img/donors/${DONOR_LOGOS[d]}" alt="${d}" loading="lazy" decoding="async">`:d}</div>`).join('')}</div><p class="fineprint">Ky grant është financuar nga projekti Promovimi i Shoqërisë Demokratike (DSP), i financuar nga Zyra Zvicerane për Bashkëpunim në Kosovë (SCO-K) dhe Ministria e Punëve të Jashtme e Danimarkës (DANIDA) dhe menaxhuar nga Fondacioni Kosovar për Shoqëri Civile (KCSF).</p>`;
 const pageHead = (kicker, title, lead, crumbs) => `<section class="wrap grid12 page-head"><div class="ph-l">${crumbs||`<span class="kicker">${kicker}</span>`}<h1 class="h-page" data-focus>${title}</h1></div><div class="ph-r">${lead?`<p class="lead">${lead}</p>`:''}</div></section>`;
-// In-page links to the sections of a page (About, Projects, Transparency).
-const subnav = (label, items, base) => `<nav class="subnav" aria-label="${label}"><span class="subnav-l">${items.map(([k,l])=>`<a href="#/${base}?seksioni=${k}">${l}</a>`).join('')}</span></nav>`;
+// In-page links to the sections of a page (About, Projects, Transparency); `pre` goes first in the same row (the project status chips).
+const subnav = (label, items, base, pre='') => `<nav class="subnav" aria-label="${label}">${pre}<span class="subnav-l">${items.map(([k,l])=>`<a href="#/${base}?seksioni=${k}">${l}</a>`).join('')}</span></nav>`;
 // Figures: big number, short label.
 const impactGrid = items => `<dl class="impact-grid">${items.map(([n,l])=>`<div><dt>${l}</dt><dd>${n==='YEARS'?YEARS:n}</dd></div>`).join('')}</dl>`;
 const projStatus = p => p.status==='aktiv' ? 'Aktiv' : 'I përfunduar';
@@ -176,12 +176,12 @@ function filtersHTML(kind, st){
   if (years.length > 1) sels += selPill(`${k}-year`,'viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),st.viti);
   // Categories without content stay out of the way (the chosen one always shows).
   const chips = [['','Të gjitha']].concat(c.facets).filter(([k2])=>!k2 || k2===st.f || items.some(x=>c.of(x)===k2)).map(([k2,l])=>`<button type="button" class="chip" data-facet="${k2}" aria-pressed="${k2===st.f}">${l}<span class="chip-n"></span></button>`).join('');
-  // One row that sticks under the header: categories, "Filtrat" (the selects, in a panel), search, order. Then the count and active filters.
+  // One row that sticks under the header: search, categories, "Filtrat" (the selects, in a panel), order. Then the count and active filters.
   return `<form class="filters" role="search" aria-label="${c.label}" data-filters="${kind}">
       <div class="filters-bar">
+        <div class="search-inline">${SEARCH}<label for="${k}-q" class="sr">${c.label}</label><input id="${k}-q" name="q" type="search" placeholder="${c.ph}" value="${esc(st.q)}" autocomplete="off"></div>
         <div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div></div>
         ${sels?`<details class="filters-more"><summary class="filters-more-btn">${SLIDERS}<span class="fm-l">Filtrat</span><span class="chip-n"></span></summary><div class="filters-pop">${sels}</div></details>`:''}
-        <div class="search-inline">${SEARCH}<label for="${k}-q" class="sr">${c.label}</label><input id="${k}-q" name="q" type="search" placeholder="${c.ph}" value="${esc(st.q)}" autocomplete="off"></div>
         <div class="filters-sort">${SORTI}${selPill(`${k}-sort`,'rendit','Rendit',SORTS,st.rendit)}</div>
       </div>
       <div class="res-bar"><p class="res-count" id="${k}-count" role="status"></p><div class="res-active" id="${k}-active"></div></div>
@@ -440,10 +440,9 @@ function projectsPage(q){
   const cases = CASES.map(id=>NEWS.find(x=>x.id===id)).filter(Boolean);
   const results = PROJECTS.flatMap(p=>p.results.map(r=>[r[0], r[1], p]));
   return pageHead('Projektet dhe ndikimi','Projektet dhe ndikimi','Projektet që zbatojmë me partnerët dhe donatorët tanë, dhe ndryshimet që kanë sjellë në institucione.') + `
-  <section class="wrap">${subnav('Seksionet e faqes', PROJ_SECTIONS, 'projektet')}</section>
+  <section class="wrap">${subnav('Seksionet e faqes', PROJ_SECTIONS, 'projektet', `<div class="chips" role="group" aria-label="Filtro sipas statusit">${chip('','','Të gjitha')}${chip('aktive','aktiv','Projektet aktive')}${chip('perfunduara','perfunduar','Projektet e përfunduara')}</div>`)}</section>
   <section class="wrap anchor" id="projektet" aria-labelledby="h-projektet">
     <h2 class="sr" id="h-projektet">Projektet</h2>
-    <div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas statusit">${chip('','','Të gjitha')}${chip('aktive','aktiv','Projektet aktive')}${chip('perfunduara','perfunduar','Projektet e përfunduara')}</div></div></div>
     <div class="results"><div class="projs">${list.map(projCard).join('')}</div></div>
   </section>
   <section class="wrap sec anchor" id="ndikimi" aria-labelledby="h-ndikimi">

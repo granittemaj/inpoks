@@ -953,16 +953,16 @@ function inpo_core_render_page_head( $a, $block ) {
 /* ---------- INPO's brief: results and impact, projects, documents, data ---------- */
 
 /**
- * "Në këtë faqe": links to the sections of a page.
+ * "Në këtë faqe": links to the sections of a page. $pre goes first in the same row (the project status chips).
  *
  * @param array[] $items [ id, label ].
  */
-function inpo_core_subnav( $items, $label = 'Në këtë faqe', $aria = 'Seksionet e faqes' ) {
+function inpo_core_subnav( $items, $label = 'Në këtë faqe', $aria = 'Seksionet e faqes', $pre = '' ) {
 	$links = '';
 	foreach ( $items as $item ) {
 		$links .= '<a href="#' . esc_attr( $item[0] ) . '">' . esc_html( $item[1] ) . '</a>';
 	}
-	return $links ? '<nav class="subnav" aria-label="' . esc_attr( $aria ) . '"><span class="subnav-l">' . $links . '</span></nav>' : '';
+	return $links ? '<nav class="subnav" aria-label="' . esc_attr( $aria ) . '">' . $pre . '<span class="subnav-l">' . $links . '</span></nav>' : '';
 }
 
 /**
@@ -1092,9 +1092,9 @@ function inpo_core_render_project_list( $a ) {
 		$cards = '<div class="projs">' . $cards . '</div>';
 	}
 	return '<div ' . inpo_core_wrapper( '' ) . '>'
-		. '<section class="wrap">' . inpo_core_subnav( inpo_core_pairs( $a['links'] ) ) . '</section>'
+		// One sticky row: the status chips, then the links to the page's sections.
+		. '<section class="wrap">' . inpo_core_subnav( inpo_core_pairs( $a['links'] ), 'Në këtë faqe', 'Seksionet e faqes', '<div class="chips" role="group" aria-label="Filtro sipas statusit">' . $chip( '', $a['allLabel'], $total ) . $chip( 'aktive', $a['activeLabel'], $total - $done ) . $chip( 'perfunduara', $a['doneLabel'], $done ) . '</div>' ) . '</section>'
 		. '<section class="wrap anchor" id="projektet" aria-labelledby="h-projektet"><h2 class="sr" id="h-projektet">Projektet</h2>'
-		. '<div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas statusit">' . $chip( '', $a['allLabel'], $total ) . $chip( 'aktive', $a['activeLabel'], $total - $done ) . $chip( 'perfunduara', $a['doneLabel'], $done ) . '</div></div></div>'
 		. '<div class="results">' . $cards . inpo_core_pager( $query ) . '</div></section></div>';
 }
 

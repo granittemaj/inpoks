@@ -458,7 +458,7 @@ html:has(.wrap>.subnav) .filters-bar{top:calc(var(--hdr-h) + 46px)}
 .filters-bar .sel-pill{padding:0 38px 0 16px}
 .filters-bar .sel-pill::after{right:18px}
 .filters-bar .sel-v{max-width:150px}
-.filters-bar .search-inline{flex:0 1 240px;min-width:160px;height:44px;padding:0 16px;gap:10px;transition:flex-basis .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1)}
+.filters-bar .search-inline{flex:0 0 240px;min-width:0;height:44px;padding:0 16px;gap:10px;transition:flex-basis .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1)}
 .filters-bar .search-inline:focus-within,.filters-bar .search-inline:has(input:not(:placeholder-shown)){flex-basis:320px}
 :root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline,:root.is-scrolled .filters-more-btn{height:38px}
 :root.is-scrolled .filters-bar .chip{padding:0 14px;font-size:13px}
@@ -720,9 +720,9 @@ h2.kicker,h3.kicker{margin:0}
 /* In-page links to the sections of a page */
 .subnav{display:flex;align-items:flex-start;gap:0 10px;margin-top:40px;padding-top:12px;border-top:1px solid var(--line)}
 .subnav-l{display:flex;flex-wrap:wrap;gap:0 4px;flex:1;min-width:0}
-.subnav a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;font-size:15px;font-weight:500;color:var(--ink-2);transition:background .15s,color .15s}
-.subnav a:hover{background:var(--bg-soft);color:var(--ink)}
-@media (max-width:640px){.subnav{flex-direction:column}.subnav-l{gap:0 20px}.subnav a{padding:0}.subnav a:hover{background:none;color:var(--accent-ink)}}
+.subnav-l a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;font-size:15px;font-weight:500;color:var(--ink-2);transition:background .15s,color .15s}
+.subnav-l a:hover{background:var(--bg-soft);color:var(--ink)}
+@media (max-width:640px){.subnav{flex-direction:column}.subnav-l{gap:0 20px}.subnav-l a{padding:0}.subnav-l a:hover{background:none;color:var(--accent-ink)}}
 
 /* Home: who we are, with photos from INPO's work in the field */
 .field-grid{row-gap:40px;align-items:start}
@@ -841,10 +841,10 @@ h2.kicker,h3.kicker{margin:0}
 .docs-filters .subnav{flex:1 1 auto;min-width:0;margin:0;padding:0;border:0;overflow-x:auto;scrollbar-width:none}
 .docs-filters .subnav::-webkit-scrollbar{display:none}
 .docs-filters .subnav-l{flex-wrap:nowrap}
-.docs-filters .subnav a{white-space:nowrap;transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
-:root.is-scrolled .docs-filters .subnav a{min-height:38px;font-size:14px}
-@media (pointer:coarse){:root.is-scrolled .docs-filters .subnav a{min-height:44px}}
-@media (max-width:640px){.docs-filters .subnav{flex-direction:row}.docs-filters .subnav-l{gap:0 4px}.docs-filters .subnav a{padding:0 12px}}
+.docs-filters .subnav-l a{white-space:nowrap;transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
+:root.is-scrolled .docs-filters .subnav-l a{min-height:38px;font-size:14px}
+@media (pointer:coarse){:root.is-scrolled .docs-filters .subnav-l a{min-height:44px}}
+@media (max-width:640px){.docs-filters .subnav{flex-direction:row}.docs-filters .subnav-l{gap:0 4px}.docs-filters .subnav-l a{padding:0 12px}}
 .docs-group{padding-top:56px}
 .docs-h{display:flex;align-items:center;gap:12px;margin:0 0 24px;font-size:var(--fs-section);line-height:1.15;font-weight:600;letter-spacing:-.045em}
 .docs-h .chip-n{margin:0;padding:3px 10px;border-radius:999px;background:var(--bg-soft);color:var(--ink-2);font-size:13px;letter-spacing:0}
@@ -932,13 +932,13 @@ h2.kicker,h3.kicker{margin:0}
 /* Section menu: sticks under the header, gets smaller on scroll, full-width background, the section being read is marked */
 .wrap:has(>.subnav){position:sticky;top:var(--hdr-h);z-index:30;margin-top:32px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);transition:top .3s cubic-bezier(.2,.7,.2,1)}
 .wrap>.subnav{margin-top:0;padding-block:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.subnav a[aria-current="true"]{background:var(--bg-soft);color:var(--accent-ink);font-weight:600}
+.subnav-l a[aria-current="true"]{background:var(--bg-soft);color:var(--accent-ink);font-weight:600}
 .wrap>.subnav .subnav-l{margin-left:-14px}
-.wrap>.subnav a{transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
+.wrap>.subnav .subnav-l a{transition:min-height .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,color .15s}
 .wrap>.subnav{transition:padding .3s cubic-bezier(.2,.7,.2,1)}
 :root.is-scrolled .wrap>.subnav{padding-block:4px}
-:root.is-scrolled .wrap>.subnav a{min-height:36px;font-size:14px}
-@media (pointer:coarse){:root.is-scrolled .wrap>.subnav{padding-block:0}:root.is-scrolled .wrap>.subnav a{min-height:44px}}
+:root.is-scrolled .wrap>.subnav .subnav-l a{min-height:36px;font-size:14px}
+@media (pointer:coarse){:root.is-scrolled .wrap>.subnav{padding-block:0}:root.is-scrolled .wrap>.subnav .subnav-l a{min-height:44px}}
 /* Its links slide to the section, which lands below the small header and the menu (46px once scrolled) */
 html:has(.wrap>.subnav){scroll-padding-top:calc(var(--wp-admin--admin-bar--height,0px) + env(safe-area-inset-top,0px) + 64px + 46px + 16px)}
 @media (max-width:640px){html:has(.wrap>.subnav){scroll-padding-top:calc(var(--wp-admin--admin-bar--height,0px) + env(safe-area-inset-top,0px) + 60px + 46px + 16px)}}
@@ -946,12 +946,23 @@ html:has(.wrap>.subnav){scroll-padding-top:calc(var(--wp-admin--admin-bar--heigh
 html:has(.docs-filters){scroll-padding-top:calc(var(--wp-admin--admin-bar--height,0px) + env(safe-area-inset-top,0px) + 64px + 56px + 16px)}
 @media (max-width:640px){html:has(.docs-filters){scroll-padding-top:calc(var(--wp-admin--admin-bar--height,0px) + env(safe-area-inset-top,0px) + 60px + 56px + 16px)}}
 @media (prefers-reduced-motion:no-preference){html:has(.docs-filters){scroll-behavior:smooth}}
+/* Projektet: the status chips and the section links share the one sticky row */
+.subnav>.chips{flex:none;flex-wrap:nowrap;align-items:center;gap:6px;margin-right:10px;padding-right:14px;border-right:1px solid var(--line)}
+.wrap>.subnav:has(>.chips){align-items:center}
+.wrap>.subnav:has(>.chips) .subnav-l{margin-left:0}
+.subnav>.chips .chip{transition:height .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,border-color .15s}
+:root.is-scrolled .wrap>.subnav>.chips .chip{height:36px;padding:0 14px;font-size:13px}
+@media (pointer:coarse){:root.is-scrolled .wrap>.subnav>.chips .chip{height:44px}}
 @media (max-width:640px){
   .wrap>.subnav{flex-direction:row}
   .wrap>.subnav .subnav-l{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:calc(clamp(20px,5.5vw,80px) - 14px)}
   .wrap>.subnav .subnav-l::-webkit-scrollbar{display:none}
-  .wrap>.subnav a{padding:0 14px;white-space:nowrap}
-  .wrap>.subnav a:hover{background:var(--bg-soft)}
+  .wrap>.subnav .subnav-l a{padding:0 14px;white-space:nowrap}
+  .wrap>.subnav .subnav-l a:hover{background:var(--bg-soft)}
+  /* With chips the whole row scrolls sideways */
+  .wrap>.subnav:has(>.chips){overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:clamp(20px,5.5vw,80px)}
+  .wrap>.subnav:has(>.chips)::-webkit-scrollbar{display:none}
+  .wrap>.subnav:has(>.chips) .subnav-l{flex:none;overflow:visible;margin-inline:0;padding-inline:0}
 }
 
 /* About: who we are in one statement, key facts beside it */
