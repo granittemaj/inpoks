@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'INPO_THEME_VERSION', wp_get_theme( get_template() )->get( 'Version' ) );
 
 require_once get_template_directory() . '/inc/chrome.php';
+require_once get_template_directory() . '/inc/admin-skin.php';
 
 add_action( 'after_setup_theme', 'inpo_theme_setup' );
 function inpo_theme_setup() {

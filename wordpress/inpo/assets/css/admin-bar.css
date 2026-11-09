@@ -1,0 +1,15 @@
+/* INPO toolbar (wp-admin and the site when logged in): ink, the current item in indigo */
+#wpadminbar{background:#0E0E1A;color:#CFCFDC;font-family:"Geist","Helvetica Neue",Helvetica,Arial,sans-serif}
+#wpadminbar .ab-item,#wpadminbar a.ab-item,#wpadminbar>#wp-toolbar span.ab-label,#wpadminbar>#wp-toolbar span.noticon{color:#CFCFDC;font-family:inherit}
+#wpadminbar .ab-icon,#wpadminbar .ab-icon:before,#wpadminbar .ab-item:before,#wpadminbar .ab-item:after{color:#A0A0B6}
+#wpadminbar:not(.mobile) .ab-top-menu>li:hover>.ab-item,#wpadminbar:not(.mobile) .ab-top-menu>li>.ab-item:focus,#wpadminbar.nojq .quicklinks .ab-top-menu>li>.ab-item:focus,#wpadminbar.nojs .ab-top-menu>li.menupop:hover>.ab-item,#wpadminbar .ab-top-menu>li.menupop.hover>.ab-item{background:#26263A;color:#FFFFFF}
+#wpadminbar:not(.mobile)>#wp-toolbar li:hover span.ab-label,#wpadminbar:not(.mobile)>#wp-toolbar li.hover span.ab-label,#wpadminbar:not(.mobile)>#wp-toolbar a:focus span.ab-label{color:#FFFFFF}
+#wpadminbar:not(.mobile) li:hover .ab-icon:before,#wpadminbar:not(.mobile) li:hover .ab-item:before,#wpadminbar:not(.mobile) li:hover .ab-item:after,#wpadminbar:not(.mobile) li:hover #adminbarsearch:before{color:#FFFFFF}
+#wpadminbar .menupop .ab-sub-wrapper,#wpadminbar .shortlink-input{background:#171726}
+#wpadminbar .quicklinks .menupop ul.ab-sub-secondary,#wpadminbar .quicklinks .menupop ul.ab-sub-secondary .ab-submenu{background:#26263A}
+#wpadminbar .ab-submenu .ab-item,#wpadminbar .quicklinks .menupop ul li a,#wpadminbar .quicklinks .menupop.hover ul li a,#wpadminbar.nojs .quicklinks .menupop:hover ul li a{color:#CFCFDC}
+#wpadminbar .quicklinks .menupop ul li a:hover,#wpadminbar .quicklinks .menupop ul li a:focus,#wpadminbar .quicklinks .menupop ul li a:hover strong,#wpadminbar .quicklinks .menupop ul li a:focus strong,#wpadminbar .quicklinks .ab-sub-wrapper .menupop.hover>a,#wpadminbar .quicklinks .menupop.hover ul li a:hover,#wpadminbar .quicklinks .menupop.hover ul li a:focus,#wpadminbar li:hover .ab-icon:before,#wpadminbar li a:focus .ab-icon:before{color:#FFFFFF}
+#wpadminbar #adminbarsearch:before{color:#A0A0B6}
+#wpadminbar>#wp-toolbar>#wp-admin-bar-top-secondary>#wp-admin-bar-search #adminbarsearch input.adminbar-input:focus{background:#26263A;color:#FFFFFF}
+#wpadminbar .ab-top-menu>li.menupop.hover>.ab-item,#wpadminbar #wp-admin-bar-user-info .display-name{color:#FFFFFF}
+#wpadminbar #wp-admin-bar-user-info .username{color:#A0A0B6}
