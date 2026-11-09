@@ -340,7 +340,7 @@ main{display:block;min-height:60vh}
 .pub:has(.cv-bars,.cv-word) .pub-read{background:var(--ink);color:var(--bg)}
 .pub:has(.cv-bars,.cv-word) .pub-read:hover{background:var(--accent);color:var(--on-accent)}
 @media (max-width:1100px){.pubs{grid-template-columns:repeat(2,minmax(0,1fr))}.pubs.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.pubs,.pubs.three{grid-template-columns:1fr}.pub,.pubs.three .pub{--ch:300px}}
+@media (max-width:560px){.pubs,.pubs.three{grid-template-columns:minmax(0,1fr)}.pub,.pubs.three .pub{--ch:300px}}
 /* Phones: publication teasers (home, programme, related) become a row you swipe; the library keeps its grid */
 @media (max-width:640px){
   .sec .pubs,.sec .pubs.three{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(78%,300px);gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * clamp(20px,5.5vw,80px));padding-inline:clamp(20px,5.5vw,80px);scroll-padding-inline:clamp(20px,5.5vw,80px);padding-block:4px}
@@ -428,26 +428,42 @@ main{display:block;min-height:60vh}
    under the header and gets smaller on scroll (like INPO's sister sites); then the live count, active filters and order.
    The form takes no box of its own, so the row stays stuck along the whole list of results. */
 form.filters{display:contents}
-.filters-bar{position:sticky;top:var(--hdr-h);z-index:30;display:flex;align-items:center;gap:12px;margin-top:40px;padding-block:10px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax);transition:top .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1)}
-.filters-bar::after{content:"";position:absolute;left:-100vmax;right:-100vmax;bottom:0;border-bottom:1px solid var(--line);opacity:0;transition:opacity .2s}
+.filters-bar{position:sticky;top:var(--hdr-h);z-index:30;display:flex;align-items:center;gap:10px;margin-top:40px;padding-block:10px;border-image:linear-gradient(var(--bg) 0 0) fill 0/0/0 100vmax;transition:top .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1)}
 :root.is-scrolled .filters-bar{padding-block:6px}
-:root.is-scrolled .filters-bar::after{opacity:1}
+:root.is-scrolled .filters-bar{border-image:linear-gradient(var(--bg) calc(100% - 1px),var(--line) 0) fill 0/0/0 100vmax}
 /* Under a page's sticky section menu (Projektet) */
 html:has(.wrap>.subnav) .filters-bar{top:calc(var(--hdr-h) + 46px)}
 .filters-strip{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;margin:-4px;padding:4px}
 .filters-strip::-webkit-scrollbar{display:none}
 .filters-strip .chips{flex:none;flex-wrap:nowrap}
-.filters-sel{display:flex;gap:8px;flex:none;margin-left:4px;padding-left:12px;border-left:1px solid var(--line)}
+/* "Filtrat": the selects (programme, theme, institution, year) in a panel under the row */
+.filters-more{flex:none}
+.filters-more-btn{list-style:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:1px solid var(--line-2);border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:height .3s cubic-bezier(.2,.7,.2,1),background .15s,border-color .15s}
+.filters-more-btn::-webkit-details-marker{display:none}
+.filters-more-btn:hover{background:var(--bg-softer)}
+.filters-more-btn:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}
+.filters-more[open] .filters-more-btn,.filters-more-btn:has(.chip-n:not(:empty)){border-color:var(--ink)}
+.filters-more-btn .chip-n{margin:0;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:12px;line-height:20px;text-align:center}
+.filters-more-btn .chip-n:empty{display:none}
+.filters-pop{position:absolute;top:calc(100% + 6px);right:0;z-index:2;display:flex;flex-wrap:wrap;gap:8px;width:max-content;max-width:100%;padding:14px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg);box-shadow:0 18px 40px rgba(14,14,26,.14)}
+.filters-pop .sel-v{max-width:180px}
+/* The panel's selects keep their size when the row gets smaller */
+:root .filters-bar .filters-pop .sel-pill.sel-pill{height:44px;font-size:14px}
+/* The order: a quiet pill at the end of the row */
+.filters-sort{position:relative;flex:none}
+.filters-sort>svg{display:none}
+.filters-bar .filters-sort .sel-pill{border-color:transparent;padding-left:12px}
+.filters-bar .filters-sort .sel-pill:hover,.filters-bar .filters-sort .sel-pill.is-set{border-color:var(--line-2)}
 .filters-bar .chip,.filters-bar .sel-pill{flex-shrink:0;height:44px;white-space:nowrap;transition:height .3s cubic-bezier(.2,.7,.2,1),padding .3s cubic-bezier(.2,.7,.2,1),font-size .3s cubic-bezier(.2,.7,.2,1),background .15s,border-color .15s}
 .filters-bar .sel-pill{padding:0 38px 0 16px}
 .filters-bar .sel-pill::after{right:18px}
 .filters-bar .sel-v{max-width:150px}
-.filters-bar .search-inline{flex:0 0 260px;height:44px;padding:0 16px;gap:10px;transition:flex-basis .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1)}
-.filters-bar .search-inline:focus-within,.filters-bar .search-inline:has(input:not(:placeholder-shown)){flex-basis:340px}
-:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline{height:38px}
+.filters-bar .search-inline{flex:0 1 240px;min-width:160px;height:44px;padding:0 16px;gap:10px;transition:flex-basis .3s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1)}
+.filters-bar .search-inline:focus-within,.filters-bar .search-inline:has(input:not(:placeholder-shown)){flex-basis:320px}
+:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline,:root.is-scrolled .filters-more-btn{height:38px}
 :root.is-scrolled .filters-bar .chip{padding:0 14px;font-size:13px}
 :root.is-scrolled .filters-bar .sel-pill{font-size:13px}
-@media (pointer:coarse){:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline{height:44px}}
+@media (pointer:coarse){:root.is-scrolled .filters-bar .chip,:root.is-scrolled .filters-bar .sel-pill,:root.is-scrolled .filters-bar .search-inline,:root.is-scrolled .filters-more-btn{height:44px}}
 .sel-pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:52px;min-width:0;padding:0 42px 0 20px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg);font-size:14px;white-space:nowrap;transition:background .15s,border-color .15s}
 .sel-pill:hover{background:var(--bg-softer)}
 .sel-pill.is-set{border-color:var(--ink)}
@@ -460,9 +476,6 @@ html:has(.wrap>.subnav) .filters-bar{top:calc(var(--hdr-h) + 46px)}
 .chip-n{margin-left:8px;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .chip[aria-pressed="true"] .chip-n,.chip.on .chip-n{color:inherit;opacity:.72}
 .res-bar{display:flex;align-items:center;gap:8px 24px;flex-wrap:wrap;min-height:61px;margin-top:12px;padding-top:16px;border-top:1px solid var(--line)}
-.res-sort{margin-left:auto}
-.res-sort .sel-pill{height:44px;border-color:transparent;padding-left:16px}
-.res-sort .sel-pill:hover,.res-sort .sel-pill.is-set{border-color:var(--line-2)}
 .res-count{margin:0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
 .res-active{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .res-active:empty{display:none}
@@ -480,13 +493,29 @@ html:has(.wrap>.subnav) .filters-bar{top:calc(var(--hdr-h) + 46px)}
 /* Narrow screens: the search is a round button at the end of the row and opens over it when used */
 @media (max-width:900px){
   .filters-bar{gap:8px;margin-top:28px}
-  .filters-bar .search-inline{position:relative;flex:0 0 44px;padding:0}
+  .filters-bar .search-inline{position:relative;flex:0 0 44px;min-width:0;padding:0}
   .filters-bar .search-inline svg{position:absolute;left:12px;top:50%;margin-top:-10px;pointer-events:none}
   .filters-bar .search-inline input{position:absolute;inset:0;width:100%;padding:0 16px 0 42px;border-radius:999px}
   .filters-bar .search-inline input::placeholder{color:transparent}
   .filters-bar .search-inline:focus-within{flex-basis:100%}
   .filters-bar .search-inline:focus-within input::placeholder{color:var(--muted)}
   .filters-bar .search-inline:has(input:not(:placeholder-shown)):not(:focus-within){flex-basis:40%}
+}
+@media (max-width:640px){
+  .filters-more-btn{position:relative;width:44px;padding:0;justify-content:center}
+  .filters-more-btn .fm-l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .filters-more-btn .chip-n{position:absolute;top:-5px;right:-5px}
+  .filters-pop{left:0;right:0;width:auto}
+  .filters-pop .sel-pill{flex:1 1 calc(50% - 4px)}
+  /* Two to a row, the name above the value */
+  :root .filters-bar .filters-pop .sel-pill.sel-pill{height:52px;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:0 34px 0 16px}
+  .filters-pop .sel-k{font-size:12px;line-height:1.2}
+  .filters-pop .sel-v{max-width:100%;line-height:1.25}
+  .filters-bar .filters-sort .sel-pill{width:44px;padding:0;border-color:var(--line-2)}
+  .filters-sort .sel-k,.filters-sort .sel-v{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .filters-bar .filters-sort .sel-pill::after{display:none}
+  .filters-sort>svg{display:block;position:absolute;left:12px;top:50%;margin-top:-10px;z-index:1;pointer-events:none}
+  .filters-bar:has(.search-inline:focus-within) .filters-more,.filters-bar:has(.search-inline:focus-within) .filters-sort{display:none}
 }
 @media (max-width:640px){
   .filters .chips{gap:6px}

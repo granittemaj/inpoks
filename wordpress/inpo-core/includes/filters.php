@@ -335,20 +335,22 @@ function inpo_core_filters_html( $kind, $found, $opts = array() ) {
 			. esc_html( $label ) . '<span class="chip-n">' . (int) $n . '</span></button>';
 	}
 
+	// How many selects in the "Filtrat" panel are set (shown on its button).
+	$set_selects = substr_count( $selects, 'sel-pill is-set' );
 	$form = '<form class="filters" method="get" action="' . esc_url( inpo_core_filter_base( $kind ) ) . '" role="search" aria-label="' . esc_attr( $k['label'] ) . '" data-inpo-filter="' . esc_attr( $kind ) . '">'
 		// First submit button = the one Enter uses, so Enter in the search field keeps the chosen chip.
 		. '<button type="submit" class="sr" tabindex="-1" aria-hidden="true">Kërko</button>'
 		. '<input type="hidden" name="' . esc_attr( $k['facet'] ) . '" value="' . esc_attr( $state['facet'] ) . '">'
-		// One row that sticks under the header: categories, selects, search.
-		. '<div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="' . esc_attr( $k['chips'] ) . '">' . $chips . '</div>'
-		. ( '' !== $selects ? '<div class="filters-sel">' . $selects . '</div>' : '' ) . '</div>'
+		// One row that sticks under the header: categories, "Filtrat" (the selects, in a panel), search, order.
+		. '<div class="filters-bar"><div class="filters-strip"><div class="chips" role="group" aria-label="' . esc_attr( $k['chips'] ) . '">' . $chips . '</div></div>'
+		. ( '' !== $selects ? '<details class="filters-more"><summary class="filters-more-btn">' . inpo_core_icon( 'sliders' ) . '<span class="fm-l">Filtrat</span><span class="chip-n">' . ( $set_selects ? (int) $set_selects : '' ) . '</span></summary><div class="filters-pop">' . $selects . '</div></details>' : '' )
 		. '<div class="search-inline">' . inpo_core_icon( 'search' ) . '<label class="sr" for="' . esc_attr( $kind ) . '-q">' . esc_html( $k['label'] ) . '</label>'
-		. '<input id="' . esc_attr( $kind ) . '-q" name="q" type="search" placeholder="' . esc_attr( $opts['placeholder'] ) . '" value="' . esc_attr( $state['q'] ) . '" autocomplete="off"></div></div>'
+		. '<input id="' . esc_attr( $kind ) . '-q" name="q" type="search" placeholder="' . esc_attr( $opts['placeholder'] ) . '" value="' . esc_attr( $state['q'] ) . '" autocomplete="off"></div>'
+		. '<div class="filters-sort">' . inpo_core_icon( 'sort' ) . inpo_core_filter_select( $kind . '-sort', 'rendit', 'Rendit', inpo_core_filter_sorts(), $state['rendit'] ) . '</div></div>'
 		. '<noscript><p class="filters-ns"><button class="btn btn-ink btn-sm" type="submit">Filtro</button></p></noscript>'
 		// The count, the active filters and the order, in one line above the results.
 		. '<div class="res-bar"><p class="res-count" id="' . esc_attr( $kind ) . '-count" role="status">' . esc_html( 1 === $found ? '1 ' . $k['one'] : $found . ' ' . $k['many'] ) . '</p>'
-		. '<div class="res-active" id="' . esc_attr( $kind ) . '-active">' . inpo_core_filter_tags( $kind, $state, $facets ) . '</div>'
-		. '<div class="res-sort">' . inpo_core_filter_select( $kind . '-sort', 'rendit', 'Rendit', inpo_core_filter_sorts(), $state['rendit'] ) . '</div></div>'
+		. '<div class="res-active" id="' . esc_attr( $kind ) . '-active">' . inpo_core_filter_tags( $kind, $state, $facets ) . '</div></div>'
 		. '</form>';
 
 	return $form;

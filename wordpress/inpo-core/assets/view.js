@@ -158,7 +158,18 @@
         p.classList.toggle('is-set', !!s.value);
         $('.sel-v', p).textContent = s.options[s.selectedIndex].text;
       });
+      // "Filtrat" shows how many of its selects are set.
+      var more = $('.filters-more .chip-n', form);
+      if (more) { var n = $$('.filters-pop .sel-pill.is-set', form).length; more.textContent = n || ''; }
     }
+    // The filters panel closes on a click outside it or Escape.
+    document.addEventListener('click', function (e) {
+      $$('.filters-more[open]', form).forEach(function (d) { if (!d.contains(e.target)) d.open = false; });
+    });
+    form.addEventListener('keydown', function (e) {
+      var d = e.target.closest && e.target.closest('.filters-more[open]');
+      if (e.key === 'Escape' && d) { d.open = false; $('summary', d).focus(); }
+    });
     // Copies state from a fetched page into this one, leaving focus where it is.
     function adopt(doc) {
       var f = $('[data-inpo-filter="' + kind + '"]', doc);
@@ -209,7 +220,7 @@
       if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       var paging = !!a.closest('.pager');
-      if (paging) form.scrollIntoView({ block: 'start' });
+      if (paging) results.scrollIntoView({ block: 'start' });
       load(a.href, paging ? null : function () { ($('.tag', active) || form.elements.q).focus(); });
     }
     active.addEventListener('click', follow);

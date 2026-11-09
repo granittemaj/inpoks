@@ -14,6 +14,8 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
 const DL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>';
 const DOCI = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></svg>';
+const SLIDERS = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
+const SORTI = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></svg>';
 const CHEV = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 const SEARCH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 const X = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -174,13 +176,15 @@ function filtersHTML(kind, st){
   if (years.length > 1) sels += selPill(`${k}-year`,'viti','Viti',[['','Të gjitha']].concat(years.map(y=>[y,y])),st.viti);
   // Categories without content stay out of the way (the chosen one always shows).
   const chips = [['','Të gjitha']].concat(c.facets).filter(([k2])=>!k2 || k2===st.f || items.some(x=>c.of(x)===k2)).map(([k2,l])=>`<button type="button" class="chip" data-facet="${k2}" aria-pressed="${k2===st.f}">${l}<span class="chip-n"></span></button>`).join('');
-  // One row that sticks under the header: categories, selects, search. Then the count, active filters and the order.
+  // One row that sticks under the header: categories, "Filtrat" (the selects, in a panel), search, order. Then the count and active filters.
   return `<form class="filters" role="search" aria-label="${c.label}" data-filters="${kind}">
       <div class="filters-bar">
-        <div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div>${sels?`<div class="filters-sel">${sels}</div>`:''}</div>
+        <div class="filters-strip"><div class="chips" role="group" aria-label="Filtro sipas kategorisë">${chips}</div></div>
+        ${sels?`<details class="filters-more"><summary class="filters-more-btn">${SLIDERS}<span class="fm-l">Filtrat</span><span class="chip-n"></span></summary><div class="filters-pop">${sels}</div></details>`:''}
         <div class="search-inline">${SEARCH}<label for="${k}-q" class="sr">${c.label}</label><input id="${k}-q" name="q" type="search" placeholder="${c.ph}" value="${esc(st.q)}" autocomplete="off"></div>
+        <div class="filters-sort">${SORTI}${selPill(`${k}-sort`,'rendit','Rendit',SORTS,st.rendit)}</div>
       </div>
-      <div class="res-bar"><p class="res-count" id="${k}-count" role="status"></p><div class="res-active" id="${k}-active"></div><div class="res-sort">${selPill(`${k}-sort`,'rendit','Rendit',SORTS,st.rendit)}</div></div>
+      <div class="res-bar"><p class="res-count" id="${k}-count" role="status"></p><div class="res-active" id="${k}-active"></div></div>
     </form>
     <div class="results" id="${k}-results"></div>`;
 }
@@ -219,6 +223,7 @@ function bindFilters(kind, q){
       b.setAttribute('aria-pressed', String(k===st.f));
     });
     $$('.sel-pill', form).forEach(p => { const s=$('select',p); p.classList.toggle('is-set', !!s.value); $('.sel-v',p).textContent = s.options[s.selectedIndex].text; });
+    const more = $('.filters-more .chip-n', form); if (more) { const n = $$('.filters-pop .sel-pill.is-set', form).length; more.textContent = n || ''; }
     count.textContent = c.count(list.length);
     const tags = [];
     if (st.q.trim()) tags.push(['q', `“${esc(st.q.trim())}”`]);
@@ -721,6 +726,7 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('sh
 
 /* Global delegation */
 document.addEventListener('click', e => {
+  $$('.filters-more[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; });
   // Section menu: slide to the section on the same page instead of re-rendering it.
   const sn = e.target.closest('.subnav a[href*="seksioni="]');
   if (sn && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
@@ -743,5 +749,6 @@ addEventListener('scroll', onScroll, {passive:true}); onScroll();
 $('#yr').textContent = new Date().getFullYear();
 
 addEventListener('hashchange', render);
+addEventListener('keydown', e => { if (e.key === 'Escape') $$('.filters-more[open]').forEach(d => { d.open = false; $('summary', d).focus(); }); });
 render();
 })();
