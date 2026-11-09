@@ -458,8 +458,8 @@ function inpo_core_cover( $post, $index = 0 ) {
 	$data    = inpo_core_cover_table( $post );
 	$slides  = inpo_core_slide_ids( $post );
 	if ( $slides ) {
-		// An infographic as images: its first image is the cover.
-		$variant = 'page';
+		// An infographic as images: its first image framed at the bottom, the title above it as on the other covers.
+		$variant = 'shot';
 		$art     = wp_get_attachment_image( $slides[0], 'medium_large', false, array( 'class' => 'cover-img', 'alt' => '', 'loading' => 'lazy', 'decoding' => 'async' ) );
 	} elseif ( $data ) {
 		// An infographic with data: its chart with the most bars, drawn small on the cover.

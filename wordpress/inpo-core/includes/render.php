@@ -287,7 +287,7 @@ function inpo_core_render_publication_detail( $a, $block ) {
 	// The cover opens the reader too; without a server preview, the browser draws the real first page into it.
 	$cover = inpo_core_cover( $post, 0 );
 	if ( $pdf ) {
-		$first = false === strpos( $cover, 'cv-page' ) ? ' data-first-page' : '';
+		$first = false === strpos( $cover, 'cv-page' ) && false === strpos( $cover, 'cv-shot' ) ? ' data-first-page' : '';
 		$cover = '<div class="pd-cover"' . $first . '>' . $cover . '<button class="pd-read" type="button"' . $reader . ' data-pdf-hash aria-label="' . esc_attr__( 'Lexo publikimin', 'inpo-core' ) . '"><span>' . inpo_core_icon( 'book' ) . ' Lexo online</span></button></div>';
 	}
 
@@ -650,7 +650,7 @@ function inpo_core_render_program_page( $a ) {
 			$rows .= inpo_core_news_card( $p );
 		}
 		$more  = $own ? add_query_arg( 'programi', $term->slug, inpo_core_news_url() ) : inpo_core_news_url();
-		$html .= '<section class="wrap sec"><div class="pub-head"><h2 class="h2">' . ( $own ? 'Lajme dhe reagime nga programi' : 'Reagimet e fundit' ) . '</h2><a class="btn btn-line btn-sm" href="' . esc_url( $more ) . '">Të gjitha lajmet</a></div><div class="ncards">' . $rows . '</div></section>';
+		$html .= '<section class="wrap sec"><div class="pub-head"><div class="pub-head-l"><span class="kicker">Lajmet</span><h2 class="h2">' . ( $own ? 'Lajme dhe reagime nga programi' : 'Reagimet e fundit' ) . '</h2></div><a class="btn btn-line btn-sm" href="' . esc_url( $more ) . '">Të gjitha lajmet</a></div><div class="ncards">' . $rows . '</div></section>';
 	}
 
 	if ( count( $all ) > 1 ) {
@@ -1154,8 +1154,8 @@ function inpo_core_render_project_detail( $a, $block ) {
 	$crumbs = '<nav class="crumbs" aria-label="Gjurma"><a href="' . esc_url( inpo_core_projects_url() ) . '">Projektet dhe ndikimi</a><span aria-hidden="true">/</span>'
 		. '<a href="' . esc_url( inpo_core_projects_url( array( 'statusi' => $active ? 'aktive' : 'perfunduara' ) ) ) . '">' . ( $active ? 'Projektet aktive' : 'Projektet e përfunduara' ) . '</a></nav>';
 	$lead   = has_excerpt( $post ) ? '<p class="lead">' . esc_html( wp_strip_all_tags( get_the_excerpt( $post ) ) ) . '</p>' : '';
-	$html   = '<section class="wrap grid12 page-head"><div class="ph-l">' . $crumbs . '<h1 class="h-headline" data-focus>' . inpo_core_title( $post ) . '</h1></div>'
-		. '<div class="ph-r"><span class="pill' . ( $active ? ' on' : '' ) . '">' . ( $active ? 'Aktiv' : 'I përfunduar' ) . '</span>' . ( $lead ? '<div style="margin-top:18px">' . $lead . '</div>' : '' ) . '</div></section>'
+	$html   = '<section class="wrap grid12 page-head"><div class="ph-l">' . $crumbs . '<h1 class="h-headline" data-focus>' . inpo_core_title( $post ) . '</h1><div class="ph-pill"><span class="pill' . ( $active ? ' on' : '' ) . '">' . ( $active ? 'Aktiv' : 'I përfunduar' ) . '</span></div></div>'
+		. '<div class="ph-r">' . $lead . '</div></section>'
 		. '<section class="wrap grid12 proj-body">' . ( $facts ? '<dl class="facts proj-facts">' . $facts . '</dl>' : '' ) . '<div class="proj-main">' . $main . '</div></section>';
 
 	$others = get_posts( array( 'post_type' => INPO_CORE_PROJECT, 'posts_per_page' => 3, 'post__not_in' => array( $post->ID ), 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'DESC' ) ) );

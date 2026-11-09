@@ -40,8 +40,8 @@ function cover(p, i){
   let art = '';
   if (v==='rings') art = rings(260,3);
   if (v==='bars') art = '<div class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:66%"></i><i style="height:52%"></i><i style="height:100%"></i></div>';
-  // An infographic as images: its first image is the cover.
-  if (p.slides) return `<div class="cover cv-page" aria-hidden="true"><img class="cover-img" src="assets/img/infografika/${p.slides[0][0]}" alt="" loading="lazy" decoding="async">${top}<span class="cover-title">${p.title}</span>${foot}</div>`;
+  // An infographic as images: its first image framed at the bottom, the title above it as on the other covers.
+  if (p.slides) return `<div class="cover cv-shot" aria-hidden="true"><img class="cover-img" src="assets/img/infografika/${p.slides[0][0]}" alt="" loading="lazy" decoding="async">${top}<span class="cover-title">${p.title}</span>${foot}</div>`;
   // An infographic with data: its chart with the most bars, drawn small on the cover.
   if (p.data) art = coverBars(p.data.charts.filter(c=>c.chart!=='table').sort((x,y)=>y.rows.length-x.rows.length)[0] || p.data.charts[0]);
   if (v==='dots') art = '<div class="dots" aria-hidden="true">' + Array.from({length:18},(_,k)=>`<i${DOTS_ON.includes(k)?' class="on"':''}></i>`).join('') + '</div>';
@@ -387,7 +387,7 @@ function progPage(id){
   <section class="wrap sec">
     <div class="impact light"><div class="impact-head"><span class="kicker">Rezultatet</span><h2 class="h2">Rezultatet e programit</h2></div>${impactGrid(results)}</div>
   </section>
-  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><h2 class="h2">Lajme dhe reagime nga programi</h2><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div class="ncards">${NEWS.slice(0,4).map(n=>ncard(n)).join('')}</div></section>`:''}
+  ${id==='qeverisje'?`<section class="wrap sec"><div class="pub-head"><div class="pub-head-l"><span class="kicker">Lajmet</span><h2 class="h2">Lajme dhe reagime nga programi</h2></div><a class="btn btn-line btn-sm" href="#/lajme">Të gjitha lajmet</a></div><div class="ncards">${NEWS.slice(0,4).map(n=>ncard(n)).join('')}</div></section>`:''}
   <section class="wrap sec"><a class="prog prog-next" href="#/programet/${other}"><div><span class="muted" style="font-size:14px">Programi tjetër</span><h3 style="margin:6px 0 0">${PROGS[other].name}</h3></div><span class="arrow-circle">${ARROW}</span></a></section>`;
 }
 
@@ -463,8 +463,8 @@ function projectPage(id){
   return `
   <section class="wrap grid12 page-head">
     <div class="ph-l"><nav class="crumbs" aria-label="Gjurma"><a href="#/projektet">Projektet dhe ndikimi</a><span aria-hidden="true">/</span><a href="#/projektet?statusi=${p.status==='aktiv'?'aktive':'perfunduara'}">${p.status==='aktiv'?'Projektet aktive':'Projektet e përfunduara'}</a></nav>
-      <h1 class="h-headline" data-focus>${p.title}</h1></div>
-    <div class="ph-r"><span class="pill${p.status==='aktiv'?' on':''}">${projStatus(p)}</span></div>
+      <h1 class="h-headline" data-focus>${p.title}</h1><div class="ph-pill"><span class="pill${p.status==='aktiv'?' on':''}">${projStatus(p)}</span></div></div>
+    <div class="ph-r"></div>
   </section>
   <section class="wrap grid12 proj-body">
     <dl class="facts proj-facts">
