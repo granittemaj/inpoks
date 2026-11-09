@@ -25,6 +25,8 @@ npm install && npm test   # jsdom smoke test of every route + em dash check
 
 Run `npm test` after any change to `app.js`, `data.js` or `index.html`.
 
+When you change a CSS or JS file, bump the `?v=` date on its links in `index.html` (all five share one value), so browsers load the new file instead of a cached copy.
+
 ## Architecture
 
 - `index.html` is the static shell: header in one row (INPO's logo, `assets/img/logo.png`, white in dark mode; `<nav id="nav">` centred in a pill tray with short labels from `SHORT` in app.js, language, theme, search; no "Kryefaqja" item, the logo is home; no "Abonohu" button), `<main id="app">`, footer, a floating back-to-top button (`#to-top`, shown after a screen of scrolling) (about text, offices, contact, copyright; no site map and no wordmark), menu and search `<dialog>`s, toast. Navigation and the mobile menu are built from `NAV` in data.js. A small inline head script adds the `js` class and applies the saved theme before paint.

@@ -11,10 +11,10 @@ const read = (p) => readFileSync(join(root, p), 'utf8');
 // Inline the external scripts so jsdom can run them without a server.
 const html = read('index.html')
   // Function replacers, so "$" sequences in the code are not treated as patterns.
-  .replace('<script src="assets/js/data.js"></script>', () => `<script>${read('assets/js/data.js')}</script>`)
-  .replace('<script src="assets/js/charts.js"></script>', () => `<script>${read('assets/js/charts.js')}</script>`)
-  .replace('<script src="assets/js/slides.js"></script>', () => `<script>${read('assets/js/slides.js')}</script>`)
-  .replace('<script src="assets/js/app.js"></script>', () => `<script>${read('assets/js/app.js')}</script>`);
+  .replace(/<script src="assets\/js\/data\.js(\?v=[^"]*)?"><\/script>/, () => `<script>${read('assets/js/data.js')}</script>`)
+  .replace(/<script src="assets\/js\/charts\.js(\?v=[^"]*)?"><\/script>/, () => `<script>${read('assets/js/charts.js')}</script>`)
+  .replace(/<script src="assets\/js\/slides\.js(\?v=[^"]*)?"><\/script>/, () => `<script>${read('assets/js/slides.js')}</script>`)
+  .replace(/<script src="assets\/js\/app\.js(\?v=[^"]*)?"><\/script>/, () => `<script>${read('assets/js/app.js')}</script>`);
 
 const routes = [
   '', 'projektet', 'projektet?statusi=aktive', 'projektet/anulimet', 'transparenca', 'te-dhenat', 'te-dhenat/tenderet-e-anuluar', 'rreth-nesh?seksioni=ekipi', 'lajme', 'lajme?kategoria=reagime', 'lajme?q=stadiume&rendit=te-vjetrat', 'lajme/pastrimi',
